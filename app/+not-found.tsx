@@ -1,32 +1,31 @@
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { Link, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function NotFoundScreen() {
-  return (
-    <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
-      <ThemedView style={styles.container}>
-        <ThemedText type="title">This screen doesn't exist.</ThemedText>
-        <Link href="/" style={styles.link}>
-          <ThemedText type="link">Go to home screen!</ThemedText>
-        </Link>
-      </ThemedView>
-    </>
-  );
+export default function CatchAll() {
+    const backgroundColor = useThemeColor({}, 'background');
+    return (
+        <>
+            <Stack.Screen options={{ title: 'Oops! Not Found' }} />
+            <View style={[styles.container, { backgroundColor }]}>
+                <Link href="/" style={styles.button}>
+                    Pagina no encontrada, Regresar al Inicio
+                </Link>
+            </View>
+        </>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      button: {
+        fontSize: 20,
+        textDecorationLine: 'underline',
+        color: '#black',
+      },
 });
