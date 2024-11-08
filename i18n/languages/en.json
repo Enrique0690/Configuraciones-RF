@@ -1,0 +1,43 @@
+{
+    "layout": {
+        "header": "Settings",
+        "menuItems": {
+            "businessInfo": "Business Information",
+            "printers": "Printers",
+            "paymentMethods": "Payment Methods",
+            "integrations": "Integrations with Other Apps",
+            "tabletConfiguration": "Table Configuration",
+            "security": "Security",
+            "advancedOptions": "Advanced Options",
+            "taxConfigurationEC": "Tax Configuration (Ecuador)"
+        }
+    },
+    "businessInfo": {
+        "header": "Business Information",
+        "fields": {
+            "name": "Business Name",
+            "address": "Address",
+            "phone": "Phone Number",
+            "email": "Email",
+            "businessType": "Business Type",
+            "currency": "Currency"
+        }
+    },
+    "printers": {
+        "header": "Printers",
+        "addPrinter": "Add Printer",
+        "editPrinter": "Edit Printer"
+    },
+    "security": {
+        "header": "Security",
+        "deleteProductReason": "Deleting products requires a reason of",
+        "cancelInvoiceReason": "Canceling an invoice requires a reason of",
+        "cancelOrderReason": "Canceling an order requires a reason of",
+        "characters": "characters",
+        "users": "Users",
+        "roles": "Roles"
+    },
+    "search": {
+    "placeholder": "Search..."
+  }
+}

@@ -1,15 +1,26 @@
-import React from "react";
-import { View, TextInput, Text, StyleSheet } from "react-native";
-import { Colors } from '@/constants/Colors';
+// components/SearchBar.tsx
+import React from 'react';
+import { View, TextInput, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslation } from 'react-i18next';
+import { useSearch } from '@/context/SearchContext';  // Importamos el hook de búsqueda
 
 const SearchBar: React.FC = () => {
+  const { t } = useTranslation();
+  const { searchQuery, setSearchQuery } = useSearch();  // Usamos el contexto global
+  const textColor = useThemeColor({}, 'textsecondary');
+  const placeholderColor = useThemeColor({}, 'placeholder');
+
   return (
     <View style={styles.searchContainer}>
-      <Text style={styles.icon}>🔍</Text>
+      <Ionicons name="search-outline" size={20} color={textColor} style={styles.searchIcon} />
       <TextInput
-        placeholder="Buscar..."
-        placeholderTextColor={Colors.text}
-        style={styles.searchInput}
+        style={[styles.searchInput, { color: textColor }]}
+        placeholder={t('search.placeholder')}
+        placeholderTextColor={placeholderColor}
+        value={searchQuery}
+        onChangeText={setSearchQuery}  // Actualizamos el valor de búsqueda global
       />
     </View>
   );
@@ -17,23 +28,19 @@ const SearchBar: React.FC = () => {
 
 const styles = StyleSheet.create({
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 12,
-    backgroundColor: Colors.itemBackground,
+    paddingHorizontal: 8,
+    marginBottom: 16,
   },
-  icon: {
-    fontSize: 20,
+  searchIcon: {
     marginRight: 8,
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 8,
-    marginLeft: 8,
-    fontSize: 16,
-    color: Colors.text, 
+    padding: 8,
   },
 });
 

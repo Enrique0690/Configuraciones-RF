@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Platform, BackHandler } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Platform, BackHandler } from "react-native";
 import { Slot, useRouter, useSegments } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import SearchBar from "@/components/SearchBar";
+import '@/i18n';
+import { useTranslation } from "react-i18next";
 
 const MenuItem = ({ item, router, setIsFullScreen }: { item: { text: string, route: string, icon: string }, router: any, setIsFullScreen: Function }) => (
     <TouchableOpacity onPress={() => { 
@@ -22,6 +24,7 @@ const MenuSection = ({ items, router, borderColor, setIsFullScreen }: { items: a
 );
 
 export default function Layout() {
+    const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     const router = useRouter();
     const segments = useSegments();
@@ -29,9 +32,7 @@ export default function Layout() {
     const [isMobile, setIsMobile] = useState(false);
 
     const backgroundColor = useThemeColor({}, 'background');
-    const itemBackgroundColor = useThemeColor({}, 'itemBackground');
     const borderColor = useThemeColor({}, 'border');
-    const textColor = useThemeColor({}, 'text');
     const secondaryTextColor = useThemeColor({}, 'textsecondary');
 
     useEffect(() => {
@@ -59,14 +60,14 @@ export default function Layout() {
     }, [isMobile, isFullScreen, segments]);
 
     const menuItems = [
-        { text: "Información del Negocio", route: "/business-info", icon: "👁️" },
-        { text: "Impresoras", route: "/printers", icon: "🖨️" },
-        { text: "Métodos de Cobro", route: "/payment-methods", icon: "💳" },
-        { text: "Integración con otras apps", route: "/integrations", icon: "🔗" },
-        { text: "Configuración de mesas", route: "/tablet-configuration", icon: "🍽️" },
-        { text: "Seguridad", route: "/security", icon: "🔒" },
-        { text: "Opciones avanzadas", route: "/advanced-options", icon: "⚙️" },
-        { text: "Configuración tributaria (Ecuador)", route: "/tax-configuration-ec", icon: "📝" }
+        { text: t("layout.menuItems.businessInfo"), route: "/business-info", icon: "👁️" },
+        { text: t("layout.menuItems.printers"), route: "/printers", icon: "🖨️" },
+        { text: t("layout.menuItems.paymentMethods"), route: "/payment-methods", icon: "💳" },
+        { text: t("layout.menuItems.integrations"), route: "/integrations", icon: "🔗" },
+        { text: t("layout.menuItems.tabletConfiguration"), route: "/tablet-configuration", icon: "🍽️" },
+        { text: t("layout.menuItems.security"), route: "/security", icon: "🔒" },
+        { text: t("layout.menuItems.advancedOptions"), route: "/advanced-options", icon: "⚙️" },
+        { text: t("layout.menuItems.taxConfigurationEC"), route: "/tax-configuration-ec", icon: "📝" }
     ];
 
     return (
@@ -75,8 +76,7 @@ export default function Layout() {
                 {/* Panel izquierdo (Menú) */}
                 {(!isFullScreen || !isMobile) && (
                     <View style={[styles.sidebar, { backgroundColor, width: isMobile ? '100%' : 300 }]}>
-                        <Text style={[styles.header, { color: secondaryTextColor }]}>Configuraciones</Text>
-                        <SearchBar  />
+                        <Text style={[styles.header, { color: secondaryTextColor }]}>{t("layout.header")}</Text>
                         <ScrollView contentContainerStyle={styles.itemsContainer}>
                             <MenuSection items={menuItems.slice(0, 4)} router={router} borderColor={borderColor} setIsFullScreen={setIsFullScreen} />
                             <MenuSection items={menuItems.slice(4)} router={router} borderColor={borderColor} setIsFullScreen={setIsFullScreen} />

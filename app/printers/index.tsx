@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 const PrintersScreen: React.FC = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
@@ -20,7 +22,7 @@ const PrintersScreen: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: textColor }]}>IMPRESORAS</Text>
+        <Text style={[styles.title, { color: textColor }]}>{t('printers.header')}</Text>
         {/* Botón de agregar nueva impresora */}
         <TouchableOpacity onPress={handleAddPrinter} style={styles.addButton}>
           <Ionicons name="add-circle" size={30} color={textColor} />
@@ -28,26 +30,17 @@ const PrintersScreen: React.FC = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color={textColor} style={styles.searchIcon} />
-          <TextInput
-            style={[styles.searchInput, { color: textColor }]}
-            placeholder="Buscar"
-            placeholderTextColor={textColor}
-          />
-        </View>
-
         {/* Lista de impresoras */}
         <TouchableOpacity onPress={handleEditPrinter}>
-          <Text style={[styles.printerItem, { color: textColor }]}>COCINA - USB</Text>
+          <Text style={[{ color: textColor }]}>COCINA - USB</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleEditPrinter}>
-          <Text style={[styles.printerItem, { color: textColor }]}>TERRAZA PB - Ethernet</Text>
+          <Text style={[{ color: textColor }]}>TERRAZA PB - Ethernet</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleEditPrinter}>
-          <Text style={[styles.printerItem, { color: textColor }]}>CAJA - USB</Text>
+          <Text style={[{ color: textColor }]}>CAJA - USB</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -75,25 +68,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 16,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    marginBottom: 16,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    padding: 8,
-  },
-  printerItem: {
-    fontSize: 16,
-    marginBottom: 16,
   },
 });
 

@@ -4,10 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { router } from 'expo-router';
 import { useAsyncStorage } from '@/components/Save';
+import { useTranslation } from 'react-i18next';
 
 const STORAGE_KEY = 'securityData';
 
 const SecurityScreen: React.FC = () => {
+  const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
   const placeholderColor = useThemeColor({}, 'placeholder');
@@ -17,10 +19,12 @@ const SecurityScreen: React.FC = () => {
     anularFacturaMotivo: '',
     anularPedidoMotivo: '',
   });
+  
   const updateField = <K extends keyof typeof data>(field: K, value: typeof data[K]) => {
     const newData = { ...data, [field]: value };
     saveData(newData);
   };
+
   const handleNumericInput = (value: string, field: keyof typeof data) => {
     const numericValue = value.replace(/[^0-9]/g, '');
     updateField(field, numericValue);
@@ -29,12 +33,11 @@ const SecurityScreen: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        
-        <Text style={[styles.title, { color: textColor }]}>SEGURIDAD</Text>
+        <Text style={[styles.title, { color: textColor }]}>{t('security.header')}</Text>
 
         <View style={styles.inputRow}>
           <Text style={[styles.optionText, { color: textColor }]}>
-            Eliminación de productos requiere un motivo de 
+            {t('security.deleteProductReason')}
           </Text>
           <TextInput
             style={[styles.input, { color: textColor }]}
@@ -46,13 +49,13 @@ const SecurityScreen: React.FC = () => {
             placeholderTextColor={placeholderColor}
           />
           <Text style={[styles.optionText, { color: textColor }]}>
-            caracteres
+            {t('security.characters')}
           </Text>
         </View>
 
         <View style={styles.inputRow}>
           <Text style={[styles.optionText, { color: textColor }]}>
-            Anular una factura requiere un motivo de 
+            {t('security.cancelInvoiceReason')}
           </Text>
           <TextInput
             style={[styles.input, { color: textColor }]}
@@ -64,13 +67,13 @@ const SecurityScreen: React.FC = () => {
             placeholderTextColor={placeholderColor}
           />
           <Text style={[styles.optionText, { color: textColor }]}>
-            caracteres
+            {t('security.characters')}
           </Text>
         </View>
 
         <View style={styles.inputRow}>
           <Text style={[styles.optionText, { color: textColor }]}>
-            Anular un pedido requiere un motivo de 
+            {t('security.cancelOrderReason')}
           </Text>
           <TextInput
             style={[styles.input, { color: textColor }]}
@@ -82,18 +85,18 @@ const SecurityScreen: React.FC = () => {
             placeholderTextColor={placeholderColor}
           />
           <Text style={[styles.optionText, { color: textColor }]}>
-            caracteres
+            {t('security.characters')}
           </Text>
         </View>
 
         <TouchableOpacity style={styles.option} onPress={() => router.push('./users/userlist')}>
           <Ionicons name="people-outline" size={20} color={textColor} />
-          <Text style={[styles.optionLabel, { color: textColor }]}>Usuarios (25 usuarios)</Text>
+          <Text style={[styles.optionLabel, { color: textColor }]}>{t('security.users')} (5 {t('security.users')})</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.option} onPress={() => router.push('./rols/rollist')}>
           <Ionicons name="briefcase-outline" size={20} color={textColor} />
-          <Text style={[styles.optionLabel, { color: textColor }]}>Roles (3 roles)</Text>
+          <Text style={[styles.optionLabel, { color: textColor }]}>{t('security.roles')} (3 {t('security.roles')})</Text>
         </TouchableOpacity>
         
       </ScrollView>

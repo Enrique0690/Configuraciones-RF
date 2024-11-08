@@ -1,0 +1,42 @@
+{
+    "layout": {
+        "header": "Configuraciones",
+        "menuItems": {
+            "businessInfo": "Información del Negocio",
+            "printers": "Impresoras",
+            "paymentMethods": "Métodos de Pago",
+            "integrations": "Integraciones con otras Apps",
+            "tabletConfiguration": "Configuración de Mesas",
+            "security": "Seguridad",
+            "advancedOptions": "Opciones Avanzadas",
+            "taxConfigurationEC": "Configuración de Impuestos (Ecuador)"
+        }
+    },
+    "businessInfo": {
+        "header": "Información del Negocio",
+        "fields": {
+            "name": "Nombre del Negocio",
+            "address": "Dirección",
+            "phone": "Número de teléfono",
+            "email": "Correo",
+            "businessType": "Tipo de Negocio",
+            "currency": "Moneda"
+        }
+    },
+    "printers": {
+        "header": "Impresoras",
+        "addPrinter": "Agregar Impresora"
+    },
+    "security": {
+        "header": "Seguridad",
+        "deleteProductReason": "La eliminación de productos requiere un motivo de",
+        "cancelInvoiceReason": "La anulación de una factura requiere un motivo de",
+        "cancelOrderReason": "La anulación de un pedido requiere un motivo de",
+        "characters": "caracteres",
+        "users": "Usuarios",
+        "roles": "Roles"
+    },
+    "search": {
+    "placeholder": "Buscar..."
+  }
+}
