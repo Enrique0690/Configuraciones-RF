@@ -14,14 +14,12 @@
     },
     "businessInfo": {
         "header": "Business Information",
-        "fields": {
-            "name": "Business Name",
-            "address": "Address",
-            "phone": "Phone Number",
-            "email": "Email",
-            "businessType": "Business Type",
-            "currency": "Currency"
-        }
+        "name": "Business Name",
+        "address": "Address",
+        "phone": "Phone Number",
+        "email": "Email",
+        "businessType": "Business Type",
+        "currency": "Currency"
     },
     "printers": {
         "header": "Printers",
@@ -37,7 +35,40 @@
         "users": "Users",
         "roles": "Roles"
     },
+    "taxConfigurationEC": {
+        "infoTributaria": {
+            "sectionTitle": "TAX INFORMATION",
+            "ruc": "RUC",
+            "razonSocial": "Company Name",
+            "direccionMatriz": "Headquarters Address",
+            "obligadollevarcontabilidad": "Required to keep accounting records",
+            "agenteRetencion": "Retention Agent",
+            "regimenContribuyente": "Taxpayer Regime",
+            "numeroCalificacionArtesanal": "Artisan Certification Number",
+            "sitioWebFacturaElectronica": "Electronic Invoice Website",
+            "correoEnvioComprobantes": "Email for Sending Invoices",
+            "editDialogTitle": "Edit Information"
+        },
+        "secuenciaFactura": {
+            "sectionTitle": "INVOICE SEQUENCE",
+            "todosLosDispositivos": "All devices",
+            "asignaSecuenciaDispositivos": "Assign sequence for specific devices:",
+            "caja1": "Cash Register 1",
+            "caja2": "Cash Register 2",
+            "caja3": "Cash Register 3",
+            "cambiarSecuencia": "Change invoice sequence when billed with - Card/Cash to",
+            "editDialogTitle": "Edit Sequence"
+        },
+        "reglas": {
+            "sectionTitle": "RULES FOR DELIVERY NOTES AND INVOICES",
+            "cambiarFacturaMetodo": "Change invoice for \"card\" or \"transfer\"",
+            "cambiarFacturaDatos": "Change invoice with sales data",
+            "cambiarNotaEntregaMonto": "Change delivery note if the amount is less",
+            "notaEntregaHora": "Change delivery note if generated after",
+            "editDialogTitle": "Edit Time"
+        }
+    },
     "search": {
-    "placeholder": "Search..."
-  }
+        "placeholder": "Search..."
+    }
 }

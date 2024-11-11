@@ -4,14 +4,14 @@ import { Slot, useRouter, useSegments } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import SearchBar from "@/components/SearchBar";
+import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
 import { useTranslation } from "react-i18next";
 
 const MenuItem = ({ item, router, setIsFullScreen }: { item: { text: string, route: string, icon: string }, router: any, setIsFullScreen: Function }) => (
-    <TouchableOpacity onPress={() => { 
-        router.push(item.route); 
-        setIsFullScreen(true); 
+    <TouchableOpacity onPress={() => {
+        router.push(item.route);
+        setIsFullScreen(true);
     }}>
         <Text style={styles.menuItem}>{item.icon} {item.text}</Text>
     </TouchableOpacity>
@@ -60,14 +60,14 @@ export default function Layout() {
     }, [isMobile, isFullScreen, segments]);
 
     const menuItems = [
-        { text: t("layout.menuItems.businessInfo"), route: "/business-info", icon: "👁️" },
-        { text: t("layout.menuItems.printers"), route: "/printers", icon: "🖨️" },
-        { text: t("layout.menuItems.paymentMethods"), route: "/payment-methods", icon: "💳" },
-        { text: t("layout.menuItems.integrations"), route: "/integrations", icon: "🔗" },
-        { text: t("layout.menuItems.tabletConfiguration"), route: "/tablet-configuration", icon: "🍽️" },
-        { text: t("layout.menuItems.security"), route: "/security", icon: "🔒" },
-        { text: t("layout.menuItems.advancedOptions"), route: "/advanced-options", icon: "⚙️" },
-        { text: t("layout.menuItems.taxConfigurationEC"), route: "/tax-configuration-ec", icon: "📝" }
+        { text: t("layout.menuItems.businessInfo"), route: "/Business-info", icon: "👁️" },
+        { text: t("layout.menuItems.printers"), route: "/Printers", icon: "🖨️" },
+        { text: t("layout.menuItems.paymentMethods"), route: "/Payment-methods", icon: "💳" },
+        { text: t("layout.menuItems.integrations"), route: "/Integrations", icon: "🔗" },
+        { text: t("layout.menuItems.tabletConfiguration"), route: "/Tablet-configuration", icon: "🍽️" },
+        { text: t("layout.menuItems.security"), route: "/Security", icon: "🔒" },
+        { text: t("layout.menuItems.advancedOptions"), route: "/Advanced-options", icon: "⚙️" },
+        { text: t("layout.menuItems.taxConfigurationEC"), route: "/Tax-configuration-ec", icon: "📝" }
     ];
 
     return (
@@ -78,6 +78,9 @@ export default function Layout() {
                     <View style={[styles.sidebar, { backgroundColor, width: isMobile ? '100%' : 300 }]}>
                         <Text style={[styles.header, { color: secondaryTextColor }]}>{t("layout.header")}</Text>
                         <ScrollView contentContainerStyle={styles.itemsContainer}>
+                            <View style={styles.searchBarContainer}>
+                                <SearchBar setIsFullScreen={setIsFullScreen} />
+                            </View>
                             <MenuSection items={menuItems.slice(0, 4)} router={router} borderColor={borderColor} setIsFullScreen={setIsFullScreen} />
                             <MenuSection items={menuItems.slice(4)} router={router} borderColor={borderColor} setIsFullScreen={setIsFullScreen} />
                         </ScrollView>
@@ -101,6 +104,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
+        zIndex: 1,
     },
     sidebar: {
         padding: 16,
@@ -147,6 +151,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         padding: 10,
+        marginBottom: 16,
+    },
+    searchBarContainer: {
+        zIndex: 10,
         marginBottom: 16,
     },
 });

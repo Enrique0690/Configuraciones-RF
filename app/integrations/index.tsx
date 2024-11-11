@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import SearchBar from '@/components/navigation/SearchBar';
 
 const IntegrationsScreen: React.FC = () => {
   const router = useRouter();
@@ -11,6 +12,9 @@ const IntegrationsScreen: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <Text style={[styles.title, { color: textColor }]}>Configuración de Integraciones</Text>
+      <View style={styles.searchBarContainer}>
+        <SearchBar />
+      </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {/* Aquí puedes agregar componentes y ajustes específicos de esta categoría */}
         <Text style={[styles.description, { color: textColor }]}>
@@ -38,6 +42,13 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     lineHeight: 24,
+  },
+  searchBarContainer: {
+    display: Platform.select({
+      ios: 'flex', 
+      android: 'flex', 
+      default: 'none', 
+    }),
   },
 });
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, Platform } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import SearchBar from '@/components/navigation/SearchBar';
 
 const TabletConfigurationScreen: React.FC = () => {
   const backgroundColor = useThemeColor({}, 'background');
@@ -13,7 +14,9 @@ const TabletConfigurationScreen: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <Text style={[styles.title, { color: textColor }]}>Editor Mesa</Text>
-
+      <View style={styles.searchBarContainer}>
+        <SearchBar />
+      </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {/* Información Tributaria */}
         <View style={styles.tributaryContainer}>
@@ -116,6 +119,13 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     fontSize: 16,
+  },
+  searchBarContainer: {
+    display: Platform.select({
+      ios: 'flex', 
+      android: 'flex', 
+      default: 'none', 
+    }),
   },
 });
 

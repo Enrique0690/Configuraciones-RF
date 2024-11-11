@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Este hook maneja la interacción con AsyncStorage de manera genérica
 const useStorage = <T>(key: string, initialValue: T) => {
   const [data, setdata] = useState<T>(initialValue);
 
@@ -12,7 +11,7 @@ const useStorage = <T>(key: string, initialValue: T) => {
       if (savedData) {
         setdata(JSON.parse(savedData));
       } else {
-        setdata(initialValue); // Si no existe, usamos el valor inicial
+        setdata(initialValue); 
       }
     } catch (error) {
       console.error('Error loading data from AsyncStorage:', error);
@@ -31,7 +30,7 @@ const useStorage = <T>(key: string, initialValue: T) => {
   const clearData = async () => {
     try {
       await AsyncStorage.removeItem(key);
-      setdata(initialValue); // Reseteamos el valor almacenado
+      setdata(initialValue); 
     } catch (error) {
       console.error('Error clearing data from AsyncStorage:', error);
     }
@@ -39,7 +38,7 @@ const useStorage = <T>(key: string, initialValue: T) => {
 
   useEffect(() => {
     loadData();
-  }, [key]); // Re-carga los datos si cambia la key
+  }, [key]); 
 
   return {
     data,

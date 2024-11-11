@@ -3,14 +3,14 @@ import { View, Text, TextInput, ScrollView, Platform, StyleSheet, TouchableOpaci
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/Colors';
-import BusinessInfo from './business-info';
-import Printers from './printers';
-import PaymentMethods from './payment-methods';
-import Integrations from './integrations';
-import TabletConfiguration from './tablet-configuration';
-import Security from './security';
-import AdvancedOptions from './advanced-options';
-import TaxConfiguration from './tax-configuration-ec';
+import BusinessInfo from './Business-info';
+import Printers from './Printers';
+import PaymentMethods from './Payment-methods';
+import Integrations from './Integrations';
+import TabletConfiguration from './Tablet-configuration';
+import Security from './Security';
+import AdvancedOptions from './Advanced-options';
+import TaxConfiguration from './Tax-configuration-ec';
 
 const SettingsScreen: React.FC = () => {
   const router = useRouter();

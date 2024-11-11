@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import SearchBar from '@/components/navigation/SearchBar';
 
 const PrintersScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -25,10 +26,12 @@ const PrintersScreen: React.FC = () => {
         <Text style={[styles.title, { color: textColor }]}>{t('printers.header')}</Text>
         {/* Botón de agregar nueva impresora */}
         <TouchableOpacity onPress={handleAddPrinter} style={styles.addButton}>
-          <Ionicons name="add-circle" size={30} color={textColor} />
+          <Ionicons name="add-circle-outline" size={30} color={textColor} />
         </TouchableOpacity>
       </View>
-
+      <View style={styles.searchBarContainer}>
+          <SearchBar />
+      </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {/* Lista de impresoras */}
         <TouchableOpacity onPress={handleEditPrinter}>
@@ -68,6 +71,13 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 16,
+  },
+  searchBarContainer: {
+    display: Platform.select({
+      ios: 'flex', 
+      android: 'flex', 
+      default: 'none', 
+    }),
   },
 });
 

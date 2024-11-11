@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist'; // Paquete para arrastrar y soltar
+import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist'; 
+import SearchBar from '@/components/navigation/SearchBar';
 
 const PaymentMethodsScreen: React.FC = () => {
   const router = useRouter();
@@ -31,6 +32,9 @@ const PaymentMethodsScreen: React.FC = () => {
       {/* Encabezado con título y botón */}
       <View style={styles.header}>
         <Text style={[styles.title, { color: textColor }]}>MÉTODOS DE COBRO</Text>
+        <View style={styles.searchBarContainer}>
+          <SearchBar />
+        </View>
         <TouchableOpacity onPress={() => router.push('./newpayment')} style={styles.addButton}>
           <Ionicons name="add-circle-outline" size={30} color={textColor} />
         </TouchableOpacity>
@@ -107,6 +111,13 @@ const styles = StyleSheet.create({
   methodLabel: {
     flex: 1,
     fontSize: 16,
+  },
+  searchBarContainer: {
+    display: Platform.select({
+      ios: 'flex', 
+      android: 'flex', 
+      default: 'none', 
+    }),
   },
 });
 
