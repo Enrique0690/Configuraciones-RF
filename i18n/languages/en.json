@@ -19,7 +19,12 @@
         "phone": "Phone Number",
         "email": "Email",
         "businessType": "Business Type",
-        "currency": "Currency"
+        "currency": "Currency",
+        "uploadImage": "Upload Image",
+        "loading": "Loading...",
+        "loadError": "Error loading",
+        "goBackHome": "Go back to home",
+        "permissionDenied": "Permission denied"
     },
     "printers": {
         "header": "Printers",

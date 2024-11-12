@@ -19,7 +19,12 @@
         "phone": "Número de teléfono",
         "email": "Correo",
         "businessType": "Tipo de Negocio",
-        "currency": "Moneda"
+        "currency": "Moneda",
+        "uploadImage": "Subir Imagen",
+        "loading": "Cargando...",
+        "loadError": "Error al cargar",
+        "goBackHome": "Volver a inicio",
+        "permissionDenied": "Permiso denegado"
     },
     "printers": {
         "header": "Impresoras",

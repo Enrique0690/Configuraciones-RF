@@ -91,7 +91,6 @@ export default function Layout() {
                 <View style={[styles.content, isFullScreen && isMobile && styles.fullScreenContent]}>
                 <Stack
                         screenOptions={{
-                            //ocualtar la barra de titulo
                             headerShown: false
                         }}
                     />

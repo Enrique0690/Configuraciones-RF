@@ -14,7 +14,7 @@ export const defaultData = {
   businessType: '',
   currency: '',
   pruebas: '',
-  imageUrl: 'Presione e ingrese la URL de la empresa',
+  imageUrl: '',
 };
 
 export const businessInfoConfig: Array<FieldConfig> = [
