@@ -5,7 +5,7 @@ import tinycolor from 'tinycolor2';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
-import { v4 as uuidv4 } from 'uuid';  // Importamos la función para generar IDs únicos
+import UUID from 'react-native-uuid';
 
 const STORAGE_KEY = 'users';
 
@@ -27,7 +27,7 @@ const NewUserScreen: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const userId = uuidv4();  // Generamos un ID único para el usuario
+    const userId = UUID.v4();  // Generamos un ID único para el usuario
 
     // Guardamos el nuevo usuario con el color en formato hexadecimal y un ID único
     const newUser = { id: userId, name, email, color };

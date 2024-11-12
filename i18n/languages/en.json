@@ -35,6 +35,15 @@
         "users": "Users",
         "roles": "Roles"
     },
+    "paymentMethods": {
+        "header": "Payment Methods",
+        "nameLabel": "Payment Method Name",
+        "selectIcon": "Select an Icon",
+        "chooseIcon": "Choose an Icon",
+        "saveButton": "Save Payment Method",
+        "successMessage": "Payment method saved successfully.",
+        "errorMessage": "Please enter a name and select an icon."
+    },
     "taxConfigurationEC": {
         "infoTributaria": {
             "sectionTitle": "TAX INFORMATION",

@@ -8,6 +8,7 @@ type FieldConfig = {
     type: 'text'| 'buttonlist' | 'input';
     route?: string;
     iconName?: string;
+    finalText?: string;
 };
 
 export const defaultData = {
@@ -18,9 +19,9 @@ export const defaultData = {
 };
 
 export const securityConfig: Array<FieldConfig> = withGlobalRoute([
-    { label: 'security.deleteProductReason', field: 'eliminarMotivo', type: 'input'},
-    { label: 'security.cancelInvoiceReason', field: 'anularFacturaMotivo', type: 'input' },
-    { label: 'security.cancelOrderReason', field: 'anularPedidoMotivo', type: 'input' },
+    { label: 'security.deleteProductReason', field: 'eliminarMotivo', type: 'input', finalText:'security.characters' },
+    { label: 'security.cancelInvoiceReason', field: 'anularFacturaMotivo', type: 'input',finalText:'security.characters' },
+    { label: 'security.cancelOrderReason', field: 'anularPedidoMotivo', type: 'input',finalText:'security.characters' },
 ], '/Security');
 
 const linksConfig = [

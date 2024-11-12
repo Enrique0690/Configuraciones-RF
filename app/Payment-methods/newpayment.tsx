@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { router } from 'expo-router';
 
-// Definimos el tipo para los nombres de íconos
 type IoniconName = 'cash-outline' | 'card-outline' | 'wallet-outline' | 'barcode-outline' | 'pricetags-outline';
 
-// Array de íconos con el tipo definido
 const iconOptions: IoniconName[] = [
   'cash-outline',
   'card-outline',
@@ -26,32 +25,30 @@ const NewPaymentScreen: React.FC = () => {
 
   const handleSave = async () => {
     if (paymentName && selectedIcon) {
-      const newPaymentMethod = { name: paymentName, icon: selectedIcon };
+      const newPaymentMethod = {
+        id: Math.random().toString(),
+        name: paymentName,
+        icon: selectedIcon,
+        isActive: true,  // Añadimos un estado inicial de activación
+      };
+      
       try {
-        await AsyncStorage.setItem(
-          'paymentMethod',
-          JSON.stringify(newPaymentMethod)
-        );
-        alert('Método de pago guardado exitosamente.');
+        const existingMethods = await AsyncStorage.getItem('paymentMethods');
+        const updatedMethods = existingMethods ? JSON.parse(existingMethods) : [];
+        updatedMethods.push(newPaymentMethod);
+        
+        await AsyncStorage.setItem('paymentMethods', JSON.stringify(updatedMethods));
+        Alert.alert('Éxito', 'Método de pago guardado exitosamente.');
+        setPaymentName(''); // Limpiamos los campos
+        setSelectedIcon(null);
+        router.push('/Payment-methods')
       } catch (error) {
         console.error('Error al guardar el método de pago', error);
       }
     } else {
-      alert('Por favor, ingrese un nombre y seleccione un ícono.');
+      Alert.alert('Error', 'Por favor, ingrese un nombre y seleccione un ícono.');
     }
   };
-
-  const renderIconOption = ({ item }: { item: IoniconName }) => (
-    <TouchableOpacity
-      style={styles.iconOption}
-      onPress={() => {
-        setSelectedIcon(item);
-        setIconPickerVisible(false);
-      }}
-    >
-      <Ionicons name={item} size={24} color={textColor} />
-    </TouchableOpacity>
-  );
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
@@ -63,7 +60,6 @@ const NewPaymentScreen: React.FC = () => {
         value={paymentName}
         onChangeText={setPaymentName}
       />
-
       <Text style={[styles.label, { color: textColor }]}>Seleccione su ícono</Text>
       <TouchableOpacity
         style={styles.iconSelector}
@@ -79,7 +75,17 @@ const NewPaymentScreen: React.FC = () => {
       {isIconPickerVisible && (
         <FlatList
           data={iconOptions}
-          renderItem={renderIconOption}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.iconOption}
+              onPress={() => {
+                setSelectedIcon(item);
+                setIconPickerVisible(false);
+              }}
+            >
+              <Ionicons name={item} size={24} color={textColor} />
+            </TouchableOpacity>
+          )}
           keyExtractor={(item) => item}
           numColumns={5}
           style={styles.iconPicker}

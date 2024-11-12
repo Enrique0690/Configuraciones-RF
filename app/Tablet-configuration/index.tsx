@@ -1,7 +1,10 @@
+// TabletConfigurationScreen.tsx
+
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Switch, Platform } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import SearchBar from '@/components/navigation/SearchBar';
+import TabletConfiguration from '@/components/Tablet-configuration/Tablet-configuration';
 
 const TabletConfigurationScreen: React.FC = () => {
   const backgroundColor = useThemeColor({}, 'background');
@@ -18,22 +21,12 @@ const TabletConfigurationScreen: React.FC = () => {
         <SearchBar />
       </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {/* Información Tributaria */}
-        <View style={styles.tributaryContainer}>
-          <Text style={[styles.sectionTitle, { color: textColor }]}>Información tributaria (Ecuador)</Text>
-
-          {/* Buscador */}
-          <View style={styles.searchBar}>
-            <Text style={[styles.searchIcon, { color: textColor }]}>🔍</Text>
-          </View>
-          
-          {/* Cuadro con nombre de usuario */}
-          <View style={styles.tableBox}>
-            <Text style={[styles.tableUser, { color: textColor }]}>PEPE PEREZ</Text>
-          </View>
-        </View>
-
-        {/* Configuraciones con interruptores */}
+        <TabletConfiguration
+          showUser={showUser}
+          showTime={showTime}
+          showCommercialName={showCommercialName}
+        />
+        {/* Configuración de Switches */}
         <View style={styles.switchContainer}>
           <View style={styles.switchRow}>
             <Text style={[styles.switchLabel, { color: textColor }]}>Mostrar usuario</Text>
@@ -69,47 +62,16 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingBottom: 16,
   },
-  tributaryContainer: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  searchBar: {
-    height: 40,
-    backgroundColor: '#e0e0e0', // Puedes cambiar esto según el tema
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  searchIcon: {
-    fontSize: 20,
-  },
-  tableBox: {
-    height: 100,
-    width: 100,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginBottom: 24,
-  },
-  tableUser: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 4,
-    backgroundColor: '#4CAF50', // Color verde para el fondo del nombre
-    borderRadius: 4,
+  searchBarContainer: {
+    display: Platform.select({
+      ios: 'flex',
+      android: 'flex',
+      default: 'none',
+    }),
   },
   switchContainer: {
     paddingHorizontal: 16,
+    marginTop: 24,
   },
   switchRow: {
     flexDirection: 'row',
@@ -119,13 +81,6 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     fontSize: 16,
-  },
-  searchBarContainer: {
-    display: Platform.select({
-      ios: 'flex', 
-      android: 'flex', 
-      default: 'none', 
-    }),
   },
 });
 

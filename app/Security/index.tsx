@@ -25,7 +25,7 @@ const SecurityScreen: React.FC = () => {
           <SearchBar />
         </View>
         <Text style={[styles.sectionTitle, { color: textColor }]}>{t('security.header')}</Text>
-        {securityConfig.map(({ label, field, type, route, iconName }) => (
+        {securityConfig.map(({ label, field, type,iconName, finalText }) => (
           <DataRenderer
             key={label}
             label={t(label)}
@@ -33,7 +33,7 @@ const SecurityScreen: React.FC = () => {
             type={type}
             onSave={(newValue) => handleChange(field, newValue, data, saveData)}
             textColor={textColor}
-            finalText={t('security.characters')}
+            finalText={t(finalText as any)}
             iconName={iconName} 
           />
         ))}
