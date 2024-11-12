@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Platform, BackHandler } from "react-native";
-import { Slot, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -89,7 +89,12 @@ export default function Layout() {
 
                 {/* Panel derecho (Contenido dinámico) */}
                 <View style={[styles.content, isFullScreen && isMobile && styles.fullScreenContent]}>
-                    <Slot />
+                <Stack
+                        screenOptions={{
+                            //ocualtar la barra de titulo
+                            headerShown: false
+                        }}
+                    />
                 </View>
             </View>
         </View>

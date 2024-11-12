@@ -3,6 +3,7 @@ type FieldConfig = {
   field: keyof typeof defaultData;
   type: 'text' | 'image' | 'input';
   route?: string;
+  imageUrl?: string | null;
 };
 
 export const defaultData = {
@@ -17,7 +18,6 @@ export const defaultData = {
 };
 
 export const businessInfoConfig: Array<FieldConfig> = [
-  { label: 'businessInfo.header', field: 'imageUrl', type: 'image', route: '/Business-info' },
   { label: 'businessInfo.name', field: 'name', type: 'input', route: '/Business-info' },
   { label: 'businessInfo.address', field: 'address', type: 'input', route: '/Business-info' },
   { label: 'businessInfo.phone', field: 'phone', type: 'input', route: '/Business-info' },
