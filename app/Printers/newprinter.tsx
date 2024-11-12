@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import UUID from 'react-native-uuid';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next'; 
 
 const NewPrinterScreen = () => {
+  const { t } = useTranslation(); 
   const router = useRouter();
   const [name, setName] = useState('');
   const [deliveryNote, setDeliveryNote] = useState(false);
@@ -15,8 +17,13 @@ const NewPrinterScreen = () => {
   const [bar, setBar] = useState(false);
   const [noStation, setNoStation] = useState(false);
   const [connection, setConnection] = useState<'USB' | 'Ethernet' | 'Bluetooth'>('USB');
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(''); 
 
+  // Guardar impresora
   const handleSave = async () => {
+    setLoading(true); 
+    setError(''); 
     const id = UUID.v4();
     const printerData = {
       id,
@@ -34,9 +41,18 @@ const NewPrinterScreen = () => {
       router.push('/Printers');
     } catch (error) {
       console.error("Error saving printer data:", error);
-      Alert.alert("Error", "No se pudo guardar la impresora. Inténtalo de nuevo.");
+      setError(t('printers.errorSaving')); 
+    } finally {
+      setLoading(false); 
     }
   };
+
+  const renderSwitch = (label: string, value: boolean, onValueChange: (val: boolean) => void) => (
+    <View style={styles.switchContainer}>
+      <Text style={styles.switchLabel}>{label}</Text>
+      <Switch value={value} onValueChange={onValueChange} />
+    </View>
+  );
 
   const renderConnectionOption = (label: string, value: 'USB' | 'Ethernet' | 'Bluetooth') => (
     <TouchableOpacity
@@ -50,48 +66,48 @@ const NewPrinterScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
-        <Text style={styles.title}>Nueva Impresora</Text>
-        
-        <Text style={styles.label}>Nombre de la Impresora</Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Escribe el nombre aquí"
-        />
+        {loading && <ActivityIndicator size="large" color="#007AFF" />}
+        {error && <Text style={styles.errorText}>{error}</Text>}
 
-        <Text style={styles.label}>Configuración de Impresión</Text>
-        {renderSwitch("Notas de entrega", deliveryNote, setDeliveryNote)}
-        {renderSwitch("Factura", invoice, setInvoice)}
-        {renderSwitch("Pre Facturas", preInvoice, setPreInvoice)}
+        {!loading && (
+          <>
+            <Text style={styles.title}>{t('printers.addPrinter')}</Text>
 
-        <Text style={styles.label}>Estaciones de Pedido</Text>
-        {renderSwitch("Cocina", kitchen, setKitchen)}
-        {renderSwitch("Barra", bar, setBar)}
-        {renderSwitch("Productos sin Estación Asignada", noStation, setNoStation)}
+            <Text style={styles.label}>{t('printers.printerName')}</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder={t('printers.writeNameHere')}
+            />
 
-        <Text style={styles.label}>Conexión</Text>
-        <View style={styles.buttonContainer}>
-          {renderConnectionOption('USB', 'USB')}
-          {renderConnectionOption('Ethernet', 'Ethernet')}
-          {renderConnectionOption('Bluetooth', 'Bluetooth')}
-        </View>
+            <Text style={styles.label}>{t('printers.printingSettings')}</Text>
+            {renderSwitch(t('printers.deliveryNote'), deliveryNote, setDeliveryNote)}
+            {renderSwitch(t('printers.invoice'), invoice, setInvoice)}
+            {renderSwitch(t('printers.preInvoice'), preInvoice, setPreInvoice)}
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <MaterialIcons name="save" size={24} color="white" />
-          <Text style={styles.saveButtonText}>Guardar Impresora</Text>
-        </TouchableOpacity>
+            <Text style={styles.label}>{t('printers.stations')}</Text>
+            {renderSwitch(t('printers.kitchen'), kitchen, setKitchen)}
+            {renderSwitch(t('printers.bar'), bar, setBar)}
+            {renderSwitch(t('printers.noStation'), noStation, setNoStation)}
+
+            <Text style={styles.label}>{t('printers.connection')}</Text>
+            <View style={styles.buttonContainer}>
+              {renderConnectionOption(t('printers.usb'), 'USB')}
+              {renderConnectionOption(t('printers.ethernet'), 'Ethernet')}
+              {renderConnectionOption(t('printers.bluetooth'), 'Bluetooth')}
+            </View>
+
+            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+              <MaterialIcons name="save" size={24} color="white" />
+              <Text style={styles.saveButtonText}>{t('printers.savePrinter')}</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </ScrollView>
   );
 };
-
-const renderSwitch = (label: string, value: boolean, onValueChange: (val: boolean) => void) => (
-  <View style={styles.switchContainer}>
-    <Text style={styles.switchLabel}>{label}</Text>
-    <Switch value={value} onValueChange={onValueChange} />
-  </View>
-);
 
 const styles = StyleSheet.create({
   scrollContainer: { flexGrow: 1 },
@@ -141,6 +157,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   saveButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold', marginLeft: 8 },
+  errorText: { color: 'red', marginTop: 10, fontSize: 16 },
 });
 
 export default NewPrinterScreen;

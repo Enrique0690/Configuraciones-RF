@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useRouter } from 'expo-router'; // Usar el router para la navegación
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importar AsyncStorage
+import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Definir el tipo de impresora
 interface Printer {
   id: string;
   name: string;
@@ -19,45 +19,70 @@ interface Printer {
 }
 
 const PrintersListScreen: React.FC = () => {
-  const [printers, setPrinters] = useState<Printer[]>([]); // Usamos un arreglo de impresoras
+  const [printers, setPrinters] = useState<Printer[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'textsecondary');
-  const router = useRouter(); // Usar el router para la navegación
+  const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
-    // Función para cargar las impresoras desde AsyncStorage
     const loadPrinters = async () => {
       try {
-        const storedPrinters = await AsyncStorage.getItem('printers'); // Obtener las impresoras guardadas
+        setLoading(true);
+        const storedPrinters = await AsyncStorage.getItem('printers');
         if (storedPrinters) {
-          setPrinters(JSON.parse(storedPrinters)); // Si existen, actualizamos el estado
+          setPrinters(JSON.parse(storedPrinters));
         }
-      } catch (error) {
-        console.error('Error loading printers from AsyncStorage:', error);
+      } catch (err) {
+        setError(t('printers.errorLoadingData')); 
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadPrinters(); // Cargar las impresoras al inicio
-  }, []); // Solo se ejecuta una vez al cargar el componente
+    loadPrinters();
+  }, []);
 
   const handleCreateNewPrinter = () => {
-    router.push('./newprinter'); // Redirigir a la pantalla de creación de impresora
+    router.push('./Printers/newprinter');
   };
 
   const handlePrinterClick = async (id: string) => {
     try {
-      await AsyncStorage.setItem('selectedPrinterId', id); // Guardar el ID en AsyncStorage
-      router.push(`./${id}`); // Navegar a la pantalla de edición
-    } catch (error) {
-      console.error('Error storing printer ID in AsyncStorage:', error);
+      await AsyncStorage.setItem('selectedPrinterId', id);
+      router.push(`./Printers/${id}`);
+    } catch (err) {
+      setError(t('printers.errorStoringPrinterId'));
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={styles.loadingText}>{t('printers.loading')}</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorMessage}>{error}</Text>
+        <TouchableOpacity onPress={() => router.push('/')} style={styles.goBackButton}>
+          <Text style={styles.goBackButtonText}>{t('printers.goBackHome')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: textColor }]}>LISTA DE IMPRESORAS</Text>
-        {/* Botón para crear nueva impresora */}
+        <Text style={[styles.title, { color: textColor }]}>{t('printers.titleindex')}</Text>
         <TouchableOpacity onPress={handleCreateNewPrinter} style={styles.addButton}>
           <Ionicons name="add-circle-outline" size={30} color={textColor} />
         </TouchableOpacity>
@@ -65,15 +90,14 @@ const PrintersListScreen: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {printers.length === 0 ? (
-          <Text style={[styles.noPrintersText, { color: textColor }]}>No hay impresoras registradas</Text>
+          <Text style={[styles.noPrintersText, { color: textColor }]}>{t('printers.noPrinters')}</Text>
         ) : (
-          printers.map((printer, index) => (
+          printers.map((printer) => (
             <TouchableOpacity 
-              key={index} 
+              key={printer.id} 
               style={styles.printerItem} 
-              onPress={() => handlePrinterClick(printer.id)} // Al hacer clic, pasamos solo el id
+              onPress={() => handlePrinterClick(printer.id)}
             >
-              {/* Círculo de color junto al nombre */}
               <View style={[styles.colorCircle, { backgroundColor: printer.connection === 'wifi' ? '#4CAF50' : '#FF5722' }]} />
               <View style={styles.printerDetails}>
                 <Text style={[styles.printerText, { color: textColor }]}>{printer.name}</Text>
@@ -116,8 +140,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#ccc',
     marginBottom: 10,
-    backgroundColor: '#f9f9f9', // Fondo ligeramente gris para cada item
-    borderRadius: 8, // Bordes redondeados para el item
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
     paddingLeft: 10,
     paddingRight: 10,
   },
@@ -125,7 +149,6 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#000', // Color por defecto en caso de que no haya un color específico
     marginRight: 12,
   },
   printerDetails: {
@@ -144,6 +167,39 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#4CAF50',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  errorMessage: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  goBackButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  goBackButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

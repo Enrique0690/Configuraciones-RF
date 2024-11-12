@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Switch, Button, TouchableOpacity, StyleSheet, Platform, ScrollView } from 'react-native';
+import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next'; // Importar i18next para la traducción
 
 const EditPrinterScreen = () => {
+  const { t } = useTranslation(); // Usamos i18next
   const router = useRouter();
-  const { printerId } = useLocalSearchParams(); // Usamos useLocalSearchParams para obtener el id
+  const { printerId } = useLocalSearchParams(); // Obtener el id de la impresora
   const [name, setName] = useState('');
   const [deliveryNote, setDeliveryNote] = useState(false);
   const [invoice, setInvoice] = useState(false);
@@ -15,54 +17,81 @@ const EditPrinterScreen = () => {
   const [bar, setBar] = useState(false);
   const [noStation, setNoStation] = useState(false);
   const [connection, setConnection] = useState('USB');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Cargar los datos de la impresora para edición
   useEffect(() => {
     const loadPrinterData = async () => {
       if (printerId) {
-        const savedPrinters = await AsyncStorage.getItem('printers');
-        const printers = savedPrinters ? JSON.parse(savedPrinters) : [];
-        const printerToEdit = printers.find((printer: any) => printer.id === printerId);
+        setLoading(true);
+        try {
+          const savedPrinters = await AsyncStorage.getItem('printers');
+          const printers = savedPrinters ? JSON.parse(savedPrinters) : [];
+          const printerToEdit = printers.find((printer: any) => printer.id === printerId);
 
-        if (printerToEdit) {
-          setName(printerToEdit.name);
-          setDeliveryNote(printerToEdit.options.deliveryNote);
-          setInvoice(printerToEdit.options.invoice);
-          setPreInvoice(printerToEdit.options.preInvoice);
-          setKitchen(printerToEdit.stations.kitchen);
-          setBar(printerToEdit.stations.bar);
-          setNoStation(printerToEdit.stations.noStation);
-          setConnection(printerToEdit.connection);
+          if (printerToEdit) {
+            setName(printerToEdit.name);
+            setDeliveryNote(printerToEdit.options.deliveryNote);
+            setInvoice(printerToEdit.options.invoice);
+            setPreInvoice(printerToEdit.options.preInvoice);
+            setKitchen(printerToEdit.stations.kitchen);
+            setBar(printerToEdit.stations.bar);
+            setNoStation(printerToEdit.stations.noStation);
+            setConnection(printerToEdit.connection);
+          } else {
+            setError(t('printers.errorLoadingData'));
+          }
+        } catch (err) {
+          setError(t('printers.errorLoadingData'));
+          console.error(err);
+        } finally {
+          setLoading(false);
         }
       }
     };
 
     loadPrinterData();
-  }, [printerId]);
+  }, [printerId, t]);
 
   // Guardar los cambios
   const handleSave = async () => {
+    setLoading(true);
+    setError('');
     if (printerId) {
-      const savedPrinters = await AsyncStorage.getItem('printers');
-      const printers = savedPrinters ? JSON.parse(savedPrinters) : [];
-      const updatedPrinters = printers.map((printer: any) =>
-        printer.id === printerId
-          ? {
-            ...printer,
-            name,
-            options: { deliveryNote, invoice, preInvoice },
-            stations: { kitchen, bar, noStation },
-            connection,
-          }
-          : printer
-      );
+      try {
+        const savedPrinters = await AsyncStorage.getItem('printers');
+        const printers = savedPrinters ? JSON.parse(savedPrinters) : [];
+        const updatedPrinters = printers.map((printer: any) =>
+          printer.id === printerId
+            ? {
+                ...printer,
+                name,
+                options: { deliveryNote, invoice, preInvoice },
+                stations: { kitchen, bar, noStation },
+                connection,
+              }
+            : printer
+        );
 
-      await AsyncStorage.setItem('printers', JSON.stringify(updatedPrinters));
-      router.push('/Printers');
+        await AsyncStorage.setItem('printers', JSON.stringify(updatedPrinters));
+        router.push('/Printers');
+      } catch (error) {
+        setError(t('printers.errorSaving'));
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  // Renderización de las opciones de conexión
+  const renderSwitch = (label: string, value: boolean, onValueChange: (val: boolean) => void) => (
+    <View style={styles.switchContainer}>
+      <Text style={styles.switchLabel}>{label}</Text>
+      <Switch value={value} onValueChange={onValueChange} />
+    </View>
+  );
+
   const renderConnectionOption = (label: string, value: 'USB' | 'Ethernet' | 'Bluetooth') => (
     <TouchableOpacity
       style={[styles.connectionButton, connection === value && styles.selectedButton]}
@@ -72,54 +101,53 @@ const EditPrinterScreen = () => {
     </TouchableOpacity>
   );
 
-  const renderSwitch = (label: string, value: boolean, onValueChange: (val: boolean) => void) => (
-    <View style={styles.switchContainer}>
-      <Text style={styles.switchLabel}>{label}</Text>
-      <Switch value={value} onValueChange={onValueChange} />
-    </View>
-  );
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.container}>
-        <Text style={styles.title}>Editar Impresora</Text>
+        {loading && <ActivityIndicator size="large" color="#007AFF" />}
+        {error && <Text style={styles.errorText}>{error}</Text>}
 
-        <Text style={styles.label}>Nombre de la Impresora</Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Escribe el nombre aquí"
-        />
+        {!loading && (
+          <>
+            <Text style={styles.title}>{t('printers.editPrinter')}</Text>
 
-        <Text style={styles.label}>Configuración de Impresión</Text>
-        {renderSwitch("Notas de entrega", deliveryNote, setDeliveryNote)}
-        {renderSwitch("Factura", invoice, setInvoice)}
-        {renderSwitch("Pre Facturas", preInvoice, setPreInvoice)}
+            <Text style={styles.label}>{t('printers.printerName')}</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder={t('printers.writeNameHere')}
+            />
 
-        <Text style={styles.label}>Estaciones de Pedido</Text>
-        {renderSwitch("Cocina", kitchen, setKitchen)}
-        {renderSwitch("Barra", bar, setBar)}
-        {renderSwitch("Productos sin Estación Asignada", noStation, setNoStation)}
+            <Text style={styles.label}>{t('printers.printingSettings')}</Text>
+            {renderSwitch(t('printers.deliveryNote'), deliveryNote, setDeliveryNote)}
+            {renderSwitch(t('printers.invoice'), invoice, setInvoice)}
+            {renderSwitch(t('printers.preInvoice'), preInvoice, setPreInvoice)}
 
-        <Text style={styles.label}>Conexión</Text>
-        <View style={styles.buttonContainer}>
-          {renderConnectionOption('USB', 'USB')}
-          {renderConnectionOption('Ethernet', 'Ethernet')}
-          {renderConnectionOption('Bluetooth', 'Bluetooth')}
-        </View>
+            <Text style={styles.label}>{t('printers.stations')}</Text>
+            {renderSwitch(t('printers.kitchen'), kitchen, setKitchen)}
+            {renderSwitch(t('printers.bar'), bar, setBar)}
+            {renderSwitch(t('printers.noStation'), noStation, setNoStation)}
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <MaterialIcons name="save" size={24} color="white" />
-          <Text style={styles.saveButtonText}>Guardar Impresora</Text>
-        </TouchableOpacity>
+            <Text style={styles.label}>{t('printers.connection')}</Text>
+            <View style={styles.buttonContainer}>
+              {renderConnectionOption(t('printers.usb'), 'USB')}
+              {renderConnectionOption(t('printers.ethernet'), 'Ethernet')}
+              {renderConnectionOption(t('printers.bluetooth'), 'Bluetooth')}
+            </View>
+
+            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+              <MaterialIcons name="save" size={24} color="white" />
+              <Text style={styles.saveButtonText}>{t('printers.savePrinter')}</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: { flexGrow: 1 },
   container: { flex: 1, padding: 20, backgroundColor: '#f9f9f9' },
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 16, color: '#333' },
   label: { fontSize: 16, color: '#666', marginTop: 20, marginBottom: 8 },
@@ -166,6 +194,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   saveButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold', marginLeft: 8 },
+  errorText: { color: 'red', marginTop: 10, fontSize: 16 },
 });
 
 export default EditPrinterScreen;

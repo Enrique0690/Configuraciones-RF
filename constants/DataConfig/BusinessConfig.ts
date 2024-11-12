@@ -1,3 +1,7 @@
+function withGlobalRoute<T>(config: T[], route: string): (T & { route: string })[] {
+  return config.map(item => ({ ...item, route }));
+}
+
 type FieldConfig = {
   label: string;
   field: keyof typeof defaultData;
@@ -17,11 +21,11 @@ export const defaultData = {
   imageUrl: '',
 };
 
-export const businessInfoConfig: Array<FieldConfig> = [
-  { label: 'businessInfo.name', field: 'name', type: 'input', route: '/Business-info' },
-  { label: 'businessInfo.address', field: 'address', type: 'input', route: '/Business-info' },
-  { label: 'businessInfo.phone', field: 'phone', type: 'input', route: '/Business-info' },
-  { label: 'businessInfo.email', field: 'email', type: 'input', route: '/Business-info' },
-  { label: 'businessInfo.businessType', field: 'businessType', type: 'input', route: '/Business-info' },
-  { label: 'businessInfo.currency', field: 'currency', type: 'input', route: '/Business-info' },
-];
+export const businessInfoConfig: Array<FieldConfig> =  withGlobalRoute([
+  { label: 'businessInfo.name', field: 'name', type: 'input'},
+  { label: 'businessInfo.address', field: 'address', type: 'input'},
+  { label: 'businessInfo.phone', field: 'phone', type: 'input'},
+  { label: 'businessInfo.email', field: 'email', type: 'input'},
+  { label: 'businessInfo.businessType', field: 'businessType', type: 'input'},
+  { label: 'businessInfo.currency', field: 'currency', type: 'input'},
+], '/Business-info');
