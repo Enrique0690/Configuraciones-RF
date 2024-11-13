@@ -121,6 +121,62 @@
             "saveButton": "Save",
             "userSaved": "User saved successfully",
             "saveError": "There was an error saving the user"
+        },
+        "role": {
+            "header": "Role List",
+            "loading": "Loading roles...",
+            "loadError": "There was an error loading the roles.",
+            "noRoles": "No roles registered",
+            "addNewRole": "Add New Role",
+            "editRole": "Edit Role",
+            "roleName": "Role Name",
+            "selectAllPermissions": "Select All Permissions",
+            "saveButton": "Save",
+            "SALES": "SALES",
+            "INVENTORY": "INVENTORY",
+            "CONFIGURATION": "CONFIGURATION",
+            "SPECIALPERMISSIONS": "SPECIAL PERMISSIONS",
+            "CLIENTS": "CLIENTS",
+            "REPORTS": "REPORTS",
+            "sales": {
+                "directSale": "Direct Sale",
+                "tableOrder": "Table Order",
+                "cashRegister": "Cash Register",
+                "expenseRecord": "Expense Record",
+                "closureQuery": "Closure Query"
+            },
+            "inventory": {
+                "articles": "Articles",
+                "inventoryEntry": "Inventory Entry",
+                "inventoryExit": "Inventory Exit",
+                "kardex": "Kardex",
+                "viewMovements": "View Movements",
+                "transformation": "Transformation",
+                "production": "Production"
+            },
+            "configuration": {
+                "config": "Configuration"
+            },
+            "specialPermissions": {
+                "cancelTables": "Cancel Tables",
+                "cancelCashClosures": "Cancel Cash Closures",
+                "cancelSales": "Cancel Sales",
+                "cancelInventoryMovements": "Cancel Inventory Movements",
+                "removeItemsFromOrder": "Remove Items from Order",
+                "verifyCashClosures": "Verify Cash Closures",
+                "chargePendingOrders": "Charge Pending Orders",
+                "accessAnyTable": "Access Any Table",
+                "reprintSalesDocuments": "Reprint Sales Documents",
+                "modifySalesData": "Modify Sales Data",
+                "moveOrderItems": "Move Order Items"
+            },
+            "clients": {
+                "clientQuery": "Client Query"
+            },
+            "report": {
+                "salesReport": "Sales Report",
+                "inventoryReport": "Inventory Report"
+            }
         }
     },
     "taxConfigurationEC": {

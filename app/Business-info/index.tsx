@@ -23,13 +23,10 @@ const BusinessInfoScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
 
-  // Carga asincrónica de los datos
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Simular la carga de datos
         setLoading(true);
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulación de espera
         if (data.imageUrl) {
           setImageUri(data.imageUrl);
         }
