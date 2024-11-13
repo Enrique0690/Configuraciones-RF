@@ -53,15 +53,6 @@
         "savePrinter": "Save Printer",
         "errorSaving": "Failed to save printer."
     },
-    "security": {
-        "header": "Security",
-        "deleteProductReason": "Deleting products requires a reason of",
-        "cancelInvoiceReason": "Canceling an invoice requires a reason of",
-        "cancelOrderReason": "Canceling an order requires a reason of",
-        "characters": "characters",
-        "users": "Users",
-        "roles": "Roles"
-    },
     "paymentMethods": {
         "header": "Payment Methods",
         "errorLoading": "Error loading payment methods.",
@@ -78,6 +69,12 @@
         "validationError": "Error",
         "saveError": "There was an error saving the payment method."
     },
+    "integrations": {
+        "header": "Integrations",
+        "viewMore": "View more",
+        "viewLess": "View less",
+        "connectButton": "Connect"
+    },
     "tabletConfiguration": {
         "header": "Tablet Configuration",
         "loading": "Loading configuration...",
@@ -90,6 +87,36 @@
         "tableNumber": "# Table",
         "time": "Time ⏰",
         "totalAmount": "$ Total de table"
+    },
+    "security": {
+        "header": "Security",
+        "deleteProductReason": "Deleting products requires a reason of",
+        "cancelInvoiceReason": "Canceling an invoice requires a reason of",
+        "cancelOrderReason": "Canceling an order requires a reason of",
+        "characters": "characters",
+        "users": "Users",
+        "roles": "Roles",
+        "loading": "Loading...",
+        "loadError": "Error loading data.",
+        "userList": {
+            "header": "User List",
+            "loading": "Loading users...",
+            "loadError": "There was an error loading the users.",
+            "noUsers": "No users registered"
+        },
+        "newUser": {
+            "header": "New User",
+            "namePlaceholder": "Name",
+            "emailPlaceholder": "Email",
+            "passwordPlaceholder": "Password",
+            "colorLabel": "Identifier Color:",
+            "hue": "Hue",
+            "saturation": "Saturation",
+            "lightness": "Lightness",
+            "saveButton": "Save",
+            "userSaved": "User saved successfully",
+            "saveError": "There was an error saving the user"
+        }
     },
     "taxConfigurationEC": {
         "infoTributaria": {

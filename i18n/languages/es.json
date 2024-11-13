@@ -53,15 +53,6 @@
         "savePrinter": "Guardar impresora",
         "errorSaving": "Error al guardar la impresora."
     },
-    "security": {
-        "header": "Seguridad",
-        "deleteProductReason": "La eliminación de productos requiere un motivo de",
-        "cancelInvoiceReason": "La anulación de una factura requiere un motivo de",
-        "cancelOrderReason": "La anulación de un pedido requiere un motivo de",
-        "characters": "caracteres",
-        "users": "Usuarios",
-        "roles": "Roles"
-    },
     "paymentMethods": {
         "header": "Métodos de Pago",
         "errorLoading": "Error al cargar los métodos de pago.",
@@ -78,6 +69,12 @@
         "validationError": "Error",
         "saveError": "Hubo un error al guardar el método de pago."
     },
+    "integrations": {
+        "header": "Integraciones",
+        "viewMore": "Ver más",
+        "viewLess": "Ver menos",
+        "connectButton": "Conectar"
+    },
     "tabletConfiguration": {
         "header": "Configuración de la Mesa",
         "loading": "Cargando configuración...",
@@ -90,6 +87,36 @@
         "tableNumber": "# Mesa",
         "time": "Tiempo ⏰",
         "totalAmount": "$ Total de mesa"
+    },
+    "security": {
+        "header": "Seguridad",
+        "deleteProductReason": "La eliminación de productos requiere un motivo de",
+        "cancelInvoiceReason": "La anulación de una factura requiere un motivo de",
+        "cancelOrderReason": "La anulación de un pedido requiere un motivo de",
+        "characters": "caracteres",
+        "users": "Usuarios",
+        "roles": "Roles",
+        "loading": "Cargando...",
+        "loadError": "Error al cargar los datos.",
+        "userList": {
+            "header": "Lista de Usuarios",
+            "loading": "Cargando usuarios...",
+            "loadError": "Hubo un error al cargar los usuarios.",
+            "noUsers": "No hay usuarios registrados"
+        },
+        "newUser": {
+            "header": "Nuevo Usuario",
+            "namePlaceholder": "Nombre",
+            "emailPlaceholder": "Correo electrónico",
+            "passwordPlaceholder": "Contraseña",
+            "colorLabel": "Color identificador:",
+            "hue": "Tono",
+            "saturation": "Saturación",
+            "lightness": "Luminosidad",
+            "saveButton": "Guardar",
+            "userSaved": "Usuario guardado con éxito",
+            "saveError": "Hubo un error al guardar el usuario"
+        }
     },
     "taxConfigurationEC": {
         "infoTributaria": {
