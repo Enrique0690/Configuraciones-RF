@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform, BackHandler } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SearchBar from '@/components/navigation/SearchBar';
 
 interface Printer {
   id: string;
@@ -81,6 +82,9 @@ const PrintersListScreen: React.FC = () => {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
+      <View style={styles.searchBarContainer}>
+        <SearchBar />
+      </View>
       <View style={styles.header}>
         <Text style={[styles.title, { color: textColor }]}>{t('printers.titleindex')}</Text>
         <TouchableOpacity onPress={handleCreateNewPrinter} style={styles.addButton}>
@@ -200,6 +204,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  searchBarContainer: {
+    display: Platform.select({ ios: 'flex', android: 'flex', default: 'none' }),
+    marginBottom: 16,
   },
 });
 

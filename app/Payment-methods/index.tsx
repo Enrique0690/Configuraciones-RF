@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, FlatList, ActivityIndicator, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next'; 
+import SearchBar from '@/components/navigation/SearchBar';
 
 type PaymentMethod = {
   id: string;
@@ -79,13 +80,15 @@ const PaymentMethodsScreen: React.FC = () => {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
+      <View style={styles.searchBarContainer}>
+        <SearchBar />
+      </View>
       <View style={styles.header}>
         <Text style={[styles.headerText, { color: blackColor }]}>{t('paymentMethods.header')}</Text>
         <TouchableOpacity onPress={() => router.push('/Payment-methods/newpayment')}>
           <Ionicons name="add-circle-outline" size={30} color={blackColor} />
         </TouchableOpacity>
       </View>
-
       {loading ? (
         <ActivityIndicator size="large" color="#007AFF" />
       ) : error ? (
@@ -157,6 +160,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
   },
+  searchBarContainer: {
+    display: Platform.select({ ios: 'flex', android: 'flex', default: 'none' }),
+    marginBottom: 16,
+  }
 });
 
 export default PaymentMethodsScreen;

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -9,14 +9,49 @@ import { handleChange } from '@/hooks/handleChange';
 import SearchBar from '@/components/navigation/SearchBar';
 import DataRenderer from '@/components/DataRenderer';
 import { securityConfig, defaultData } from '@/constants/DataConfig/SecurityConfig';
-
-const STORAGE_KEY = 'securityData';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SecurityScreen: React.FC = () => {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
-  const { data, saveData } = useStorage(STORAGE_KEY, defaultData);
+  const { data, saveData } = useStorage('securityData', defaultData);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const savedData = await AsyncStorage.getItem('securityData');
+        if (savedData) {
+          saveData(JSON.parse(savedData));
+        }
+        setLoading(false); 
+      } catch (error) {
+        console.error('Error al cargar los datos:', error);
+        setLoadError(true);
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={styles.loadingText}>{t('security.loading')}</Text>
+      </View>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorMessage}>{t('security.loadError')}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
@@ -25,7 +60,7 @@ const SecurityScreen: React.FC = () => {
           <SearchBar />
         </View>
         <Text style={[styles.sectionTitle, { color: textColor }]}>{t('security.header')}</Text>
-        {securityConfig.map(({ label, field, type,iconName, finalText }) => (
+        {securityConfig.map(({ label, field, type, iconName, finalText }) => (
           <DataRenderer
             key={label}
             label={t(label)}
@@ -37,20 +72,19 @@ const SecurityScreen: React.FC = () => {
             iconName={iconName} 
           />
         ))}
-        <TouchableOpacity style={styles.button} onPress={() => router.push('./users/userlist')}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('./Security/users/userlist')}>
           <Ionicons name="people-outline" size={20} color={textColor} />
           <Text style={[styles.buttonLabel, { color: textColor }]}>
             {t('security.users')} (5 {t('security.users')})
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={() => router.push('./rols/rollist')}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('./Security/rols/rollist')}>
           <Ionicons name="briefcase-outline" size={20} color={textColor} />
           <Text style={[styles.buttonLabel, { color: textColor }]}>
             {t('security.roles')} (3 {t('security.roles')})
           </Text>
         </TouchableOpacity>
-
       </ScrollView>
     </View>
   );
@@ -93,6 +127,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 12,
     fontWeight: '600',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#4CAF50',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  errorMessage: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });
 

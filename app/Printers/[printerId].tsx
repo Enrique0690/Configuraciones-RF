@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next';
 import DataRenderer from '@/components/DataRenderer';
 
 const EditPrinterScreen = () => {
-  const { t } = useTranslation(); // Usamos i18next
+  const { t } = useTranslation(); 
   const router = useRouter();
-  const { printerId } = useLocalSearchParams(); // Obtener el id de la impresora
+  const { printerId } = useLocalSearchParams(); 
   const [name, setName] = useState('');
   const [deliveryNote, setDeliveryNote] = useState(false);
   const [invoice, setInvoice] = useState(false);

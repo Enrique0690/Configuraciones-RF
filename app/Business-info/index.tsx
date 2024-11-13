@@ -158,14 +158,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginVertical: 16,
+    marginBottom: 16,
     textAlign: 'center',
   },
   imagePreview: {
     width: '100%',
     height: IMAGE_PREVIEW_SIZE,
     resizeMode: 'contain',
-    marginVertical: 16,
     borderRadius: 10,
   },
   uploadButton: {

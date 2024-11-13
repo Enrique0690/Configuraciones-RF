@@ -1,75 +1,86 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import tinycolor from 'tinycolor2';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import UUID from 'react-native-uuid';
-
-const STORAGE_KEY = 'users';
+import { useTranslation } from 'react-i18next';
 
 const NewUserScreen: React.FC = () => {
+  const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
   const buttonColor = useThemeColor({}, 'buttonColor');
   
-  const [color, setColor] = useState<string>('#000000'); // Se usa un valor hex por defecto
+  const [color, setColor] = useState<string>('#000000');
   const [hue, setHue] = useState<number>(tinycolor(color).toHsv().h);
   const [saturation, setSaturation] = useState<number>(tinycolor(color).toHsv().s);
   const [lightness, setLightness] = useState<number>(tinycolor(color).toHsv().v);
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>(''); 
+  const [loading, setLoading] = useState<boolean>(false); 
 
   const updateColor = () => {
-    const newColor = tinycolor({ h: hue, s: saturation, v: lightness }).toHexString(); // Convierte a hex
+    const newColor = tinycolor({ h: hue, s: saturation, v: lightness }).toHexString();
     setColor(newColor);
   };
 
   const handleSave = async () => {
-    const userId = UUID.v4();  // Generamos un ID único para el usuario
+    setLoading(true); 
 
-    // Guardamos el nuevo usuario con el color en formato hexadecimal y un ID único
-    const newUser = { id: userId, name, email, color };
+    const userId = UUID.v4();  
+    const newUser = { id: userId, name, email, password, color };
     
     try {
-      const storedUsers = await AsyncStorage.getItem(STORAGE_KEY);
+      const storedUsers = await AsyncStorage.getItem('users');
       const users = storedUsers ? JSON.parse(storedUsers) : [];
       users.push(newUser);
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-      
-      alert('Usuario guardado');
+      await AsyncStorage.setItem('users', JSON.stringify(users));
+
+      alert(t('security.newUser.userSaved'));
       router.push('./userlist');
     } catch (error) {
-      console.error('Error al guardar el usuario:', error);
-      alert('Hubo un error al guardar el usuario');
+      alert(t('security.newUser.saveError'));
+    } finally {
+      setLoading(false); 
     }
   };
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
-      <Text style={[styles.title, { color: textColor }]}>NUEVO USUARIO</Text>
+      <Text style={[styles.title, { color: textColor }]}>{t('security.newUser.header')}</Text>
 
       <TextInput
         style={[styles.input, { color: textColor, borderColor: textColor }]}
-        placeholder="Nombre"
+        placeholder={t('security.newUser.namePlaceholder')}
         placeholderTextColor={textColor}
         value={name}
         onChangeText={setName}
       />
       <TextInput
         style={[styles.input, { color: textColor, borderColor: textColor }]}
-        placeholder="Correo"
+        placeholder={t('security.newUser.emailPlaceholder')}
         placeholderTextColor={textColor}
         value={email}
         onChangeText={setEmail}
       />
+      <TextInput
+        style={[styles.input, { color: textColor, borderColor: textColor }]}
+        placeholder={t('security.newUser.passwordPlaceholder')}
+        placeholderTextColor={textColor}
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
 
-      <Text style={[styles.label, { color: textColor }]}>Color identificador:</Text>
+      <Text style={[styles.label, { color: textColor }]}>{t('security.newUser.colorLabel')}</Text>
 
       <View style={[styles.colorBox, { backgroundColor: color }]} />
 
-      <Text style={[styles.sliderLabel, { color: textColor }]}>Tono (Hue)</Text>
+      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.newUser.hue')}</Text>
       <Slider
         style={styles.slider}
         minimumValue={0}
@@ -81,7 +92,7 @@ const NewUserScreen: React.FC = () => {
         }}
       />
 
-      <Text style={[styles.sliderLabel, { color: textColor }]}>Saturación</Text>
+      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.newUser.saturation')}</Text>
       <Slider
         style={styles.slider}
         minimumValue={0}
@@ -93,7 +104,7 @@ const NewUserScreen: React.FC = () => {
         }}
       />
 
-      <Text style={[styles.sliderLabel, { color: textColor }]}>Luminosidad</Text>
+      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.newUser.lightness')}</Text>
       <Slider
         style={styles.slider}
         minimumValue={0}
@@ -106,7 +117,11 @@ const NewUserScreen: React.FC = () => {
       />
 
       <TouchableOpacity style={[styles.saveButton, { backgroundColor: buttonColor }]} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Guardar</Text>
+        {loading ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.saveButtonText}>{t('security.newUser.saveButton')}</Text>
+        )}
       </TouchableOpacity>
     </ScrollView>
   );
