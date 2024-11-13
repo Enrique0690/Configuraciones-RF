@@ -51,13 +51,8 @@ const PrintersListScreen: React.FC = () => {
     router.push('./Printers/newprinter');
   };
 
-  const handlePrinterClick = async (id: string) => {
-    try {
-      await AsyncStorage.setItem('selectedPrinterId', id);
+  const handlePrinterClick = (id: string) => {
       router.push(`./Printers/${id}`);
-    } catch (err) {
-      setError(t('printers.errorStoringPrinterId'));
-    }
   };
 
   if (loading) {

@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import UUID from 'react-native-uuid';
 import { useTranslation } from 'react-i18next';
+import DataRenderer from '@/components/DataRenderer';
 
 const NewUserScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -20,6 +21,7 @@ const NewUserScreen: React.FC = () => {
   const [lightness, setLightness] = useState<number>(tinycolor(color).toHsv().v);
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [role, setRole] = useState<string>('');
   const [password, setPassword] = useState<string>(''); 
   const [loading, setLoading] = useState<boolean>(false); 
 
@@ -40,10 +42,10 @@ const NewUserScreen: React.FC = () => {
       users.push(newUser);
       await AsyncStorage.setItem('users', JSON.stringify(users));
 
-      alert(t('security.newUser.userSaved'));
+      alert(t('security.user.userSaved'));
       router.push('./userlist');
     } catch (error) {
-      alert(t('security.newUser.saveError'));
+      alert(t('security.user.saveError'));
     } finally {
       setLoading(false); 
     }
@@ -51,36 +53,42 @@ const NewUserScreen: React.FC = () => {
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
-      <Text style={[styles.title, { color: textColor }]}>{t('security.newUser.header')}</Text>
+      <Text style={[styles.title, { color: textColor }]}>{t('security.user.Newuser')}</Text>
 
-      <TextInput
-        style={[styles.input, { color: textColor, borderColor: textColor }]}
-        placeholder={t('security.newUser.namePlaceholder')}
-        placeholderTextColor={textColor}
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={[styles.input, { color: textColor, borderColor: textColor }]}
-        placeholder={t('security.newUser.emailPlaceholder')}
-        placeholderTextColor={textColor}
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={[styles.input, { color: textColor, borderColor: textColor }]}
-        placeholder={t('security.newUser.passwordPlaceholder')}
-        placeholderTextColor={textColor}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+      <DataRenderer
+              label={t('security.user.namePlaceholder')}
+              value={name}
+              type="input"
+              textColor="#333"
+              onSave={(newValue) => setName(newValue as string)}
+            />
+            <DataRenderer
+              label={t('security.user.emailPlaceholder')}
+              value={email}
+              type="input"
+              textColor="#333"
+              onSave={(newValue) => setEmail(newValue as string)}
+            />
+            <DataRenderer
+              label={t('security.user.rolePlaceholder')}
+              value={role}
+              type="input"
+              textColor="#333"
+              onSave={(newValue) => setRole(newValue as string)}
+            />
+            <DataRenderer
+              label={t('security.user.passwordPlaceholder')}
+              value={password}
+              type="input"
+              textColor="#333"
+              onSave={(newValue) => setPassword(newValue as string)}
+            />
 
-      <Text style={[styles.label, { color: textColor }]}>{t('security.newUser.colorLabel')}</Text>
+      <Text style={[styles.label, { color: textColor }]}>{t('security.user.colorLabel')}</Text>
 
       <View style={[styles.colorBox, { backgroundColor: color }]} />
 
-      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.newUser.hue')}</Text>
+      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.user.hue')}</Text>
       <Slider
         style={styles.slider}
         minimumValue={0}
@@ -92,7 +100,7 @@ const NewUserScreen: React.FC = () => {
         }}
       />
 
-      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.newUser.saturation')}</Text>
+      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.user.saturation')}</Text>
       <Slider
         style={styles.slider}
         minimumValue={0}
@@ -104,7 +112,7 @@ const NewUserScreen: React.FC = () => {
         }}
       />
 
-      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.newUser.lightness')}</Text>
+      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.user.lightness')}</Text>
       <Slider
         style={styles.slider}
         minimumValue={0}
@@ -120,7 +128,7 @@ const NewUserScreen: React.FC = () => {
         {loading ? (
           <ActivityIndicator size="small" color="#fff" />
         ) : (
-          <Text style={styles.saveButtonText}>{t('security.newUser.saveButton')}</Text>
+          <Text style={styles.saveButtonText}>{t('security.user.saveButton')}</Text>
         )}
       </TouchableOpacity>
     </ScrollView>

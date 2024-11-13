@@ -48,7 +48,6 @@ const NewPaymentScreen: React.FC = () => {
       updatedMethods.push(newPaymentMethod);
 
       await AsyncStorage.setItem('paymentMethods', JSON.stringify(updatedMethods));
-      Alert.alert(t('paymentMethods.successTitle'), t('paymentMethods.successMessage'));
       setPaymentName('');
       setSelectedIcon(null);
       router.push('/Payment-methods');

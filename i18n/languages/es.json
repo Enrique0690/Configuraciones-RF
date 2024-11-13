@@ -98,24 +98,85 @@
         "roles": "Roles",
         "loading": "Cargando...",
         "loadError": "Error al cargar los datos.",
-        "userList": {
+        "user": {
             "header": "Lista de Usuarios",
             "loading": "Cargando usuarios...",
             "loadError": "Hubo un error al cargar los usuarios.",
-            "noUsers": "No hay usuarios registrados"
-        },
-        "newUser": {
-            "header": "Nuevo Usuario",
+            "noUsers": "No hay usuarios registrados",
+            "editUser": "Editar Usuario",
+            "userNotFound": "Usuario no encontrado",
+            "goBack": "Volver",
             "namePlaceholder": "Nombre",
-            "emailPlaceholder": "Correo electrónico",
+            "emailPlaceholder": "Correo Electrónico",
+            "rolePlaceholder": "Rol",
             "passwordPlaceholder": "Contraseña",
-            "colorLabel": "Color identificador:",
+            "colorIdentifier": "Identificador de color",
             "hue": "Tono",
             "saturation": "Saturación",
             "lightness": "Luminosidad",
+            "save": "Guardar",
+            "saving": "Guardando...",
+            "Newuser": "Nuevo Usuario",
+            "colorLabel": "Color identificador:",
             "saveButton": "Guardar",
             "userSaved": "Usuario guardado con éxito",
             "saveError": "Hubo un error al guardar el usuario"
+        },
+        "role": {
+            "header": "Lista de Roles",
+            "loading": "Cargando roles...",
+            "loadError": "Hubo un error al cargar los roles.",
+            "noRoles": "No hay roles registrados",
+            "addNewRole": "Agregar Nuevo Rol",
+            "editRole": "Editar Rol",
+            "roleName": "Nombre del Rol",
+            "selectAllPermissions": "Seleccionar Todos los Permisos",
+            "saveButton": "Guardar",
+            "SALES": "Ventas",
+            "INVENTORY": "Inventario",
+            "CONFIGURATION": "Configuración",
+            "SPECIALPERMISSIONS": "Permisos Especiales",
+            "CLIENTS": "Clientes",
+            "REPORTS": "Reportes",
+            "sales": {
+                "directSale": "Venta Directa",
+                "tableOrder": "Pedido en Mesa",
+                "cashRegister": "Arqueo de Caja",
+                "expenseRecord": "Registro de Gastos",
+                "closureQuery": "Consulta de Cierre"
+            },
+            "inventory": {
+                "articles": "Artículos",
+                "inventoryEntry": "Ingreso de Inventario",
+                "inventoryExit": "Egreso de Inventario",
+                "kardex": "Kardex",
+                "viewMovements": "Ver Movimientos",
+                "transformation": "Transformación",
+                "production": "Producción"
+            },
+            "configuration": {
+                "config": "Configuración"
+            },
+            "specialPermissions": {
+                "cancelTables": "Cancelar Mesas",
+                "cancelCashClosures": "Cancelar Cierres de Caja",
+                "cancelSales": "Cancelar Ventas",
+                "cancelInventoryMovements": "Cancelar Movimientos de Inventario",
+                "removeItemsFromOrder": "Eliminar Artículos del Pedido",
+                "verifyCashClosures": "Verificar Cierres de Caja",
+                "chargePendingOrders": "Cobrar Pedidos Pendientes",
+                "accessAnyTable": "Acceder a Cualquier Mesa",
+                "reprintSalesDocuments": "Reimprimir Documentos de Venta",
+                "modifySalesData": "Modificar Datos de Venta",
+                "moveOrderItems": "Mover Artículos de Pedido"
+            },
+            "clients": {
+                "clientQuery": "Consulta de Clientes"
+            },
+            "report": {
+                "salesReport": "Informe de Ventas",
+                "inventoryReport": "Informe de Inventario"
+            }
         }
     },
     "taxConfigurationEC": {

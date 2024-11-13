@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useRouter } from 'expo-router'; // Importar useRouter
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importar AsyncStorage
+import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Definir el tipo de usuario
 interface User {
   id: string;
   name: string;
@@ -14,46 +14,59 @@ interface User {
 }
 
 const UserListScreen: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]); // Cambiar el tipo de estado para que sea un arreglo de objetos User
+  const { t } = useTranslation();
+  const [users, setUsers] = useState<User[]>([]); 
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'textsecondary');
-  const router = useRouter(); // Usar el router para navegar
+  const router = useRouter(); 
 
   useEffect(() => {
-    // Función para cargar los usuarios desde AsyncStorage
     const loadUsers = async () => {
       try {
-        const storedUsers = await AsyncStorage.getItem('users'); // Obtener los usuarios guardados
+        const storedUsers = await AsyncStorage.getItem('users'); 
         if (storedUsers) {
-          setUsers(JSON.parse(storedUsers)); // Si existen, actualizamos el estado
+          setUsers(JSON.parse(storedUsers)); 
         }
+        setLoading(false); 
       } catch (error) {
-        console.error('Error loading users from AsyncStorage:', error);
+        setLoadError(true); 
+        setLoading(false);
       }
     };
-
-    loadUsers(); // Cargar los usuarios al inicio
-  }, []); // Solo se ejecuta una vez al cargar el componente
+    loadUsers(); 
+  }, []); 
 
   const handleCreateNewUser = () => {
-    router.push('./newuser'); // Redirigir a la pantalla de creación de usuario
+    router.push('./newuser'); 
   };
 
-  const handleUserClick = async (id: string) => {
-    try {
-      await AsyncStorage.setItem('selectedUserId', id); // Guardar el ID en AsyncStorage
-      router.push('./edituser'); // Navegar a la pantalla de edición
-    } catch (error) {
-      console.error('Error storing user ID in AsyncStorage:', error);
-    }
+  const handleUserClick = (id: string) => {
+    router.push(`./${id}`);
   };
-  
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={styles.loadingText}>{t('security.user.loading')}</Text>
+      </View>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorMessage}>{t('security.user.loadError')}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: textColor }]}>LISTA DE USUARIOS</Text>
-        {/* Botón para crear nuevo usuario */}
+        <Text style={[styles.title, { color: textColor }]}>{t('security.user.header')}</Text>
         <TouchableOpacity onPress={handleCreateNewUser} style={styles.addButton}>
           <Ionicons name="add-circle-outline" size={30} color={textColor} />
         </TouchableOpacity>
@@ -61,15 +74,14 @@ const UserListScreen: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {users.length === 0 ? (
-          <Text style={[styles.noUsersText, { color: textColor }]}>No hay usuarios registrados</Text>
+          <Text style={[styles.noUsersText, { color: textColor }]}>{t('security.user.noUsers')}</Text>
         ) : (
           users.map((user, index) => (
             <TouchableOpacity 
               key={index} 
               style={styles.userItem} 
-              onPress={() => handleUserClick(user.id)} // Al hacer clic, pasamos solo el id
+              onPress={() => handleUserClick(user.id)} 
             >
-              {/* Círculo de color junto al nombre */}
               <View style={[styles.colorCircle, { backgroundColor: user.color }]} />
               <View style={styles.userDetails}>
                 <Text style={[styles.userText, { color: textColor }]}>{user.name}</Text>
@@ -112,8 +124,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#ccc',
     marginBottom: 10,
-    backgroundColor: '#f9f9f9', // Fondo ligeramente gris para cada item
-    borderRadius: 8, // Bordes redondeados para el item
+    backgroundColor: '#f9f9f9', 
+    borderRadius: 8, 
     paddingLeft: 10,
     paddingRight: 10,
   },
@@ -121,7 +133,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#000', // Color por defecto en caso de que no haya un color específico
+    backgroundColor: '#000', 
     marginRight: 12,
   },
   userDetails: {
@@ -140,6 +152,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#4CAF50',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  errorMessage: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });
 
