@@ -28,7 +28,7 @@ const IntegrationsScreen: React.FC = () => {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <View style={styles.searchBarContainer}>
+    <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
       <Text style={[styles.sectionTitle, { color: textColor }]}>{t('integrations.header')}</Text>
@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
       android: 'flex',
       default: 'none',
     }),
+    width: '100%',
   },
   sectionTitle: {
     fontSize: 20,

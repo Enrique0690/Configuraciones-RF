@@ -11,10 +11,10 @@ const AdvancedOptionsScreen: React.FC = () => {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <Text style={[styles.title, { color: textColor }]}>Configuración de Configuraciones Avanzadas</Text>
       <View style={styles.searchBarContainer}>
-      <SearchBar />
+        <SearchBar />
       </View>
+      <Text style={[styles.title, { color: textColor }]}>Configuración de Configuraciones Avanzadas</Text>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {/* Aquí puedes agregar componentes y ajustes específicos de esta categoría */}
         <Text style={[styles.description, { color: textColor }]}>
@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
       android: 'flex', 
       default: 'none', 
     }),
+    marginBottom: 16,
   },
 });
 

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { handleChange } from '@/hooks/handleChange';
 import useStorage from '@/hooks/useStorage';
 import { useTranslation } from 'react-i18next';
 import { infoTributariaConfig, defaultInfoTributariaData } from '@/constants/DataConfig/TaxConfig'; 
 import DataRenderer from '@/components/DataRenderer'; 
+import SearchBar from '@/components/navigation/SearchBar';
 
 const STORAGE_KEY = 'infoTributariaData';
 
@@ -16,6 +17,9 @@ const InfoTributaria: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.searchBarContainer}>
+        <SearchBar />
+      </View>
       <Text style={[styles.sectionTitle, { color: textColor }]}>
         {t('taxConfigurationEC.infoTributaria.sectionTitle')}
       </Text>
@@ -44,6 +48,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 16,
     textAlign: 'center',
+  },
+  searchBarContainer: {
+    display: Platform.select({ ios: 'flex', android: 'flex', default: 'none' }),
   },
 });
 
