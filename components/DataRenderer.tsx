@@ -12,7 +12,7 @@ interface DataRendererProps {
   textColor: string;
   finalText?: string;
   iconName?: string;
-  onSave?: (value: string) => void; 
+  onSave?: (value: string | boolean) => void; 
 }
 
 const DataRenderer: React.FC<DataRendererProps> = ({label, value = '/Security/users/userlist', type, onPress, textColor, finalText, iconName, onSave}) => {

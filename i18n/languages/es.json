@@ -64,12 +64,32 @@
     },
     "paymentMethods": {
         "header": "Métodos de Pago",
-        "nameLabel": "Nombre del método de pago",
-        "selectIcon": "Seleccione su ícono",
-        "chooseIcon": "Elegir un ícono",
-        "saveButton": "Guardar método de pago",
-        "successMessage": "Método de pago guardado exitosamente.",
-        "errorMessage": "Por favor, ingrese un nombre y seleccione un ícono."
+        "errorLoading": "Error al cargar los métodos de pago.",
+        "errorSaving": "Error al guardar los métodos de pago.",
+        "emptyList": "No hay métodos de pago disponibles.",
+        "newpayment": "Nuevo Método de Pago",
+        "paymentNamePlaceholder": "Ingresa el nombre",
+        "iconLabel": "Seleccionar un ícono",
+        "selectIcon": "Elige un ícono",
+        "selectNameIcon": "Por favor ingresa un nombre y selecciona un ícono.",
+        "saveButtonText": "Guardar Método de Pago",
+        "successTitle": "Éxito",
+        "successMessage": "Método de pago guardado correctamente.",
+        "validationError": "Error",
+        "saveError": "Hubo un error al guardar el método de pago."
+    },
+    "tabletConfiguration": {
+        "header": "Configuración de la Mesa",
+        "loading": "Cargando configuración...",
+        "loadError": "Hubo un error al cargar los datos.",
+        "showUser": "Mostrar usuario",
+        "showTime": "Mostrar tiempo que la mesa lleva ocupada",
+        "showCommercialName": "Mostrar 'Nombre Comercial' del cliente",
+        "userName": "Nombre Usuario",
+        "commercialName": "Nombre Comercial",
+        "tableNumber": "# Mesa",
+        "time": "Tiempo ⏰",
+        "totalAmount": "$ Total de mesa"
     },
     "taxConfigurationEC": {
         "infoTributaria": {

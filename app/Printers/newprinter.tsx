@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import UUID from 'react-native-uuid';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next'; 
+import DataRenderer from '@/components/DataRenderer';
 
 const NewPrinterScreen = () => {
   const { t } = useTranslation(); 
@@ -47,13 +48,6 @@ const NewPrinterScreen = () => {
     }
   };
 
-  const renderSwitch = (label: string, value: boolean, onValueChange: (val: boolean) => void) => (
-    <View style={styles.switchContainer}>
-      <Text style={styles.switchLabel}>{label}</Text>
-      <Switch value={value} onValueChange={onValueChange} />
-    </View>
-  );
-
   const renderConnectionOption = (label: string, value: 'USB' | 'Ethernet' | 'Bluetooth') => (
     <TouchableOpacity
       style={[styles.connectionButton, connection === value && styles.selectedButton]}
@@ -73,23 +67,60 @@ const NewPrinterScreen = () => {
           <>
             <Text style={styles.title}>{t('printers.addPrinter')}</Text>
 
-            <Text style={styles.label}>{t('printers.printerName')}</Text>
-            <TextInput
-              style={styles.input}
+            <DataRenderer
+              label={t('printers.printerName')}
               value={name}
-              onChangeText={setName}
-              placeholder={t('printers.writeNameHere')}
+              type="input"
+              textColor="#333"
+              onSave={(newValue) => setName(newValue as string)}
             />
 
             <Text style={styles.label}>{t('printers.printingSettings')}</Text>
-            {renderSwitch(t('printers.deliveryNote'), deliveryNote, setDeliveryNote)}
-            {renderSwitch(t('printers.invoice'), invoice, setInvoice)}
-            {renderSwitch(t('printers.preInvoice'), preInvoice, setPreInvoice)}
+            <DataRenderer
+              label={t('printers.deliveryNote')}
+              value={deliveryNote}
+              type="switch"
+              textColor="#333"
+              onSave={(newValue) => setDeliveryNote(newValue as boolean)}
+            />
+            <DataRenderer
+              label={t('printers.invoice')}
+              value={invoice}
+              type="switch"
+              textColor="#333"
+              onSave={(newValue) => setInvoice(newValue as boolean)}
+            />
+            <DataRenderer
+              label={t('printers.preInvoice')}
+              value={preInvoice}
+              type="switch"
+              textColor="#333"
+              onSave={(newValue) => setPreInvoice(newValue as boolean)}
+            />
+
 
             <Text style={styles.label}>{t('printers.stations')}</Text>
-            {renderSwitch(t('printers.kitchen'), kitchen, setKitchen)}
-            {renderSwitch(t('printers.bar'), bar, setBar)}
-            {renderSwitch(t('printers.noStation'), noStation, setNoStation)}
+            <DataRenderer
+              label={t('printers.kitchen')}
+              value={kitchen}
+              type="switch"
+              textColor="#333"
+              onSave={(newValue) => setKitchen(newValue as boolean)}
+            />
+            <DataRenderer
+              label={t('printers.bar')}
+              value={bar}
+              type="switch"
+              textColor="#333"
+              onSave={(newValue) => setBar(newValue as boolean)}
+            />
+            <DataRenderer
+              label={t('printers.noStation')}
+              value={noStation}
+              type="switch"
+              textColor="#333"
+              onSave={(newValue) => setNoStation(newValue as boolean)}
+            />
 
             <Text style={styles.label}>{t('printers.connection')}</Text>
             <View style={styles.buttonContainer}>

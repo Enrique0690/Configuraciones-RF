@@ -64,12 +64,32 @@
     },
     "paymentMethods": {
         "header": "Payment Methods",
-        "nameLabel": "Payment Method Name",
-        "selectIcon": "Select an Icon",
-        "chooseIcon": "Choose an Icon",
-        "saveButton": "Save Payment Method",
+        "errorLoading": "Error loading payment methods.",
+        "errorSaving": "Error saving payment methods.",
+        "emptyList": "No payment methods available.",
+        "newpayment": "Payment Method Name",
+        "paymentNamePlaceholder": "Enter the name",
+        "iconLabel": "Select an icon",
+        "selectIcon": "Choose an icon",
+        "selectNameIcon": "Please enter a name and select an icon.",
+        "saveButtonText": "Save Payment Method",
+        "successTitle": "Success",
         "successMessage": "Payment method saved successfully.",
-        "errorMessage": "Please enter a name and select an icon."
+        "validationError": "Error",
+        "saveError": "There was an error saving the payment method."
+    },
+    "tabletConfiguration": {
+        "header": "Tablet Configuration",
+        "loading": "Loading configuration...",
+        "loadError": "There was an error loading the data.",
+        "showUser": "Show user",
+        "showTime": "Show time the table has been occupied",
+        "showCommercialName": "Show customer's 'Commercial Name'",
+        "userName": "User Name",
+        "commercialName": "Commercial Name",
+        "tableNumber": "# Table",
+        "time": "Time ⏰",
+        "totalAmount": "$ Total de table"
     },
     "taxConfigurationEC": {
         "infoTributaria": {

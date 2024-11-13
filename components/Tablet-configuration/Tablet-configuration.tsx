@@ -1,7 +1,6 @@
-// TabletConfiguration.tsx
-
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 type TabletConfigurationProps = {
   showUser: boolean;
@@ -10,19 +9,20 @@ type TabletConfigurationProps = {
 };
 
 const TabletConfiguration: React.FC<TabletConfigurationProps> = ({ showUser, showTime, showCommercialName }) => {
+  const { t } = useTranslation();
   return (
     <View style={styles.tableBox}>
       {showUser && (
-        <Text style={styles.tableLabel}>Nombre Usuario</Text>
+        <Text style={styles.tableLabel}>{t('tabletConfiguration.userName')}</Text>
       )}
       {showCommercialName && (
-        <Text style={styles.tableLabel}>Nombre Comercial</Text>
+        <Text style={styles.tableLabel}>{t('tabletConfiguration.commercialName')}</Text>
       )}
-      <Text style={styles.tableInfo}># Mesa</Text>
+      <Text style={styles.tableInfo}>{t('tabletConfiguration.tableNumber')}</Text>
       {showTime && (
-        <Text style={styles.tableInfo}>Tiempo ⏰</Text>
+        <Text style={styles.tableInfo}>{t('tabletConfiguration.time')}</Text>
       )}
-      <Text style={styles.tableInfo}>$ Total de mesa</Text>
+      <Text style={styles.tableInfo}>{t('tabletConfiguration.totalAmount')}</Text>
     </View>
   );
 };
