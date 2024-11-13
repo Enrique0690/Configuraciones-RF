@@ -50,7 +50,7 @@ const UserListScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('security.userList.loading')}</Text>
+        <Text style={styles.loadingText}>{t('security.user.loading')}</Text>
       </View>
     );
   }
@@ -58,7 +58,7 @@ const UserListScreen: React.FC = () => {
   if (loadError) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('security.userList.loadError')}</Text>
+        <Text style={styles.errorMessage}>{t('security.user.loadError')}</Text>
       </View>
     );
   }
@@ -66,7 +66,7 @@ const UserListScreen: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: textColor }]}>{t('security.userList.header')}</Text>
+        <Text style={[styles.title, { color: textColor }]}>{t('security.user.header')}</Text>
         <TouchableOpacity onPress={handleCreateNewUser} style={styles.addButton}>
           <Ionicons name="add-circle-outline" size={30} color={textColor} />
         </TouchableOpacity>
@@ -74,7 +74,7 @@ const UserListScreen: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {users.length === 0 ? (
-          <Text style={[styles.noUsersText, { color: textColor }]}>{t('security.userList.noUsers')}</Text>
+          <Text style={[styles.noUsersText, { color: textColor }]}>{t('security.user.noUsers')}</Text>
         ) : (
           users.map((user, index) => (
             <TouchableOpacity 

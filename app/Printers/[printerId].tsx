@@ -21,7 +21,6 @@ const EditPrinterScreen = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Cargar los datos de la impresora para edición
   useEffect(() => {
     const loadPrinterData = async () => {
       if (printerId) {
@@ -55,7 +54,6 @@ const EditPrinterScreen = () => {
     loadPrinterData();
   }, [printerId, t]);
 
-  // Guardar los cambios
   const handleSave = async () => {
     setLoading(true);
     setError('');

@@ -98,21 +98,26 @@
         "roles": "Roles",
         "loading": "Cargando...",
         "loadError": "Error al cargar los datos.",
-        "userList": {
+        "user": {
             "header": "Lista de Usuarios",
             "loading": "Cargando usuarios...",
             "loadError": "Hubo un error al cargar los usuarios.",
-            "noUsers": "No hay usuarios registrados"
-        },
-        "newUser": {
-            "header": "Nuevo Usuario",
+            "noUsers": "No hay usuarios registrados",
+            "editUser": "Editar Usuario",
+            "userNotFound": "Usuario no encontrado",
+            "goBack": "Volver",
             "namePlaceholder": "Nombre",
-            "emailPlaceholder": "Correo electrónico",
+            "emailPlaceholder": "Correo Electrónico",
+            "rolePlaceholder": "Rol",
             "passwordPlaceholder": "Contraseña",
-            "colorLabel": "Color identificador:",
+            "colorIdentifier": "Identificador de color",
             "hue": "Tono",
             "saturation": "Saturación",
             "lightness": "Luminosidad",
+            "save": "Guardar",
+            "saving": "Guardando...",
+            "Newuser": "Nuevo Usuario",
+            "colorLabel": "Color identificador:",
             "saveButton": "Guardar",
             "userSaved": "Usuario guardado con éxito",
             "saveError": "Hubo un error al guardar el usuario"
