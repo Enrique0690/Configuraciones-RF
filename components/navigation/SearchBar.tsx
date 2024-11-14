@@ -35,18 +35,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
     setQuery('');
     setFilteredResults(allConfigs);
   
-    // Redirigir con el parámetro 'highlight' que es el label único
     router.push({
       pathname: route as any,
-      params: { highlight: label },  // Pasar el 'label' como parámetro
+      params: { highlight: label },  
     });
   };
   
-
   const renderSearchResult = (item: any, index: number) => (
     <TouchableOpacity
       key={index}
-      onPress={() => handleSelectResult(item.route, item.label)}  // Aquí pasamos item.route y item.label
+      onPress={() => handleSelectResult(item.route, item.label)}  
       activeOpacity={0.7}
     >
       <Text

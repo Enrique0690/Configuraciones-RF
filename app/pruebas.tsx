@@ -1,62 +1,55 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import ListModal from '@/components/modals/ListModal';
+import EthernetModal from '@/components/modals/EthernetModal';
 
-const MyComponent = () => {
-  // Estado para determinar si el componente está activo o no
-  const [isActive, setIsActive] = useState(false);
+const ExampleScreen: React.FC = () => {
+  const [isListModalVisible, setListModalVisible] = useState(false);
+  const [isEthernetModalVisible, setEthernetModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [fields, setFields] = useState([
+    { label: 'IP Address', value: '', onChange: (text: string) => updateField('IP Address', text) },
+    { label: 'Port', value: '', onChange: (text: string) => updateField('Port', text) },
+  ]);
 
-  // Función para cambiar el estado
-  const toggleActive = () => {
-    setIsActive(!isActive);
+  const data = ['Item 1', 'Item 2', 'Item 3'];
+
+  const updateField = (label: string, text: string) => {
+    setFields(fields.map(field => 
+      field.label === label ? { ...field, value: text } : field
+    ));
+  };
+
+  const handleSaveEthernet = (fields: { label: string; value: string }[]) => {
+    console.log('Saved:', fields);
+    setEthernetModalVisible(false);
   };
 
   return (
-    <View style={styles.container}>
-      {/* Botón que cambia el estado */}
-      <TouchableOpacity onPress={toggleActive} style={styles.button}>
-        <Text style={styles.buttonText}>Cambiar Estado</Text>
-      </TouchableOpacity>
-      
-      {/* Componente que cambia visualmente si está activo */}
-      <View style={[styles.box, isActive && styles.activeBox]}>
-        <Text style={styles.boxText}>
-          {isActive ? 'Activo' : 'Inactivo'}
-        </Text>
-      </View>
-    </View>
+    <div>
+      <button onClick={() => setListModalVisible(true)}>Show List Modal</button>
+      <button onClick={() => setEthernetModalVisible(true)}>Show Ethernet Modal</button>
+
+      <ListModal
+        visible={isListModalVisible}
+        data={data}
+        renderItem={(item) => <span>{item}</span>}
+        onSelect={(item) => {
+          setSelectedItem(item);
+          setListModalVisible(false);
+        }}
+        onClose={() => setListModalVisible(false)}
+        title="Select an Item"
+      />
+
+      <EthernetModal
+        visible={isEthernetModalVisible}
+        fields={fields}
+        onSave={handleSaveEthernet}
+        onClose={() => setEthernetModalVisible(false)}
+        title="Configure Ethernet"
+      />
+    </div>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  box: {
-    width: 100,
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ccc',
-  },
-  activeBox: {
-    backgroundColor: '#4caf50', // Cambia el color cuando está activo
-  },
-  boxText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-});
-
-export default MyComponent;
+export default ExampleScreen;

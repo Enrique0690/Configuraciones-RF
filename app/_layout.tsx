@@ -62,7 +62,7 @@ export default function Layout() {
 
     const menuItems = [
         { text: t("layout.menuItems.businessInfo"), route: "/Business-info", icon: "👁️" },
-        { text: t("layout.menuItems.orderingstations"), route: "/ordering-stations", icon: "🖨️" },
+        { text: t("layout.menuItems.orderingstations"), route: "/Ordering-stations", icon: "👨‍🍳" },
         { text: t("layout.menuItems.printers"), route: "/Printers", icon: "🖨️" },
         //{ text: t("layout.menuItems.paymentMethods"), route: "/Payment-methods", icon: "💳" },
         //{ text: t("layout.menuItems.integrations"), route: "/Integrations", icon: "🔗" },

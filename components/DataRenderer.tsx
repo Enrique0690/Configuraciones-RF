@@ -13,12 +13,14 @@ interface DataRendererProps {
   finalText?: string;
   iconName?: string;
   onSave?: (value: string | boolean) => void; 
+  highlight?: boolean;
 }
 
-const DataRenderer: React.FC<DataRendererProps> = ({label, value = '/Security/users/userlist', type, onPress, textColor, finalText, iconName, onSave}) => {
+const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onPress, textColor, finalText, iconName, onSave, highlight}) => {
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [tempValue, setTempValue] = useState(value as string);
   const [switchValue, setSwitchValue] = useState(value as boolean);
+  const [highlightActive, setHighlightActive] = useState(highlight);
 
   const openEditDialog = () => {
     if (type === 'input') {
@@ -40,7 +42,17 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '/Security/us
       onSave(newValue as any); 
     }
   };
+  useEffect(() => {
+    if (highlight) {
+      setHighlightActive(true);
+      const timeout = setTimeout(() => {
+        setHighlightActive(false);
+      }, 8000); 
 
+      return () => clearTimeout(timeout); 
+    }
+  }, [highlight]);
+  
   useEffect(() => {
     if (type === 'switch') {
       setSwitchValue(value as boolean);
@@ -91,7 +103,7 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '/Security/us
   };
 
   return (
-    <View style={styles.inputGroup}>
+    <View style={[styles.inputGroup, highlightActive && styles.highlightedContainer]}>
       {renderContent()}
 
       {isDialogVisible && (
@@ -155,6 +167,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 12,
     fontWeight: '600',
+  },
+  highlightedContainer: {
+    borderColor: '#4CAF50',
+    borderWidth: 2,
+    padding: 5,
+    borderRadius: 10,
+  },
+  highlightedText: {
+    backgroundColor: '#e6ffe6',
   },
 });
 

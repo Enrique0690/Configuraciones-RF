@@ -44,7 +44,7 @@ export const infoTributariaConfig: Array<InfoTributariaFieldConfig> = withGlobal
     { label: 'taxConfigurationEC.infoTributaria.numeroCalificacionArtesanal', field: 'numeroCalificacionArtesanal', type: 'input' },
     { label: 'taxConfigurationEC.infoTributaria.sitioWebFacturaElectronica', field: 'sitioWebFacturaElectronica', type: 'input' },
     //{ label: 'taxConfigurationEC.infoTributaria.correoEnvioComprobantes', field: 'correoEnvioComprobantes', type: 'input' },
-  ], '/Tax-configuration-ec/InfoTributaria/');
+  ], '/Tax-configuration-ec/SRI/InfoTributaria/');
 
   type ReglasFieldConfig = {
     label: string;

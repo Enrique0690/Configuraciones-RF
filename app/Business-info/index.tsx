@@ -7,8 +7,9 @@ import SearchBar from '@/components/navigation/SearchBar';
 import DataRenderer from '@/components/DataRenderer';
 import { businessInfoConfig, defaultData } from '@/constants/DataConfig/BusinessConfig';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { handleChange } from '@/hooks/handleChange';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEY = 'businessInfo';
 const IMAGE_PREVIEW_SIZE = 250;
@@ -19,25 +20,33 @@ const BusinessInfoScreen: React.FC = () => {
   const textColor = useThemeColor({}, 'textsecondary');
   const { data, saveData } = useStorage(STORAGE_KEY, defaultData);
   const router = useRouter();
+  const { highlight } = useLocalSearchParams();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null); 
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
-        if (data.imageUrl) {
-          setImageUri(data.imageUrl);
+        const storedData = await AsyncStorage.getItem(STORAGE_KEY);
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+          if (JSON.stringify(parsedData) !== JSON.stringify(data)) {
+            saveData(parsedData);
+          }
+          if (parsedData?.imageUrl) {
+            setImageUri(parsedData.imageUrl);
+          }
         }
       } catch (err) {
-        setError(true);  
+        setError(t('businessInfo.loadError'));
       } finally {
         setLoading(false);
       }
     };
-    loadData();
-  }, [data]);
+    loadData(); 
+  }, []); 
 
   const openImagePicker = async () => {
     const permission = await requestImagePickerPermission();
@@ -81,7 +90,7 @@ const BusinessInfoScreen: React.FC = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('businessInfo.loadError')}</Text>
+        <Text style={styles.errorMessage}>{error}</Text>
         <TouchableOpacity onPress={() => router.push('/')} style={styles.goBackButton}>
           <Text style={styles.goBackButtonText}>{t('businessInfo.goBackHome')}</Text>
         </TouchableOpacity>
@@ -114,6 +123,7 @@ const BusinessInfoScreen: React.FC = () => {
             type={type}
             onSave={(newValue) => handleChange(field, newValue, data, saveData)}
             textColor={textColor}
+            highlight={highlight === label}
           />
         ))}
       </ScrollView>
@@ -121,7 +131,7 @@ const BusinessInfoScreen: React.FC = () => {
   );
 };
 
-//componente para subir imagen
+// Componente para subir imagen
 const ImageUploadSection: React.FC<{
   imageUri: string | null;
   onSelectImage: () => void;

@@ -5,9 +5,11 @@ import { PrintersConfig } from "./PrintersConfig";
 import { TabletConfig } from "./TabletConfig";
 import { paymentMethodsConfig } from "./PaymentmethodsConfig";
 import { IntegrationsConfig } from "./IntegrationsConfig";
+import { StationsConfig } from "./StationsConfig";
 
 export const allConfigs = [
   ...businessInfoConfig,
+  ...StationsConfig,
   ...PrintersConfig,
   //...paymentMethodsConfig,
   ...TabletConfig,
