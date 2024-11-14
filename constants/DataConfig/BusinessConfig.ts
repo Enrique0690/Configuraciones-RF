@@ -27,5 +27,4 @@ export const businessInfoConfig: Array<FieldConfig> =  withGlobalRoute([
   { label: 'businessInfo.phone', field: 'phone', type: 'input'},
   { label: 'businessInfo.email', field: 'email', type: 'input'},
   { label: 'businessInfo.businessType', field: 'businessType', type: 'input'},
-  { label: 'businessInfo.currency', field: 'currency', type: 'input'},
 ], '/Business-info');

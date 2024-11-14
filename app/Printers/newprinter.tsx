@@ -14,6 +14,7 @@ const NewPrinterScreen = () => {
   const [deliveryNote, setDeliveryNote] = useState(false);
   const [invoice, setInvoice] = useState(false);
   const [preInvoice, setPreInvoice] = useState(false);
+  const [reports, setReports] = useState(false);
   const [kitchen, setKitchen] = useState(false);
   const [bar, setBar] = useState(false);
   const [noStation, setNoStation] = useState(false);
@@ -29,7 +30,7 @@ const NewPrinterScreen = () => {
     const printerData = {
       id,
       name,
-      options: { deliveryNote, invoice, preInvoice },
+      options: { deliveryNote, invoice, preInvoice, reports },
       stations: { kitchen, bar, noStation },
       connection,
     };
@@ -97,7 +98,13 @@ const NewPrinterScreen = () => {
               textColor="#333"
               onSave={(newValue) => setPreInvoice(newValue as boolean)}
             />
-
+            <DataRenderer
+              label={t('printers.reports')}
+              value={reports}
+              type="switch"
+              textColor="#333"
+              onSave={(newValue) => setReports(newValue as boolean)}
+            />
 
             <Text style={styles.label}>{t('printers.stations')}</Text>
             <DataRenderer

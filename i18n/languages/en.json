@@ -9,7 +9,8 @@
             "tabletConfiguration": "Table Configuration",
             "security": "Security",
             "advancedOptions": "Advanced Options",
-            "taxConfigurationEC": "Tax Configuration (Ecuador)"
+            "taxConfigurationEC": "Tax Configuration",
+            "ordering stations": "Ordering Stations"
         }
     },
     "businessInfo": {
@@ -42,6 +43,7 @@
         "deliveryNote": "Delivery Note",
         "invoice": "Invoice",
         "preInvoice": "Pre Invoice",
+        "reports": "Reports",
         "stations": "Order Stations",
         "kitchen": "Kitchen",
         "bar": "Bar",

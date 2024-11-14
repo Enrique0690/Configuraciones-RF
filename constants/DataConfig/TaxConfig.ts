@@ -10,9 +10,9 @@ type FieldConfig = {
 };
 
 export const taxConfig: Array<FieldConfig> = [
-    { label: 'taxConfigurationEC.infoTributaria.sectionTitle', type: 'buttonlist', route: '/Tax-configuration-ec/InfoTributaria', iconName: 'document-text' },
-    { label: 'taxConfigurationEC.secuenciaFactura.sectionTitle', type: 'buttonlist', route: '/Tax-configuration-ec/SecuenciaFactura', iconName: 'clipboard' },
-    { label: 'taxConfigurationEC.reglas.sectionTitle', type: 'buttonlist', route: '/Tax-configuration-ec/Reglas', iconName: 'settings' },
+    { label: 'taxConfigurationEC.infoTributaria.sectionTitle', type: 'buttonlist', route: '/Tax-configuration-ec/SRI/InfoTributaria', iconName: 'document-text' },
+    //{ label: 'taxConfigurationEC.secuenciaFactura.sectionTitle', type: 'buttonlist', route: '/Tax-configuration-ec/SecuenciaFactura', iconName: 'clipboard' },
+    //{ label: 'taxConfigurationEC.reglas.sectionTitle', type: 'buttonlist', route: '/Tax-configuration-ec/Reglas', iconName: 'settings' },
 ];
 
 type InfoTributariaFieldConfig = {
@@ -43,7 +43,7 @@ export const infoTributariaConfig: Array<InfoTributariaFieldConfig> = withGlobal
     { label: 'taxConfigurationEC.infoTributaria.regimenContribuyente', field: 'regimenContribuyente', type: 'input' },
     { label: 'taxConfigurationEC.infoTributaria.numeroCalificacionArtesanal', field: 'numeroCalificacionArtesanal', type: 'input' },
     { label: 'taxConfigurationEC.infoTributaria.sitioWebFacturaElectronica', field: 'sitioWebFacturaElectronica', type: 'input' },
-    { label: 'taxConfigurationEC.infoTributaria.correoEnvioComprobantes', field: 'correoEnvioComprobantes', type: 'input' },
+    //{ label: 'taxConfigurationEC.infoTributaria.correoEnvioComprobantes', field: 'correoEnvioComprobantes', type: 'input' },
   ], '/Tax-configuration-ec/InfoTributaria/');
 
   type ReglasFieldConfig = {
@@ -95,6 +95,6 @@ export const infoTributariaConfig: Array<InfoTributariaFieldConfig> = withGlobal
   export const taxConfigall = {
     general: taxConfig,
     infoTributaria: infoTributariaConfig,
-    reglas: reglasConfig,
-    secuenciaFactura: secuenciaFacturaConfig,
+    //reglas: reglasConfig,
+    //secuenciaFactura: secuenciaFacturaConfig,
 };

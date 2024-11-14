@@ -8,6 +8,7 @@ import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
 import { useTranslation } from "react-i18next";
 
+
 const MenuItem = ({ item, router, setIsFullScreen }: { item: { text: string, route: string, icon: string }, router: any, setIsFullScreen: Function }) => (
     <TouchableOpacity onPress={() => {
         router.push(item.route);
@@ -61,13 +62,14 @@ export default function Layout() {
 
     const menuItems = [
         { text: t("layout.menuItems.businessInfo"), route: "/Business-info", icon: "👁️" },
+        { text: t("layout.menuItems.orderingstations"), route: "/ordering-stations", icon: "🖨️" },
         { text: t("layout.menuItems.printers"), route: "/Printers", icon: "🖨️" },
-        { text: t("layout.menuItems.paymentMethods"), route: "/Payment-methods", icon: "💳" },
-        { text: t("layout.menuItems.integrations"), route: "/Integrations", icon: "🔗" },
+        //{ text: t("layout.menuItems.paymentMethods"), route: "/Payment-methods", icon: "💳" },
+        //{ text: t("layout.menuItems.integrations"), route: "/Integrations", icon: "🔗" },
         { text: t("layout.menuItems.tabletConfiguration"), route: "/Tablet-configuration", icon: "🍽️" },
         { text: t("layout.menuItems.security"), route: "/Security", icon: "🔒" },
         { text: t("layout.menuItems.advancedOptions"), route: "/Advanced-options", icon: "⚙️" },
-        { text: t("layout.menuItems.taxConfigurationEC"), route: "/Tax-configuration-ec", icon: "📝" }
+        { text: t("layout.menuItems.taxConfigurationEC"), route: "/Tax-configuration-ec/SRI/InfoTributaria", icon: "📝" }
     ];
 
     return (

@@ -9,9 +9,9 @@ import { IntegrationsConfig } from "./IntegrationsConfig";
 export const allConfigs = [
   ...businessInfoConfig,
   ...PrintersConfig,
-  ...paymentMethodsConfig,
+  //...paymentMethodsConfig,
   ...TabletConfig,
-  ...IntegrationsConfig,
+  //...IntegrationsConfig,
   ...Object.values(Securityall).flat(),
   ...Object.values(taxConfigall).flat(),
 ];
