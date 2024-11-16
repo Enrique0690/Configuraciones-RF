@@ -14,6 +14,7 @@ const EditPrinterScreen = () => {
   const [deliveryNote, setDeliveryNote] = useState(false);
   const [invoice, setInvoice] = useState(false);
   const [preInvoice, setPreInvoice] = useState(false);
+  const [reports, setReports] = useState(false);
   const [kitchen, setKitchen] = useState(false);
   const [bar, setBar] = useState(false);
   const [noStation, setNoStation] = useState(false);
@@ -36,6 +37,7 @@ const EditPrinterScreen = () => {
             setInvoice(printerToEdit.options.invoice);
             setPreInvoice(printerToEdit.options.preInvoice);
             setKitchen(printerToEdit.stations.kitchen);
+            setReports(printerToEdit.options.reports);
             setBar(printerToEdit.stations.bar);
             setNoStation(printerToEdit.stations.noStation);
             setConnection(printerToEdit.connection);
@@ -66,7 +68,7 @@ const EditPrinterScreen = () => {
             ? {
               ...printer,
               name,
-              options: { deliveryNote, invoice, preInvoice },
+              options: { deliveryNote, invoice, preInvoice, reports},
               stations: { kitchen, bar, noStation },
               connection,
             }
@@ -132,6 +134,13 @@ const EditPrinterScreen = () => {
               type="switch"
               textColor="#333"
               onSave={(newValue) => setPreInvoice(newValue as boolean)}
+            />
+            <DataRenderer
+              label={t('printers.reports')}
+              value={reports}
+              type="switch"
+              textColor="#333"
+              onSave={(newValue) => setReports(newValue as boolean)}
             />
 
             <Text style={styles.label}>{t('printers.stations')}</Text>

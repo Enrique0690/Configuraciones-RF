@@ -2,28 +2,41 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Switch, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';  
+import ListModal from './modals/ListModal';
 import { router } from 'expo-router';
 
 interface DataRendererProps {
   label: string;
   value?: string | boolean;
-  type: 'input' | 'image' | 'switch' | 'buttonlist' | 'text'; 
+  type: 'input' | 'image' | 'switch' | 'buttonlist' | 'text' | 'inputlist'; 
   onPress?: () => void;
   textColor: string;
   finalText?: string;
   iconName?: string;
   onSave?: (value: string | boolean) => void; 
+  highlight?: boolean;
+  dataList?: string[]; 
 }
 
-const DataRenderer: React.FC<DataRendererProps> = ({label, value = '/Security/users/userlist', type, onPress, textColor, finalText, iconName, onSave}) => {
+const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onPress, textColor, finalText, iconName, onSave, highlight, dataList}) => {
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [tempValue, setTempValue] = useState(value as string);
   const [switchValue, setSwitchValue] = useState(value as boolean);
+  const [highlightActive, setHighlightActive] = useState(highlight);
+  const [isListModalVisible, setListModalVisible] = useState(false);
 
   const openEditDialog = () => {
     if (type === 'input') {
       setTempValue(value as string); 
       setDialogVisible(true);
+    }
+  };
+
+  const handleSelectItem = (selectedItem: string) => {
+    setTempValue(selectedItem); 
+    setListModalVisible(false);  
+    if (onSave) {
+      onSave(selectedItem); 
     }
   };
 
@@ -40,7 +53,17 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '/Security/us
       onSave(newValue as any); 
     }
   };
+  useEffect(() => {
+    if (highlight) {
+      setHighlightActive(true);
+      const timeout = setTimeout(() => {
+        setHighlightActive(false);
+      }, 8000); 
 
+      return () => clearTimeout(timeout); 
+    }
+  }, [highlight]);
+  
   useEffect(() => {
     if (type === 'switch') {
       setSwitchValue(value as boolean);
@@ -56,6 +79,16 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '/Security/us
           <TouchableOpacity onPress={openEditDialog}>
             <Text style={[styles.textValue, { color: textColor }]}>
               <Text style={styles.label}>{label}:</Text> {value || 'Editar'}
+              {finalText && <Text style={styles.finalText}> {finalText}</Text>}
+            </Text>
+          </TouchableOpacity>
+        );
+
+        case 'inputlist': 
+        return (
+          <TouchableOpacity onPress={() => setListModalVisible(true)}>
+            <Text style={[styles.textValue, { color: textColor }]}>
+              <Text style={styles.label}>{label}:</Text> {value || 'Seleccione una opcion'}
               {finalText && <Text style={styles.finalText}> {finalText}</Text>}
             </Text>
           </TouchableOpacity>
@@ -91,7 +124,7 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '/Security/us
   };
 
   return (
-    <View style={styles.inputGroup}>
+    <View style={[styles.inputGroup, highlightActive && styles.highlightedContainer]}>
       {renderContent()}
 
       {isDialogVisible && (
@@ -101,6 +134,16 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '/Security/us
           onChangeText={setTempValue}
           onSave={handleSave}
           onClose={() => setDialogVisible(false)}
+          title={label}
+        />
+      )}
+      {isListModalVisible && dataList && (
+        <ListModal
+          visible={isListModalVisible}
+          data={dataList}
+          renderItem={(item) => <Text>{item}</Text>}
+          onSelect={handleSelectItem}
+          onClose={() => setListModalVisible(false)}
           title={label}
         />
       )}
@@ -155,6 +198,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 12,
     fontWeight: '600',
+  },
+  highlightedContainer: {
+    borderColor: '#4CAF50',
+    borderWidth: 2,
+    padding: 5,
+    borderRadius: 10,
+  },
+  highlightedText: {
+    backgroundColor: '#e6ffe6',
+  },
+  inputListContainer: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    marginBottom: 20,
   },
 });
 

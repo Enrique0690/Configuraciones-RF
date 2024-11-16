@@ -29,18 +29,22 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
     setFilteredResults(text ? filterResults(text, allConfigs, t) : allConfigs);
   };
 
-  const handleSelectResult = (route: string) => {
+  const handleSelectResult = (route: string, label: string) => {
     Keyboard.dismiss();
     setIsFullScreen?.(true);
     setQuery('');
     setFilteredResults(allConfigs);
-    router.push(route as any);
+  
+    router.push({
+      pathname: route as any,
+      params: { highlight: label },  
+    });
   };
-
+  
   const renderSearchResult = (item: any, index: number) => (
     <TouchableOpacity
-      key={index}  
-      onPress={() => handleSelectResult(item.route!)}
+      key={index}
+      onPress={() => handleSelectResult(item.route, item.label)}  
       activeOpacity={0.7}
     >
       <Text

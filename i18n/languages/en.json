@@ -9,7 +9,8 @@
             "tabletConfiguration": "Table Configuration",
             "security": "Security",
             "advancedOptions": "Advanced Options",
-            "taxConfigurationEC": "Tax Configuration (Ecuador)"
+            "taxConfigurationEC": "Tax Configuration",
+            "ordering stations": "Ordering Stations"
         }
     },
     "businessInfo": {
@@ -25,6 +26,16 @@
         "loadError": "Error loading",
         "goBackHome": "Go back to home",
         "permissionDenied": "Permission denied"
+    },
+    "stations": {
+        "loading": "Loading ordering stations...",
+        "loadError": "Failed to load ordering stations. Please go back to the home page.",
+        "goBackHome": "Go back to Home",
+        "header": "Ordering Stations",
+        "description1": "An ordering station is a space where products are prepared for delivery. An example could be a restaurant's kitchen, a bar's counter, or a storage room.",
+        "description2": "Create stations and assign printers to those stations.",
+        "addStationTitle": "Add New Station",
+        "saveError": "Failed to save changes."
     },
     "printers": {
         "header": "Printers",
@@ -42,6 +53,8 @@
         "deliveryNote": "Delivery Note",
         "invoice": "Invoice",
         "preInvoice": "Pre Invoice",
+        "reports": "Reports",
+        "order": "Order",
         "stations": "Order Stations",
         "kitchen": "Kitchen",
         "bar": "Bar",

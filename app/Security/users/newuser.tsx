@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import tinycolor from 'tinycolor2';
 import Slider from '@react-native-community/slider';
@@ -14,28 +14,28 @@ const NewUserScreen: React.FC = () => {
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
   const buttonColor = useThemeColor({}, 'buttonColor');
-  
-  const [color, setColor] = useState<string>('#000000');
-  const [hue, setHue] = useState<number>(tinycolor(color).toHsv().h);
-  const [saturation, setSaturation] = useState<number>(tinycolor(color).toHsv().s);
-  const [lightness, setLightness] = useState<number>(tinycolor(color).toHsv().v);
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [role, setRole] = useState<string>('');
-  const [password, setPassword] = useState<string>(''); 
-  const [loading, setLoading] = useState<boolean>(false); 
+  const [password, setPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [roles, setRoles] = useState<string[]>([]);
 
-  const updateColor = () => {
-    const newColor = tinycolor({ h: hue, s: saturation, v: lightness }).toHexString();
-    setColor(newColor);
-  };
+  useEffect(() => {
+    const fetchRoles = async () => {
+      const storedRoles = await AsyncStorage.getItem('roles');
+      const parsedRoles = storedRoles ? JSON.parse(storedRoles) : [];
+      setRoles(parsedRoles.map((role: any) => role.name));
+    };
+    fetchRoles();
+  }, []);
 
   const handleSave = async () => {
-    setLoading(true); 
+    setLoading(true);
 
-    const userId = UUID.v4();  
-    const newUser = { id: userId, name, email, password, color };
-    
+    const userId = UUID.v4();
+    const newUser = { id: userId, name, email, password, role };
+
     try {
       const storedUsers = await AsyncStorage.getItem('users');
       const users = storedUsers ? JSON.parse(storedUsers) : [];
@@ -47,7 +47,7 @@ const NewUserScreen: React.FC = () => {
     } catch (error) {
       alert(t('security.user.saveError'));
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -56,74 +56,36 @@ const NewUserScreen: React.FC = () => {
       <Text style={[styles.title, { color: textColor }]}>{t('security.user.Newuser')}</Text>
 
       <DataRenderer
-              label={t('security.user.namePlaceholder')}
-              value={name}
-              type="input"
-              textColor="#333"
-              onSave={(newValue) => setName(newValue as string)}
-            />
-            <DataRenderer
-              label={t('security.user.emailPlaceholder')}
-              value={email}
-              type="input"
-              textColor="#333"
-              onSave={(newValue) => setEmail(newValue as string)}
-            />
-            <DataRenderer
-              label={t('security.user.rolePlaceholder')}
-              value={role}
-              type="input"
-              textColor="#333"
-              onSave={(newValue) => setRole(newValue as string)}
-            />
-            <DataRenderer
-              label={t('security.user.passwordPlaceholder')}
-              value={password}
-              type="input"
-              textColor="#333"
-              onSave={(newValue) => setPassword(newValue as string)}
-            />
-
-      <Text style={[styles.label, { color: textColor }]}>{t('security.user.colorLabel')}</Text>
-
-      <View style={[styles.colorBox, { backgroundColor: color }]} />
-
-      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.user.hue')}</Text>
-      <Slider
-        style={styles.slider}
-        minimumValue={0}
-        maximumValue={360}
-        value={hue}
-        onValueChange={(value) => {
-          setHue(value);
-          updateColor();
-        }}
+        label={t('security.user.namePlaceholder')}
+        value={name}
+        type="input"
+        textColor="#333"
+        onSave={(newValue) => setName(newValue as string)}
+      />
+      <DataRenderer
+        label={t('security.user.emailPlaceholder')}
+        value={email}
+        type="input"
+        textColor="#333"
+        onSave={(newValue) => setEmail(newValue as string)}
+      />
+      <DataRenderer
+        label={t('security.user.rolePlaceholder')}
+        value={role}
+        type="inputlist"
+        textColor="#333"
+        dataList={roles} 
+        onSave={(selectedRole) => setRole(selectedRole as string)} 
       />
 
-      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.user.saturation')}</Text>
-      <Slider
-        style={styles.slider}
-        minimumValue={0}
-        maximumValue={1}
-        value={saturation}
-        onValueChange={(value) => {
-          setSaturation(value);
-          updateColor();
-        }}
+      <DataRenderer
+        label={t('security.user.passwordPlaceholder')}
+        value={password}
+        type="input"
+        textColor="#333"
+        onSave={(newValue) => setPassword(newValue as string)}
       />
-
-      <Text style={[styles.sliderLabel, { color: textColor }]}>{t('security.user.lightness')}</Text>
-      <Slider
-        style={styles.slider}
-        minimumValue={0}
-        maximumValue={1}
-        value={lightness}
-        onValueChange={(value) => {
-          setLightness(value);
-          updateColor();
-        }}
-      />
-
+    <View style={styles.colorPickerContainer}>
       <TouchableOpacity style={[styles.saveButton, { backgroundColor: buttonColor }]} onPress={handleSave}>
         {loading ? (
           <ActivityIndicator size="small" color="#fff" />
@@ -131,6 +93,7 @@ const NewUserScreen: React.FC = () => {
           <Text style={styles.saveButtonText}>{t('security.user.saveButton')}</Text>
         )}
       </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -141,7 +104,9 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: Platform.OS === 'ios' ? 20 : 0,
     backgroundColor: '#d9ffe6',
-    alignItems: 'center',
+  },
+  formContainer: {
+    marginLeft: 20,
   },
   title: {
     fontSize: 24,
@@ -156,7 +121,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 16,
     width: '100%',
-    maxWidth: 400, 
+    maxWidth: 400,
   },
   label: {
     fontSize: 16,
@@ -168,12 +133,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     borderWidth: 2,
-    borderColor: '#0f6c33', 
+    borderColor: '#0f6c33',
   },
   slider: {
     width: '100%',
     maxWidth: 400,
-    height: 30, 
+    height: 30,
     marginBottom: 16,
   },
   sliderLabel: {
@@ -186,13 +151,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 16,
     width: '100%',
-    maxWidth: 400, 
+    maxWidth: 400,
   },
   saveButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
+  colorPickerContainer: {
+    alignItems: 'center',
+  }
 });
 
 export default NewUserScreen;

@@ -8,9 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TabletConfigurationScreen: React.FC = () => {
   const { t } = useTranslation(); 
-  const backgroundColor = useThemeColor({}, 'background');
+  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
-
   const [showUser, setShowUser] = useState(false);
   const [showTime, setShowTime] = useState(false);
   const [showCommercialName, setShowCommercialName] = useState(false);

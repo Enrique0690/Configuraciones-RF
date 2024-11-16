@@ -9,7 +9,8 @@
             "tabletConfiguration": "Configuración de Mesas",
             "security": "Seguridad",
             "advancedOptions": "Opciones Avanzadas",
-            "taxConfigurationEC": "Configuración de Impuestos (Ecuador)"
+            "taxConfigurationEC": "Configuración de Tributaria",
+            "orderingstations": "Estaciones de Pedidos"
         }
     },
     "businessInfo": {
@@ -25,6 +26,16 @@
         "loadError": "Error al cargar",
         "goBackHome": "Volver a inicio",
         "permissionDenied": "Permiso denegado"
+    },
+    "stations": {
+        "loading": "Cargando estaciones de pedido...",
+        "loadError": "No se pudieron cargar las estaciones de pedido. Por favor, regresa a la página de inicio.",
+        "goBackHome": "Regresar al inicio",
+        "header": "Estaciones de pedido",
+        "description1": "Una estación de pedido es un espacio donde se preparan los productos para su entrega. Un ejemplo puede ser la cocina de un restaurante, la barra de un bar, la bodega.",
+        "description2": "Crea estaciones y asigna impresoras a dichas estaciones.",
+        "addStationTitle": "Agregar Nueva Estación",
+        "saveError": "No se pudieron guardar los cambios."
     },
     "printers": {
         "header": "Impresoras",
@@ -42,6 +53,8 @@
         "deliveryNote": "Nota de entrega",
         "invoice": "Factura",
         "preInvoice": "Pre-factura",
+        "reports": "Reportes",
+        "order": "Pedidos",
         "stations": "Estaciones de pedidos",
         "kitchen": "Cocina",
         "bar": "Bar",
