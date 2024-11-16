@@ -18,7 +18,7 @@ const UserListScreen: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]); 
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const backgroundColor = useThemeColor({}, 'background');
+  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
   const router = useRouter(); 
 

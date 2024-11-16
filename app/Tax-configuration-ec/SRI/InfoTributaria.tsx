@@ -13,12 +13,13 @@ const STORAGE_KEY = 'infoTributariaData';
 
 const InfoTributaria: React.FC = () => {
   const textColor = useThemeColor({}, 'textsecondary');
+  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const { t } = useTranslation();
   const { data, saveData } = useStorage(STORAGE_KEY, defaultInfoTributariaData);
   const { highlight } = useLocalSearchParams();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor }] }>
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
@@ -26,7 +27,7 @@ const InfoTributaria: React.FC = () => {
         {t('taxConfigurationEC.infoTributaria.sectionTitle')}
       </Text>
 
-      {infoTributariaConfig.map(({ label, field, type }) => (
+      {infoTributariaConfig.map(({ label, field, type, list}) => (
         <DataRenderer
           key={field}
           label={t(label)}
@@ -35,6 +36,7 @@ const InfoTributaria: React.FC = () => {
           onSave={(newValue) => handleChange(field, newValue, data, saveData)}
           textColor={textColor}
           highlight={highlight === label}
+          dataList={list}
         />
       ))}
     </View>
@@ -45,6 +47,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    borderRadius: 10,
   },
   sectionTitle: {
     fontSize: 20,
