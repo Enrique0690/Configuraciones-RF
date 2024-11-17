@@ -35,7 +35,8 @@
         "description1": "Una estación de pedido es un espacio donde se preparan los productos para su entrega. Un ejemplo puede ser la cocina de un restaurante, la barra de un bar, la bodega.",
         "description2": "Crea estaciones y asigna impresoras a dichas estaciones.",
         "addStationTitle": "Agregar Nueva Estación",
-        "saveError": "No se pudieron guardar los cambios."
+        "saveError": "No se pudieron guardar los cambios.",
+        "noStations": "No existen estaciones creadas. Haga clic aquí para agregar una."        
     },
     "printers": {
         "header": "Impresoras",
@@ -46,7 +47,7 @@
         "errorLoadingData": "No se pudo cargar los datos.",
         "errorStoringPrinterId": "Error al seleccionar la impresora.",
         "goBackHome": "Volver a inicio",
-        "noPrinters": "No hay impresoras registradas",
+        "noPrinters": "No hay impresoras registradas, Haga click aqui para agregar una",
         "printerName": "Nombre de la impresora",
         "writeNameHere": "Escribe el nombre aquí",
         "printingSettings": "Configuración de impresión",
@@ -113,9 +114,9 @@
         "loadError": "Error al cargar los datos.",
         "user": {
             "header": "Lista de Usuarios",
-            "loading": "Cargando usuarios...",
+            "loading": "Cargando...",
             "loadError": "Hubo un error al cargar los usuarios.",
-            "noUsers": "No hay usuarios registrados",
+            "noUsers": "No hay usuarios registrados, Haga click aqui para agregar uno",
             "editUser": "Editar Usuario",
             "userNotFound": "Usuario no encontrado",
             "goBack": "Volver",
@@ -139,18 +140,20 @@
             "header": "Lista de Roles",
             "loading": "Cargando roles...",
             "loadError": "Hubo un error al cargar los roles.",
-            "noRoles": "No hay roles registrados",
+            "goBack": "Volver",
+            "roleNotFound": "Rol no encontrado",
+            "noRoles": "No hay roles registrados, Haga click aqui para agregar uno",
             "addNewRole": "Agregar Nuevo Rol",
             "editRole": "Editar Rol",
             "roleName": "Nombre del Rol",
             "selectAllPermissions": "Seleccionar Todos los Permisos",
-            "saveButton": "Guardar",
+            "save": "Guardar",
             "SALES": "Ventas",
             "INVENTORY": "Inventario",
             "CONFIGURATION": "Configuración",
             "SPECIALPERMISSIONS": "Permisos Especiales",
             "CLIENTS": "Clientes",
-            "REPORTS": "Reportes",
+            "REPORT": "Reportes",
             "sales": {
                 "directSale": "Venta Directa",
                 "tableOrder": "Pedido en Mesa",
@@ -171,6 +174,7 @@
                 "config": "Configuración"
             },
             "specialPermissions": {
+                "singleWaiter":"La mesa sólo puede ser atendida por un mesero",
                 "cancelTables": "Cancelar Mesas",
                 "cancelCashClosures": "Cancelar Cierres de Caja",
                 "cancelSales": "Cancelar Ventas",

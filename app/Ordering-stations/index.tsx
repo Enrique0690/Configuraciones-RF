@@ -1,54 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import SearchBar from '@/components/navigation/SearchBar';
 import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';
+import useStorage from '@/hooks/useStorage';
 
 const OrderingStationsScreen: React.FC = () => {
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
   const { t } = useTranslation();
-  const router = useRouter();
-  const [stations, setStations] = useState<string[]>([]);
+  const { data: stations, loading, error, saveData: saveStations, reloadData } = useStorage<string[]>('stations', []);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [newStation, setNewStation] = useState('');
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadStations = async () => {
-      try {
-        setLoading(true);
-        const storedStations = await AsyncStorage.getItem('stations');
-        if (storedStations) {
-          setStations(JSON.parse(storedStations));
-        }
-      } catch (err) {
-        setError(t('stations.loadError'));
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadStations();
-  }, []);
-
-  const saveStations = async (updatedStations: string[]) => {
-    try {
-      await AsyncStorage.setItem('stations', JSON.stringify(updatedStations));
-      setStations(updatedStations);
-    } catch (err) {
-      setError(t('stations.saveError'));
-    }
-  };
 
   const handleAddStation = () => {
     if (newStation.trim()) {
-      const updatedStations = [...stations, newStation];
-      saveStations(updatedStations);
+      saveStations([...stations, newStation]);
       setNewStation('');
       setDialogVisible(false);
     }
@@ -72,8 +41,8 @@ const OrderingStationsScreen: React.FC = () => {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorMessage}>{t('stations.loadError')}</Text>
-        <TouchableOpacity onPress={() => router.push('/')} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('stations.goBackHome')}</Text>
+        <TouchableOpacity onPress={reloadData} style={styles.goBackButton}>
+          <Text style={styles.goBackButtonText}>{t('stations.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -99,17 +68,24 @@ const OrderingStationsScreen: React.FC = () => {
           {t('stations.description2')}
         </Text>
       </View>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        {stations.map((station, index) => (
-          <View key={index} style={styles.stationContainer}>
-            <Text style={[styles.stationName, { color: textColor }]}>{station}</Text>
-            <TouchableOpacity onPress={() => handleDeleteStation(index)}>
-              <Ionicons name="trash-outline" size={24} color="#FF0000" />
-            </TouchableOpacity>
-          </View>
-        ))}
-      </ScrollView>
-
+      {stations.length === 0 ? (
+        <TouchableOpacity onPress={() => setDialogVisible(true)} style={styles.noStationsContainer}>
+          <Text style={[styles.noStationsText, { color: textColor }]}>
+            {t('stations.noStations')}
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <ScrollView contentContainerStyle={styles.contentContainer}>
+          {stations.map((station, index) => (
+            <View key={index} style={styles.stationContainer}>
+              <Text style={[styles.stationName, { color: textColor }]}>{station}</Text>
+              <TouchableOpacity onPress={() => handleDeleteStation(index)}>
+                <Ionicons name="trash-outline" size={24} color="#FF0000" />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </ScrollView>
+      )}
       <EditDialog
         visible={dialogVisible}
         value={newStation}
@@ -137,7 +113,7 @@ const styles = StyleSheet.create({
       ios: 'flex',
       android: 'flex',
       default: 'none',
-    })
+    }),
   },
   titleContainer: {
     flexDirection: 'row',
@@ -153,7 +129,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   descriptionBox: {
-    backgroundColor: '#f9f9f9',
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
@@ -217,6 +192,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  noStationsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    marginVertical: 5,
+  },
+  noStationsText: {
+    fontSize: 20,
+    textAlign: 'center',
   },
 });
 

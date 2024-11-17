@@ -33,3 +33,39 @@ export const Securityall = {
     general: securityConfig,
     links: linksConfig
 }
+
+export const rolePermissions = {
+    sales: [
+      'directSale',
+      'tableOrder',
+      'cashRegister',
+      'expenseRecord',
+      'closureQuery',
+    ],
+    inventory: [
+      'articles',
+      'inventoryEntry',
+      'inventoryExit',
+      'kardex',
+      'viewMovements',
+      'transformation',
+      'production',
+    ],
+    configuration: ['config'],
+    specialPermissions: [
+      'singleWaiter',
+      'cancelTables',
+      'cancelCashClosures',
+      'cancelSales',
+      'cancelInventoryMovements',
+      'removeItemsFromOrder',
+      'verifyCashClosures',
+      'chargePendingOrders',
+      'accessAnyTable',
+      'reprintSalesDocuments',
+      'modifySalesData',
+      'moveOrderItems',
+    ],
+    clients: ['clientQuery'],
+    report: ['salesReport', 'inventoryReport'],
+  };

@@ -35,7 +35,8 @@
         "description1": "An ordering station is a space where products are prepared for delivery. An example could be a restaurant's kitchen, a bar's counter, or a storage room.",
         "description2": "Create stations and assign printers to those stations.",
         "addStationTitle": "Add New Station",
-        "saveError": "Failed to save changes."
+        "saveError": "Failed to save changes.",
+        "noStations": "No stations created. Click here to add one."
     },
     "printers": {
         "header": "Printers",
@@ -113,7 +114,7 @@
         "loadError": "Error loading data.",
         "user": {
             "header": "User List",
-            "loading": "Loading users...",
+            "loading": "Loading...",
             "loadError": "There was an error loading the users.",
             "noUsers": "No users registered",
             "editUser": "Edit User",
@@ -139,18 +140,20 @@
             "header": "Role List",
             "loading": "Loading roles...",
             "loadError": "There was an error loading the roles.",
+            "goBack": "Go Back",
+            "roleNotFound": "Role not found",
             "noRoles": "No roles registered",
             "addNewRole": "Add New Role",
             "editRole": "Edit Role",
             "roleName": "Role Name",
             "selectAllPermissions": "Select All Permissions",
-            "saveButton": "Save",
+            "save": "Save",
             "SALES": "SALES",
             "INVENTORY": "INVENTORY",
             "CONFIGURATION": "CONFIGURATION",
             "SPECIALPERMISSIONS": "SPECIAL PERMISSIONS",
             "CLIENTS": "CLIENTS",
-            "REPORTS": "REPORTS",
+            "REPORT": "REPORTS",
             "sales": {
                 "directSale": "Direct Sale",
                 "tableOrder": "Table Order",
@@ -171,6 +174,7 @@
                 "config": "Configuration"
             },
             "specialPermissions": {
+                "singleWaiter":"The table can only be served by one waiter",
                 "cancelTables": "Cancel Tables",
                 "cancelCashClosures": "Cancel Cash Closures",
                 "cancelSales": "Cancel Sales",

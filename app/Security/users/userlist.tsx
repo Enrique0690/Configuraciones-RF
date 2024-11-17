@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import useStorage from '@/hooks/useStorage';
+import SearchBar from '@/components/navigation/SearchBar';
 
 interface User {
   id: string;
@@ -14,32 +15,14 @@ interface User {
 }
 
 const UserListScreen: React.FC = () => {
-  const { t } = useTranslation();
-  const [users, setUsers] = useState<User[]>([]); 
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
+  const { data: users, loading, error, reloadData} = useStorage<User[]>('users', []);
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
-  const router = useRouter(); 
-
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const storedUsers = await AsyncStorage.getItem('users'); 
-        if (storedUsers) {
-          setUsers(JSON.parse(storedUsers)); 
-        }
-        setLoading(false); 
-      } catch (error) {
-        setLoadError(true); 
-        setLoading(false);
-      }
-    };
-    loadUsers(); 
-  }, []); 
+  const router = useRouter();
+  const { t } = useTranslation();
 
   const handleCreateNewUser = () => {
-    router.push('./newuser'); 
+    router.push('./newuser');
   };
 
   const handleUserClick = (id: string) => {
@@ -55,16 +38,22 @@ const UserListScreen: React.FC = () => {
     );
   }
 
-  if (loadError) {
+  if (error) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorMessage}>{t('security.user.loadError')}</Text>
+        <TouchableOpacity onPress={reloadData} style={styles.goBackButton}>
+          <Text style={styles.goBackButtonText}>{t('security.user.retry')}</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
+      <View style={styles.searchBarContainer}>
+        <SearchBar />
+      </View>
       <View style={styles.header}>
         <Text style={[styles.title, { color: textColor }]}>{t('security.user.header')}</Text>
         <TouchableOpacity onPress={handleCreateNewUser} style={styles.addButton}>
@@ -74,13 +63,17 @@ const UserListScreen: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {users.length === 0 ? (
-          <Text style={[styles.noUsersText, { color: textColor }]}>{t('security.user.noUsers')}</Text>
+          <TouchableOpacity onPress={handleCreateNewUser}>
+            <Text style={[styles.noUsersText, { color: textColor }]}>
+              {t('security.user.noUsers')}
+            </Text>
+          </TouchableOpacity>
         ) : (
-          users.map((user, index) => (
-            <TouchableOpacity 
-              key={index} 
-              style={styles.userItem} 
-              onPress={() => handleUserClick(user.id)} 
+          users.map((user) => (
+            <TouchableOpacity
+              key={user.id}
+              style={styles.userItem}
+              onPress={() => handleUserClick(user.id)}
             >
               <View style={[styles.colorCircle, { backgroundColor: user.color }]} />
               <View style={styles.userDetails}>
@@ -99,6 +92,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  searchBarContainer: {
+    display: Platform.select({
+      ios: 'flex',
+      android: 'flex',
+      default: 'none',
+    }),
   },
   header: {
     flexDirection: 'row',
@@ -124,8 +124,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#ccc',
     marginBottom: 10,
-    backgroundColor: '#f9f9f9', 
-    borderRadius: 8, 
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
     paddingLeft: 10,
     paddingRight: 10,
   },
@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#000', 
     marginRight: 12,
   },
   userDetails: {
@@ -174,6 +173,17 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  goBackButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  goBackButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

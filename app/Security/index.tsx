@@ -1,42 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useTranslation } from 'react-i18next';
-import useStorage from '@/hooks/useStorage';
 import { handleChange } from '@/hooks/handleChange';
+import useStorage from '@/hooks/useStorage';
+import { useTranslation } from 'react-i18next';
+import { securityConfig, defaultData } from '@/constants/DataConfig/SecurityConfig'; 
+import DataRenderer from '@/components/DataRenderer'; 
 import SearchBar from '@/components/navigation/SearchBar';
-import DataRenderer from '@/components/DataRenderer';
-import { securityConfig, defaultData } from '@/constants/DataConfig/SecurityConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const SecurityScreen: React.FC = () => {
-  const { t } = useTranslation();
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
-  const { data, saveData } = useStorage('securityData', defaultData);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
+  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { data, loading, error, saveData, reloadData } = useStorage('securityData', defaultData);
+  const { highlight } = useLocalSearchParams();
+  const { data: usersData, loading: usersLoading, error: usersError } = useStorage('users', []);
+  const { data: rolesData, loading: rolesLoading, error: rolesError } = useStorage('roles', []);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const savedData = await AsyncStorage.getItem('securityData');
-        if (savedData) {
-          saveData(JSON.parse(savedData));
-        }
-        setLoading(false); 
-      } catch (error) {
-        console.error('Error al cargar los datos:', error);
-        setLoadError(true);
-        setLoading(false);
-      }
-    };
-    loadData();
-  }, []);
-
-  if (loading) {
+  if (loading || usersLoading || rolesLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
@@ -45,22 +29,27 @@ const SecurityScreen: React.FC = () => {
     );
   }
 
-  if (loadError) {
+  if (error) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorMessage}>{t('security.loadError')}</Text>
+        <TouchableOpacity onPress={reloadData} style={styles.retryButton}>
+          <Text style={styles.retryButtonText}>{t('security.retry')}</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <View style={styles.searchBarContainer}>
-          <SearchBar />
-        </View>
-        <Text style={[styles.sectionTitle, { color: textColor }]}>{t('security.header')}</Text>
-        {securityConfig.map(({ label, field, type, iconName, finalText }) => (
+      <View style={styles.searchBarContainer}>
+        <SearchBar />
+      </View>
+      <Text style={[styles.sectionTitle, { color: textColor }]}>
+        {t('security.header')}
+      </Text>
+      <View style={styles.groupContainer}>
+      {securityConfig.map(({ label, field, type, finalText }) => (
           <DataRenderer
             key={label}
             label={t(label)}
@@ -68,24 +57,27 @@ const SecurityScreen: React.FC = () => {
             type={type}
             onSave={(newValue) => handleChange(field, newValue, data, saveData)}
             textColor={textColor}
-            finalText={t(finalText as any)}
-            iconName={iconName} 
+            finalText={t(finalText as string)}
+            highlight={highlight === label}
           />
         ))}
-        <TouchableOpacity style={styles.button} onPress={() => router.push('./Security/users/userlist')}>
-          <Ionicons name="people-outline" size={20} color={textColor} />
-          <Text style={[styles.buttonLabel, { color: textColor }]}>
-            {t('security.users')} (5 {t('security.users')})
-          </Text>
-        </TouchableOpacity>
+      </View>
+      
+      <TouchableOpacity style={styles.button} onPress={() => router.push('./Security/users/userlist')}>
+        <Ionicons name="people-outline" size={24} color={textColor} />
+        <Text style={[styles.buttonLabel, { color: textColor }]}>
+          {t('security.users')}{' '}
+          {!usersError && usersData && usersData.length > 0 ? `(${usersData.length})` : ''}
+        </Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={() => router.push('./Security/rols/rollist')}>
-          <Ionicons name="briefcase-outline" size={20} color={textColor} />
-          <Text style={[styles.buttonLabel, { color: textColor }]}>
-            {t('security.roles')} (3 {t('security.roles')})
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('./Security/rols/rollist')}>
+        <Ionicons name="briefcase-outline" size={24} color={textColor} />
+        <Text style={[styles.buttonLabel, { color: textColor }]}>
+          {t('security.roles')}{' '}
+          {!rolesError && rolesData && rolesData.length > 0 ? `(${rolesData.length})` : ''}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -94,10 +86,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
+    borderRadius: 10,
   },
-  contentContainer: {
-    paddingBottom: 16,
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 16,
+    textAlign: 'center',
   },
   searchBarContainer: {
     display: Platform.select({
@@ -106,27 +101,8 @@ const styles = StyleSheet.create({
       default: 'none',
     }),
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginVertical: 16,
-    textAlign: 'center',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    marginVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#f5f5f5',
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  buttonLabel: {
-    fontSize: 16,
-    marginLeft: 12,
-    fontWeight: '600',
+  groupContainer: {
+    marginBottom: 20,
   },
   loadingContainer: {
     flex: 1,
@@ -149,6 +125,33 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  buttonLabel: {
+    fontSize: 16,
+    marginLeft: 12,
+    fontWeight: '600',
   },
 });
 

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import useStorage from '@/hooks/useStorage';
+import SearchBar from '@/components/navigation/SearchBar';
 
 interface Role {
   id: string;
@@ -13,35 +14,11 @@ interface Role {
 }
 
 const RoleListScreen: React.FC = () => {
-  const { t } = useTranslation();
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
+  const { data: roles, loading, error, reloadData } = useStorage<Role[]>('roles', []);
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
   const router = useRouter();
-
-  useEffect(() => {
-    const loadRoles = async () => {
-      try {
-        const storedRoles = await AsyncStorage.getItem('roles');
-        const parsedRoles = storedRoles ? JSON.parse(storedRoles) : [];
-        
-        if (Array.isArray(parsedRoles)) {
-          setRoles(parsedRoles);
-        } else {
-          console.error('El valor de roles no es un array, se restablece a un array vacío');
-          setRoles([]); 
-        }
-        
-        setLoading(false);
-      } catch (error) {
-        setLoadError(true);
-        setLoading(false);
-      }
-    };
-    loadRoles();
-  }, []);
+  const { t } = useTranslation();
 
   const handleCreateNewRole = () => {
     router.push('./newrol');
@@ -60,16 +37,22 @@ const RoleListScreen: React.FC = () => {
     );
   }
 
-  if (loadError) {
+  if (error) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorMessage}>{t('security.role.loadError')}</Text>
+        <TouchableOpacity onPress={reloadData} style={styles.goBackButton}>
+          <Text style={styles.goBackButtonText}>{t('security.role.retry')}</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
+      <View style={styles.searchBarContainer}>
+        <SearchBar />
+      </View>
       <View style={styles.header}>
         <Text style={[styles.title, { color: textColor }]}>{t('security.role.header')}</Text>
         <TouchableOpacity onPress={handleCreateNewRole} style={styles.addButton}>
@@ -79,11 +62,13 @@ const RoleListScreen: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {roles.length === 0 ? (
-          <Text style={[styles.noRolesText, { color: textColor }]}>{t('security.role.noRoles')}</Text>
+          <TouchableOpacity onPress={handleCreateNewRole}>
+            <Text style={[styles.noRolesText, { color: textColor }]}>{t('security.role.noRoles')}</Text>
+          </TouchableOpacity>
         ) : (
-          roles.map((role, index) => (
+          roles.map((role) => (
             <TouchableOpacity
-              key={index}
+              key={role.id}
               style={styles.roleItem}
               onPress={() => handleRoleClick(role.id)}
             >
@@ -102,6 +87,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  searchBarContainer: {
+    display: Platform.select({
+      ios: 'flex',
+      android: 'flex',
+      default: 'none',
+    }),
   },
   header: {
     flexDirection: 'row',
@@ -137,11 +129,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  rolePermissions: {
-    fontSize: 14,
-    marginTop: 4,
-    fontStyle: 'italic',
-  },
   noRolesText: {
     fontSize: 18,
     textAlign: 'center',
@@ -168,6 +155,17 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  goBackButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  goBackButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

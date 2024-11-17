@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from 'react-i18next';
@@ -7,46 +7,24 @@ import SearchBar from '@/components/navigation/SearchBar';
 import DataRenderer from '@/components/DataRenderer';
 import { businessInfoConfig, defaultData } from '@/constants/DataConfig/BusinessConfig';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter, useLocalSearchParams } from 'expo-router';
 import { handleChange } from '@/hooks/handleChange';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLocalSearchParams } from 'expo-router';
 
-const STORAGE_KEY = 'businessInfo';
 const IMAGE_PREVIEW_SIZE = 250;
 
 const BusinessInfoScreen: React.FC = () => {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
-  const { data, saveData } = useStorage(STORAGE_KEY, defaultData);
-  const router = useRouter();
-  const { highlight } = useLocalSearchParams();
+  const { data, loading, error, saveData, reloadData } = useStorage('businessInfo', defaultData);
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null); 
+  const { highlight } = useLocalSearchParams();
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const storedData = await AsyncStorage.getItem(STORAGE_KEY);
-        if (storedData) {
-          const parsedData = JSON.parse(storedData);
-          if (JSON.stringify(parsedData) !== JSON.stringify(data)) {
-            saveData(parsedData);
-          }
-          if (parsedData?.imageUrl) {
-            setImageUri(parsedData.imageUrl);
-          }
-        }
-      } catch (err) {
-        setError(t('businessInfo.loadError'));
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData(); 
-  }, []); 
+    if (data?.imageUrl) {
+      setImageUri(data.imageUrl);
+    }
+  }, [data]);
 
   const openImagePicker = async () => {
     const permission = await requestImagePickerPermission();
@@ -75,7 +53,7 @@ const BusinessInfoScreen: React.FC = () => {
 
   const saveImage = (uri: string) => {
     setImageUri(uri);
-    saveData({ ...data, imageUrl: uri });
+    saveData({ ...data, imageUrl: uri }); 
   };
 
   if (loading) {
@@ -90,9 +68,9 @@ const BusinessInfoScreen: React.FC = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{error}</Text>
-        <TouchableOpacity onPress={() => router.push('/')} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('businessInfo.goBackHome')}</Text>
+        <Text style={styles.errorMessage}>{t('businessInfo.loadError')}</Text>
+        <TouchableOpacity onPress={reloadData} style={styles.retryButton}>
+          <Text style={styles.retryButtonText}>{t('businessInfo.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -104,7 +82,7 @@ const BusinessInfoScreen: React.FC = () => {
         <View style={styles.searchBarContainer}>
           <SearchBar />
         </View>
-        
+
         <Text style={[styles.sectionTitle, { color: textColor }]}>
           {t('businessInfo.header')}
         </Text>
@@ -131,7 +109,6 @@ const BusinessInfoScreen: React.FC = () => {
   );
 };
 
-// Componente para subir imagen
 const ImageUploadSection: React.FC<{
   imageUri: string | null;
   onSelectImage: () => void;
@@ -173,6 +150,7 @@ const styles = StyleSheet.create({
     height: IMAGE_PREVIEW_SIZE,
     resizeMode: 'contain',
     borderRadius: 10,
+    marginBottom: 16,
   },
   uploadButton: {
     backgroundColor: '#4CAF50',
@@ -211,13 +189,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  goBackButton: {
+  retryButton: {
     backgroundColor: '#4CAF50',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
   },
-  goBackButtonText: {
+  retryButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
