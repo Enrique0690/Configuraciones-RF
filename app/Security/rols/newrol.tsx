@@ -1,29 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, ActivityIndicator } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import DataRenderer from '@/components/DataRenderer';
+import { rolePermissions } from '@/constants/DataConfig/SecurityConfig';
 
-const NewRolScreen: React.FC = () => {
+const Checkbox: React.FC<{ value: boolean, onChange: (newValue: boolean) => void }> = ({ value, onChange }) => (
+  <TouchableOpacity style={styles.checkbox} onPress={() => onChange(!value)}>
+    <View style={[styles.checkboxSquare, value && styles.checkboxChecked]}>
+      {value && <Text style={styles.checkboxIcon}>✔️</Text>}
+    </View>
+  </TouchableOpacity>
+);
+
+const NewRoleScreen: React.FC = () => {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const buttonColor = useThemeColor({}, 'buttonColor');
   const [name, setName] = useState<string>('');
   const [permissions, setPermissions] = useState<Record<string, Record<string, boolean>>>({});
-  const [activeCategory, setActiveCategory] = useState<string>(t('security.role.sales'));
+  const [activeCategory, setActiveCategory] = useState<string>(t('security.role.SALES'));
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const initialPermissions = Object.fromEntries(
-      Object.entries(permissionCategories).map(([category, items]) => [
+      Object.entries(rolePermissions).map(([category, items]) => [
         category, Object.fromEntries(items.map(item => [item, false]))
       ])
     );
     setPermissions(initialPermissions);
   }, [t]);
 
-  const handlePermissionChange = (category: string, item: string, value: boolean) => {
+  const updatePermission = (category: string, item: string, value: boolean) => {
     setPermissions(prev => ({
       ...prev,
       [category]: {
@@ -33,7 +44,7 @@ const NewRolScreen: React.FC = () => {
     }));
   };
 
-  const handleCategoryChange = (category: string, value: boolean) => {
+  const updateCategoryPermissions = (category: string, value: boolean) => {
     setPermissions(prev => ({
       ...prev,
       [category]: Object.fromEntries(
@@ -42,7 +53,7 @@ const NewRolScreen: React.FC = () => {
     }));
   };
 
-  const handleSelectAll = (value: boolean) => {
+  const updateAllPermissions = (value: boolean) => {
     setPermissions(prev => Object.fromEntries(
       Object.entries(prev).map(([category, items]) => [
         category, Object.fromEntries(Object.keys(items).map(item => [item, value]))
@@ -51,71 +62,42 @@ const NewRolScreen: React.FC = () => {
   };
 
   const handleSave = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const storedRoles = await AsyncStorage.getItem('roles');
-      let parsedRoles = storedRoles ? JSON.parse(storedRoles) : [];
-
-      if (!Array.isArray(parsedRoles)) {
-        console.error('El valor de roles no es un array, se restablece a un array vacío');
-        parsedRoles = []; 
-      }
-
+      const parsedRoles = storedRoles ? JSON.parse(storedRoles) : [];
       const newRole = { id: Date.now().toString(), name, permissions };
       const updatedRoles = [...parsedRoles, newRole];
-
       await AsyncStorage.setItem('roles', JSON.stringify(updatedRoles));
-
       router.push('./rollist');
     } catch (error) {
-      console.error('Error al guardar el rol:', error);
+      setError(t('security.role.saveError'));
+      console.error('Error saving role:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const CustomCheckbox = ({ value, onValueChange }: { value: boolean; onValueChange: (newValue: boolean) => void }) => (
-    <TouchableOpacity style={styles.checkbox} onPress={() => onValueChange(!value)}>
-      <View style={[styles.checkboxSquare, value && styles.checkboxChecked]}>
-        {value && <Text style={styles.checkboxIcon}>✔️</Text>}
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={styles.loadingText}>{t('security.role.saving')}</Text>
       </View>
-    </TouchableOpacity>
-  );
+    );
+  }
 
-  const permissionCategories: Record<string, string[]> = {
-    [t('security.role.SALES')]: [
-      t('security.role.sales.directSale'), 
-      t('security.role.sales.tableOrder'), 
-      t('security.role.sales.cashRegister'), 
-      t('security.role.sales.expenseRecord'), 
-      t('security.role.sales.closureQuery')
-    ],
-    [t('security.role.INVENTORY')]: [
-      t('security.role.inventory.articles'), 
-      t('security.role.inventory.inventoryEntry'), 
-      t('security.role.inventory.inventoryExit'), 
-      t('security.role.inventory.kardex'), 
-      t('security.role.inventory.viewMovements'), 
-      t('security.role.inventory.transformation'), 
-      t('security.role.inventory.production')
-    ],
-    [t('security.role.CONFIGURATION')]: [t('security.role.configuration.config')],
-    [t('security.role.SPECIALPERMISSIONS')]: [
-      t('security.role.specialPermissions.cancelTables'), 
-      t('security.role.specialPermissions.cancelCashClosures'), 
-      t('security.role.specialPermissions.cancelSales'), 
-      t('security.role.specialPermissions.cancelInventoryMovements'),
-      t('security.role.specialPermissions.removeItemsFromOrder'), 
-      t('security.role.specialPermissions.verifyCashClosures'), 
-      t('security.role.specialPermissions.chargePendingOrders'), 
-      t('security.role.specialPermissions.accessAnyTable'), 
-      t('security.role.specialPermissions.reprintSalesDocuments'), 
-      t('security.role.specialPermissions.modifySalesData'), 
-      t('security.role.specialPermissions.moveOrderItems')
-    ],
-    [t('security.role.CLIENTS')]: [t('security.role.clients.clientQuery')],
-    [t('security.role.REPORTS')]: [
-      t('security.role.report.salesReport'), 
-      t('security.role.report.inventoryReport')
-    ]
-  };
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorMessage}>{error}</Text>
+        <TouchableOpacity onPress={() => router.push('./rollist')} style={styles.goBackButton}>
+          <Text style={styles.goBackButtonText}>{t('security.role.goBack')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -128,66 +110,67 @@ const NewRolScreen: React.FC = () => {
         textColor="#333"
         onSave={(newValue) => setName(newValue as string)}
       />
+
       <View style={styles.selectAllContainer}>
-        <CustomCheckbox
+        <Checkbox
           value={Object.values(permissions).every(category =>
             Object.values(category).every(isSelected => isSelected)
           )}
-          onValueChange={(value) => handleSelectAll(value)}
+          onChange={updateAllPermissions}
         />
         <Text style={styles.selectAllLabel}>{t('security.role.selectAllPermissions')}</Text>
       </View>
+
       <View style={styles.categoryNav}>
-        {Object.keys(permissionCategories).map(category => {
+        {Object.keys(rolePermissions).map(category => {
           const allSelected = Object.values(permissions[category] || {}).every(isSelected => isSelected);
           return (
             <TouchableOpacity
               key={category}
               style={[
-                styles.categoryNavButton,
+                styles.categoryNavButton, 
                 activeCategory === category && styles.categoryNavButtonActive,
                 allSelected && styles.categoryNavButtonSelected
               ]}
               onPress={() => setActiveCategory(category)}
             >
-              <Text style={styles.categoryNavText}>{category}</Text>
+              <Text style={styles.categoryNavText}>{t(`security.role.${category.toUpperCase()}`)}</Text>
             </TouchableOpacity>
           );
         })}
       </View>
+
       <View style={styles.permissionsContainer}>
-        {Object.entries(permissionCategories).map(([category, items]) => {
+        {Object.entries(rolePermissions).map(([category, items]) => {
           if (category === activeCategory) {
             return (
               <View key={category} style={styles.categoryContainer}>
                 <View style={styles.categoryHeader}>
-                  <CustomCheckbox
+                  <Checkbox
                     value={Object.values(permissions[category] || {}).every(isSelected => isSelected)}
-                    onValueChange={(value) => handleCategoryChange(category, value)}
+                    onChange={(value) => updateCategoryPermissions(category, value)}
                   />
-                  <Text style={styles.categoryLabel}>{category}</Text>
+                  <Text style={styles.categoryTitle}>{t(`security.role.${category.toUpperCase()}`)}</Text>
                 </View>
-                
                 <ScrollView style={styles.permissionList} nestedScrollEnabled>
                   {items.map((item) => (
-                    <View key={item} style={styles.permissionItem}>
-                      <CustomCheckbox
+                    <View key={item} style={styles.permissionRow}>
+                      <Checkbox
                         value={permissions[category]?.[item] || false}
-                        onValueChange={(value) => handlePermissionChange(category, item, value)}
+                        onChange={(value) => updatePermission(category, item, value)}
                       />
-                      <Text style={styles.permissionLabel}>{item}</Text>
+                      <Text style={styles.permissionText}>{t(`security.role.${category}.${item}`)}</Text>
                     </View>
                   ))}
                 </ScrollView>
               </View>
             );
           }
-          return null;
         })}
       </View>
 
       <TouchableOpacity style={[styles.saveButton, { backgroundColor: buttonColor }]} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>{t('security.role.saveButton')}</Text>
+        <Text style={styles.saveButtonText}>{t('security.role.save')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -261,23 +244,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  categoryLabel: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  permissionList: {
-    maxHeight: 200,
-  },
-  permissionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 8,
-  },
-  permissionLabel: {
-    fontSize: 16,
-    marginLeft: 8,
-  },
   saveButton: {
     paddingVertical: 12,
     borderRadius: 8,
@@ -288,28 +254,80 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
   checkbox: {
     width: 24,
     height: 24,
     borderRadius: 4,
-    borderWidth: 2,
+    borderWidth: 1,
+    borderColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 8,
   },
   checkboxSquare: {
-    borderColor: '#007bff',
+    width: 24,
+    height: 24,
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    borderWidth: 2,  
+    borderColor: '#000'
   },
   checkboxChecked: {
     backgroundColor: '#4CAF50',
   },
   checkboxIcon: {
-    color: '#fff',
     fontSize: 16,
+    color: '#fff',
+  },
+  permissionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  permissionText: {
+    marginLeft: 8,
+    fontSize: 16,
+  },
+  categoryTitle: {
+    marginLeft: 8,
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 18,
+    color: '#4CAF50',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorMessage: {
+    color: 'red',
+    fontSize: 16,
+  },
+  goBackButton: {
+    marginTop: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+  },
+  goBackButtonText: {
+    fontSize: 16,
+    color: '#007bff',
+  },
+  permissionList: {
+    maxHeight: 200,
   },
 });
 
-export default NewRolScreen;
+export default NewRoleScreen;

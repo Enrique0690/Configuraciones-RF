@@ -1,82 +1,92 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react'; 
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
 import UUID from 'react-native-uuid';
+import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next'; 
+import useStorage from '@/hooks/useStorage'; 
 import DataRenderer from '@/components/DataRenderer';
-import EthernetModal from '@/components/modals/EthernetModal';
-import ListModal from '@/components/modals/ListModal';
+
+interface Printer {
+  id: string;
+  name: string;
+  options: {
+    deliveryNote: boolean;
+    invoice: boolean;
+    preInvoice: boolean;
+    reports: boolean;
+    order: boolean;
+  };
+  stations: {
+    noStation: boolean;
+    selectedStations: string[];
+  };
+  connection: 'USB' | 'Ethernet' | 'Bluetooth' | '';
+}
 
 const NewPrinterScreen = () => {
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [deliveryNote, setDeliveryNote] = useState(false);
-  const [invoice, setInvoice] = useState(false);
-  const [preInvoice, setPreInvoice] = useState(false);
-  const [reports, setReports] = useState(false);
-  const [order, setOrder] = useState(false);
-  const [noStation, setNoStation] = useState(false);
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState('');
-  const [stations, setStations] = useState<{ name: string; enabled: boolean }[]>([]);
+  const { data: stationsData, loading: stationsLoading, error: stationsError, reloadData: reloadStations } = useStorage<string[]>('stations', []);
+  const { data: printersData, saveData: savePrintersData } = useStorage<Printer[]>('printers', []);
+  const [printerName, setPrinterName] = useState('');
   const [connection, setConnection] = useState<'USB' | 'Ethernet' | 'Bluetooth' | ''>('');
-  const [showListModal, setShowListModal] = useState(false);
-const [showEthernetModal, setShowEthernetModal] = useState(false);
-const [selectedUSB, setSelectedUSB] = useState('');  // Para almacenar la opción seleccionada en el modal de USB
-const [selectedEthernet, setSelectedEthernet] = useState('');  // Para almacenar la opción seleccionada en el modal de Ethernet
-const [selectedBluetooth, setSelectedBluetooth] = useState('');  // Si tienes un modal para Bluetooth
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  // Opciones de impresión
+  const [printOptions, setPrintOptions] = useState({
+    deliveryNote: false,
+    invoice: false,
+    preInvoice: false,
+    reports: false,
+    order: false,
+  });
 
+  // Estados para estaciones
+  const [noStation, setNoStation] = useState(false);
+  const [stations, setStations] = useState<{ name: string; enabled: boolean }[]>([]);
 
+  // Cargar datos iniciales de las estaciones
   useEffect(() => {
-    const loadStations = async () => {
-      try {
-        const storedStations = await AsyncStorage.getItem('stations');
-        if (storedStations) {
-          const parsedStations = JSON.parse(storedStations);
-          const initializedStations = parsedStations.map((station: string) => ({
-            name: station,
-            enabled: false,
-          }));
-          setStations(initializedStations);
-        }
-      } catch (error) {
-        setError(t('stations.loadError'));
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadStations();
-  }, []);
+    if (!stationsLoading && !stationsError) {
+      const initializedStations = (stationsData || []).map((station) => ({
+        name: station,
+        enabled: false,
+      }));
+      setStations(initializedStations);
+    }
+  }, [stationsData, stationsLoading, stationsError]);
 
+  // Maneja el guardado de la impresora
   const handleSave = async () => {
-    setLoading(true); 
-    setError(''); 
-    const id = UUID.v4();
-    const printerData = {
-      id,
-      name,
-      options: { deliveryNote, invoice, preInvoice, reports, order },
-      stations: { noStation, selectedStations: stations.filter(s => s.enabled).map(s => s.name) },
+    setLoading(true);
+    setError('');
+
+    const newPrinter = {
+      id: UUID.v4(),
+      name: printerName,
+      options: printOptions,
+      stations: {
+        noStation,
+        selectedStations: stations.filter(s => s.enabled).map(s => s.name),
+      },
       connection,
     };
 
     try {
-      const savedPrinters = await AsyncStorage.getItem('printers');
-      const printers = savedPrinters ? JSON.parse(savedPrinters) : [];
-      printers.push(printerData);
-      await AsyncStorage.setItem('printers', JSON.stringify(printers));
+      const updatedPrinters: Printer[] = [...(printersData || []), newPrinter];
+      await savePrintersData(updatedPrinters);
       router.push('/Printers');
     } catch (error) {
-      console.error("Error saving printer data:", error);
-      setError(t('printers.errorSaving')); 
+      console.error('Error saving printer data:', error);
+      setError(t('printers.errorSaving'));
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
+  // Función para renderizar opciones de conexión
   const renderConnectionOption = (label: string, value: 'USB' | 'Ethernet' | 'Bluetooth') => (
     <TouchableOpacity
       style={[styles.connectionButton, connection === value && styles.selectedButton]}
@@ -86,7 +96,8 @@ const [selectedBluetooth, setSelectedBluetooth] = useState('');  // Si tienes un
     </TouchableOpacity>
   );
 
-  if (loading) {
+  // Renderizado condicional según estados
+  if (loading || stationsLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
@@ -95,10 +106,10 @@ const [selectedBluetooth, setSelectedBluetooth] = useState('');  // Si tienes un
     );
   }
 
-  if (error) {
+  if (error || stationsError) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorText}>{error || stationsError}</Text>
         <TouchableOpacity onPress={() => router.push('/')} style={styles.goBackButton}>
           <Text style={styles.goBackButtonText}>{t('printers.goBackHome')}</Text>
         </TouchableOpacity>
@@ -110,53 +121,32 @@ const [selectedBluetooth, setSelectedBluetooth] = useState('');  // Si tienes un
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={styles.title}>{t('printers.addPrinter')}</Text>
-
         <DataRenderer
           label={t('printers.printerName')}
-          value={name}
+          value={printerName}
           type="input"
           textColor="#333"
-          onSave={(newValue) => setName(newValue as string)}
+          onSave={(newValue) => setPrinterName(newValue as string)}
         />
 
         <Text style={styles.label}>{t('printers.printingSettings')}</Text>
-        <DataRenderer
-          label={t('printers.deliveryNote')}
-          value={deliveryNote}
-          type="switch"
-          textColor="#333"
-          onSave={(newValue) => setDeliveryNote(newValue as boolean)}
-        />
-        <DataRenderer
-          label={t('printers.invoice')}
-          value={invoice}
-          type="switch"
-          textColor="#333"
-          onSave={(newValue) => setInvoice(newValue as boolean)}
-        />
-        <DataRenderer
-          label={t('printers.preInvoice')}
-          value={preInvoice}
-          type="switch"
-          textColor="#333"
-          onSave={(newValue) => setPreInvoice(newValue as boolean)}
-        />
-        <DataRenderer
-          label={t('printers.reports')}
-          value={reports}
-          type="switch"
-          textColor="#333"
-          onSave={(newValue) => setReports(newValue as boolean)}
-        />
-        <DataRenderer
-          label={t('printers.order')}
-          value={order}
-          type="switch"
-          textColor="#333"
-          onSave={(newValue) => setOrder(newValue as boolean)}
-        />
+        {Object.keys(printOptions).map((optionKey) => (
+          <DataRenderer
+            key={optionKey}
+            label={t(`printers.${optionKey}`)}
+            value={printOptions[optionKey as keyof typeof printOptions]}
+            type="switch"
+            textColor="#333"
+            onSave={(newValue) =>
+              setPrintOptions((prev) => ({
+                ...prev,
+                [optionKey]: newValue as boolean,
+              }))
+            }
+          />
+        ))}
 
-        {order && (
+        {printOptions.order && (
           <>
             <Text style={styles.label}>{t('printers.stations')}</Text>
             <DataRenderer

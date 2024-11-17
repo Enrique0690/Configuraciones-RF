@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Platform } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import tinycolor from 'tinycolor2';
-import Slider from '@react-native-community/slider';
+import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import UUID from 'react-native-uuid';
-import { useTranslation } from 'react-i18next';
 import DataRenderer from '@/components/DataRenderer';
+import useStorage from '@/hooks/useStorage';
 
 const NewUserScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -19,37 +18,46 @@ const NewUserScreen: React.FC = () => {
   const [role, setRole] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [roles, setRoles] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchRoles = async () => {
-      const storedRoles = await AsyncStorage.getItem('roles');
-      const parsedRoles = storedRoles ? JSON.parse(storedRoles) : [];
-      setRoles(parsedRoles.map((role: any) => role.name));
-    };
-    fetchRoles();
-  }, []);
+  const [error, setError] = useState<string | null>(null);
+  const { data: roles, loading: rolesLoading } = useStorage('roles', []);
+  const roleNames = roles.map((role: { name: string }) => role.name);  
 
   const handleSave = async () => {
-    setLoading(true);
-
+    setLoading(true); 
     const userId = UUID.v4();
     const newUser = { id: userId, name, email, password, role };
-
     try {
       const storedUsers = await AsyncStorage.getItem('users');
       const users = storedUsers ? JSON.parse(storedUsers) : [];
       users.push(newUser);
       await AsyncStorage.setItem('users', JSON.stringify(users));
-
-      alert(t('security.user.userSaved'));
       router.push('./userlist');
     } catch (error) {
-      alert(t('security.user.saveError'));
+      setError(t('security.user.saveError'));
     } finally {
       setLoading(false);
     }
   };
+
+  if (loading || rolesLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={styles.loadingText}>{t('security.user.loading')}</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorMessage}>{error}</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.retryButton}>
+          <Text style={styles.retryButtonText}>{t('security.user.goBack')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -59,40 +67,42 @@ const NewUserScreen: React.FC = () => {
         label={t('security.user.namePlaceholder')}
         value={name}
         type="input"
-        textColor="#333"
+        textColor={textColor}
         onSave={(newValue) => setName(newValue as string)}
       />
+
       <DataRenderer
         label={t('security.user.emailPlaceholder')}
         value={email}
         type="input"
-        textColor="#333"
+        textColor={textColor}
         onSave={(newValue) => setEmail(newValue as string)}
       />
+
       <DataRenderer
         label={t('security.user.rolePlaceholder')}
         value={role}
         type="inputlist"
-        textColor="#333"
-        dataList={roles} 
-        onSave={(selectedRole) => setRole(selectedRole as string)} 
+        textColor={textColor}
+        dataList={roleNames}  
+        onSave={(selectedRole) => setRole(selectedRole as string)}
       />
 
       <DataRenderer
         label={t('security.user.passwordPlaceholder')}
         value={password}
         type="input"
-        textColor="#333"
+        textColor={textColor}
         onSave={(newValue) => setPassword(newValue as string)}
       />
-    <View style={styles.colorPickerContainer}>
-      <TouchableOpacity style={[styles.saveButton, { backgroundColor: buttonColor }]} onPress={handleSave}>
-        {loading ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
+
+      <View style={styles.colorPickerContainer}>
+        <TouchableOpacity
+          style={[styles.saveButton, { backgroundColor: buttonColor }]}
+          onPress={handleSave}
+        >
           <Text style={styles.saveButtonText}>{t('security.user.saveButton')}</Text>
-        )}
-      </TouchableOpacity>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -105,45 +115,11 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 20 : 0,
     backgroundColor: '#d9ffe6',
   },
-  formContainer: {
-    marginLeft: 20,
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
-    width: '100%',
-    maxWidth: 400,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  colorBox: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: '#0f6c33',
-  },
-  slider: {
-    width: '100%',
-    maxWidth: 400,
-    height: 30,
-    marginBottom: 16,
-  },
-  sliderLabel: {
-    fontSize: 16,
-    marginBottom: 8,
   },
   saveButton: {
     paddingVertical: 12,
@@ -151,7 +127,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 16,
     width: '100%',
-    maxWidth: 400,
   },
   saveButtonText: {
     color: '#fff',
@@ -160,7 +135,40 @@ const styles = StyleSheet.create({
   },
   colorPickerContainer: {
     alignItems: 'center',
-  }
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#4CAF50',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  errorMessage: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
 export default NewUserScreen;
