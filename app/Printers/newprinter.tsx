@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import UUID from 'react-native-uuid';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next'; 
-import useStorage from '@/hooks/useStorage'; 
+import { useTranslation } from 'react-i18next';
+import useStorage from '@/hooks/useStorage';
 import DataRenderer from '@/components/DataRenderer';
+import BluetoothModal from '@/components/Printersconnection/BluetoohModal';
+import EthernetModal from '@/components/Printersconnection/EthernetModal';
+import UsbModal from '@/components/Printersconnection/USBModal';
 
 interface Printer {
   id: string;
@@ -33,8 +36,13 @@ const NewPrinterScreen = () => {
   const [connection, setConnection] = useState<'USB' | 'Ethernet' | 'Bluetooth' | ''>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
-  // Opciones de impresión
+  const [isBluetoothModalVisible, setBluetoothModalVisible] = useState(false);
+  const [isUsbModalVisible, setUsbModalVisible] = useState(false);
+  const [isEthernetModalVisible, setEthernetModalVisible] = useState(false);
+  const [usbConnectionStatus, setUsbConnectionStatus] = useState<string | null>(null);
+  const [ethernetConnectionStatus, setEthernetConnectionStatus] = useState<string | null>(null);
+  const [bluetoothConnectionStatus, setBluetoothConnectionStatus] = useState<string | null>(null);
+
   const [printOptions, setPrintOptions] = useState({
     deliveryNote: false,
     invoice: false,
@@ -43,11 +51,9 @@ const NewPrinterScreen = () => {
     order: false,
   });
 
-  // Estados para estaciones
   const [noStation, setNoStation] = useState(false);
   const [stations, setStations] = useState<{ name: string; enabled: boolean }[]>([]);
 
-  // Cargar datos iniciales de las estaciones
   useEffect(() => {
     if (!stationsLoading && !stationsError) {
       const initializedStations = (stationsData || []).map((station) => ({
@@ -58,7 +64,6 @@ const NewPrinterScreen = () => {
     }
   }, [stationsData, stationsLoading, stationsError]);
 
-  // Maneja el guardado de la impresora
   const handleSave = async () => {
     setLoading(true);
     setError('');
@@ -86,17 +91,72 @@ const NewPrinterScreen = () => {
     }
   };
 
-  // Función para renderizar opciones de conexión
-  const renderConnectionOption = (label: string, value: 'USB' | 'Ethernet' | 'Bluetooth') => (
-    <TouchableOpacity
-      style={[styles.connectionButton, connection === value && styles.selectedButton]}
-      onPress={() => setConnection(value)}
-    >
-      <Text style={[styles.buttonText, connection === value && styles.selectedButtonText]}>{label}</Text>
-    </TouchableOpacity>
-  );
+  const handleBluetoothSelect = async (device: { id: string; name: string; }) => {
+    try {
+      console.log(`Conectado al dispositivo Bluetooth: ${device.name}`);
+      setBluetoothConnectionStatus(`Conectado a ${device.name}`);
+      setBluetoothModalVisible(false);
+    } catch (error) {
+      console.error("Error al conectar al dispositivo Bluetooth", error);
+    }
+  };
 
-  // Renderizado condicional según estados
+  const handleUsbSelect = async (device: { id: string; name: string; }) => {
+    try {
+      console.log(`Conectado al dispositivo USB: ${device.name}`);
+      setUsbConnectionStatus(`Conectado a ${device.name}`);
+      setUsbModalVisible(false);
+    } catch (error) {
+      console.error("Error al conectar al dispositivo USB", error);
+    }
+  };
+
+  const handleEthernetSelect = async (data: { ip: string; port: string }) => {
+    try {
+      console.log(`Configuración Ethernet: IP=${data.ip}, Puerto=${data.port}`);
+      setEthernetConnectionStatus(`Conectado a IP ${data.ip}, Puerto ${data.port}`);
+      setEthernetModalVisible(false);
+    } catch (error) {
+      console.error("Error en la configuración de Ethernet", error);
+    }
+  };
+
+  const renderConnectionOption = (label: string, value: 'USB' | 'Ethernet' | 'Bluetooth') => {
+    const handlePress = () => {
+      setConnection(value);
+      if (value === 'Bluetooth') {
+        setUsbConnectionStatus(null);
+        setEthernetConnectionStatus(null);
+        setBluetoothModalVisible(true);
+      } else if (value === 'USB') {
+        setBluetoothConnectionStatus(null);
+        setEthernetConnectionStatus(null);
+        setUsbModalVisible(true);
+      } else if (value === 'Ethernet') {
+        setBluetoothConnectionStatus(null);
+        setUsbConnectionStatus(null);
+        setEthernetModalVisible(true);
+      }
+    };
+
+    const connectionStatus =
+      value === 'USB' ? usbConnectionStatus :
+        value === 'Ethernet' ? ethernetConnectionStatus :
+          bluetoothConnectionStatus;
+
+    return (
+      <View style={styles.connectionOptionContainer}>
+        <TouchableOpacity
+          style={[styles.connectionButton, connection === value && styles.selectedButton]}
+          onPress={handlePress}
+        >
+          <Text style={[styles.buttonText, connection === value && styles.selectedButtonText]}>{label}</Text>
+        </TouchableOpacity>
+        {connectionStatus && <Text style={styles.connectionStatusText}>{connectionStatus}</Text>}
+      </View>
+    );
+  };
+
   if (loading || stationsLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -190,6 +250,27 @@ const NewPrinterScreen = () => {
           <MaterialIcons name="save" size={24} color="white" />
           <Text style={styles.saveButtonText}>{t('printers.savePrinter')}</Text>
         </TouchableOpacity>
+        <BluetoothModal
+          visible={isBluetoothModalVisible}
+          devices={[{ id: '1', name: 'Bluetooth Printer 1' }, { id: '2', name: 'Bluetooth Printer 2' }]}
+          onSelect={handleBluetoothSelect}
+          onClose={() => setBluetoothModalVisible(false)}
+          title="Seleccionar Dispositivo Bluetooth"
+        />
+        <UsbModal
+          visible={isUsbModalVisible}
+          devices={[{ id: '1', name: 'USB Printer 1' }, { id: '2', name: 'USB Printer 2' }]}
+          onSelect={handleUsbSelect}
+          onClose={() => setUsbModalVisible(false)}
+          title="Seleccionar Dispositivo USB"
+        />
+
+        <EthernetModal
+          visible={isEthernetModalVisible}
+          onSave={handleEthernetSelect}
+          onClose={() => setEthernetModalVisible(false)}
+          title="Configurar Conexión Ethernet"
+        />
       </View>
     </ScrollView>
   );
@@ -235,6 +316,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   goBackButtonText: { color: 'white', fontSize: 16 },
+  connectionOptionContainer: {
+    alignItems: 'center',
+  },
+  connectionStatusText: {
+    marginTop: 5,
+    fontSize: 12,
+    color: '#333',
+  },
 });
 
 export default NewPrinterScreen;

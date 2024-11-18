@@ -1,17 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-type Field = {
-  label: string;
-  value: string;
-  onChange: (text: string) => void;
-  keyboardType?: 'default' | 'numeric';
-};
-
 type EthernetModalProps = {
   visible: boolean;
-  fields: Field[];
-  onSave: (fields: Field[]) => void;
+  onSave: (data: { ip: string; port: string }) => Promise<void>;
   onClose: () => void;
   title: string;
 };
@@ -33,15 +25,14 @@ const isValidPort = (port: string): boolean => {
   return portNumber >= 1 && portNumber <= 65535;
 };
 
-const EthernetModal: React.FC<EthernetModalProps> = ({ visible, fields, onSave, onClose, title }) => {
-  // Inicialización de la IP
+const EthernetModal: React.FC<EthernetModalProps> = ({ visible, onSave, onClose, title }) => {
   const [ip, setIp] = useState<IpState>({
-    octet1: fields.find(field => field.label === 'IP Address 1')?.value || '',
-    octet2: fields.find(field => field.label === 'IP Address 2')?.value || '',
-    octet3: fields.find(field => field.label === 'IP Address 3')?.value || '',
-    octet4: fields.find(field => field.label === 'IP Address 4')?.value || '',
+    octet1: '',
+    octet2: '',
+    octet3: '',
+    octet4: '',
   });
-  const [port, setPort] = useState(fields.find(field => field.label === 'Port')?.value || '');
+  const [port, setPort] = useState('');
 
   const handleIpChange = (octet: keyof IpState, text: string) => {
     if (isValidIpOctet(text) || text === '') {
@@ -70,19 +61,12 @@ const EthernetModal: React.FC<EthernetModalProps> = ({ visible, fields, onSave, 
       return;
     }
 
-    const updatedFields = fields.map(field =>
-      field.label === 'IP Address 1' ? { ...field, value: ip.octet1 } : field
-    ).map(field =>
-      field.label === 'IP Address 2' ? { ...field, value: ip.octet2 } : field
-    ).map(field =>
-      field.label === 'IP Address 3' ? { ...field, value: ip.octet3 } : field
-    ).map(field =>
-      field.label === 'IP Address 4' ? { ...field, value: ip.octet4 } : field
-    ).map(field =>
-      field.label === 'Port' ? { ...field, value: port } : field
-    );
-
-    onSave(updatedFields);
+    onSave({ ip: fullIp, port })
+      .then(() => onClose()) 
+      .catch((error) => {
+        console.error('Error al guardar:', error);
+        alert('Hubo un problema al guardar los datos.');
+      });
   };
 
   const moveToNextInput = (currentField: string, nextField: string) => {
@@ -110,8 +94,7 @@ const EthernetModal: React.FC<EthernetModalProps> = ({ visible, fields, onSave, 
                     onChangeText={(text) => handleIpChange(octet as keyof IpState, text)}
                     keyboardType="numeric"
                     maxLength={3}
-                    onSubmitEditing={() => moveToNextInput(octet as string, `ip-${['octet2', 'octet3', 'octet4'][index]}`)}
-                    blurOnSubmit={false}
+                    onEndEditing={() => moveToNextInput(octet as string, `ip-${['octet2', 'octet3', 'octet4'][index]}`)}
                   />
                   {index < 3 && <Text style={styles.separator}>.</Text>}
                 </React.Fragment>
