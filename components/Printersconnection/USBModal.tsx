@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 
 type UsbDevice = {
@@ -8,17 +8,22 @@ type UsbDevice = {
 
 type UsbModalProps = {
   visible: boolean;
-  devices: UsbDevice[];
   onSelect: (device: UsbDevice) => Promise<void>;
   onClose: () => void;
   title: string;
 };
 
-const UsbModal = ({ visible, devices, onSelect, onClose, title }: UsbModalProps) => {
+const UsbModal = ({ visible, onSelect, onClose, title }: UsbModalProps) => {
+  const [devices, setDevices] = useState<UsbDevice[]>([
+    { id: '1', name: 'USB Printer 1' },
+    { id: '2', name: 'USB Printer 2' },
+  ]);
+
+  
   const handleSelect = async (device: UsbDevice) => {
     try {
-      await onSelect(device); 
-      onClose(); 
+      await onSelect(device);
+      onClose();
     } catch (error) {
       console.error("Error al seleccionar el dispositivo USB:", error);
     }

@@ -245,26 +245,22 @@ const NewPrinterScreen = () => {
           {renderConnectionOption(t('printers.ethernet'), 'Ethernet')}
           {renderConnectionOption(t('printers.bluetooth'), 'Bluetooth')}
         </View>
-
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <MaterialIcons name="save" size={24} color="white" />
           <Text style={styles.saveButtonText}>{t('printers.savePrinter')}</Text>
         </TouchableOpacity>
         <BluetoothModal
           visible={isBluetoothModalVisible}
-          devices={[{ id: '1', name: 'Bluetooth Printer 1' }, { id: '2', name: 'Bluetooth Printer 2' }]}
           onSelect={handleBluetoothSelect}
           onClose={() => setBluetoothModalVisible(false)}
           title="Seleccionar Dispositivo Bluetooth"
         />
         <UsbModal
           visible={isUsbModalVisible}
-          devices={[{ id: '1', name: 'USB Printer 1' }, { id: '2', name: 'USB Printer 2' }]}
           onSelect={handleUsbSelect}
           onClose={() => setUsbModalVisible(false)}
           title="Seleccionar Dispositivo USB"
         />
-
         <EthernetModal
           visible={isEthernetModalVisible}
           onSave={handleEthernetSelect}

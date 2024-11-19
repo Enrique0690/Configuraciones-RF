@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 
 type BluetoothDevice = {
@@ -8,17 +8,21 @@ type BluetoothDevice = {
 
 type BluetoothModalProps = {
   visible: boolean;
-  devices: BluetoothDevice[];
-  onSelect: (device: BluetoothDevice) => Promise<void>; 
+  onSelect: (device: BluetoothDevice) => Promise<void>;
   onClose: () => void;
   title: string;
 };
 
-const BluetoothModal = ({ visible, devices, onSelect, onClose, title }: BluetoothModalProps) => {
+const BluetoothModal = ({ visible, onSelect, onClose, title }: BluetoothModalProps) => {
+  const [devices, setDevices] = useState<BluetoothDevice[]>([
+    { id: '1', name: 'Bluetooth Printer 1' },
+    { id: '2', name: 'Bluetooth Printer 2' },
+  ]);
+
   const handleSelect = async (device: BluetoothDevice) => {
     try {
-      await onSelect(device); 
-      onClose(); 
+      await onSelect(device);
+      onClose();
     } catch (error) {
       console.error("Error al seleccionar el dispositivo Bluetooth:", error);
     }

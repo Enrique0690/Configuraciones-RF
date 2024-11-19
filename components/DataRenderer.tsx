@@ -77,8 +77,8 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
       case 'input':  
         return (
           <TouchableOpacity onPress={openEditDialog}>
-            <Text style={[styles.textValue, { color: textColor }]}>
-              <Text style={styles.label}>{label}:</Text> {value || 'Editar'}
+            <Text style={[styles.textValue]}>
+              <Text style={styles.label}>{label}</Text> {value || 'Editar'}
               {finalText && <Text style={styles.finalText}> {finalText}</Text>}
             </Text>
           </TouchableOpacity>
@@ -157,13 +157,15 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   label: {
-    fontWeight: 'bold',
-    fontSize: 18,
+    fontWeight: 400,
+    fontSize: 16,
     marginRight: 8,
   },
   textValue: {
+    fontWeight: 400,
     fontSize: 16,
     paddingVertical: 4,
+    
   },
   finalText: {
     fontSize: 16,
@@ -175,7 +177,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%', 
-    paddingHorizontal: 10, 
   },
   imageContainer: {
     marginTop: 10,

@@ -10,7 +10,8 @@ import SearchBar from '@/components/navigation/SearchBar';
 import { useLocalSearchParams } from 'expo-router';
 
 const InfoTributaria: React.FC = () => {
-  const textColor = useThemeColor({}, 'textsecondary');
+  const textColor = useThemeColor({}, 'text');
+  const textColorSecondary = useThemeColor({}, 'textsecondary');
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const { t } = useTranslation();
   const { data, loading, error, saveData, reloadData } = useStorage('infoTributariaData', defaultInfoTributariaData);
@@ -54,7 +55,7 @@ const InfoTributaria: React.FC = () => {
             value={data[field]}
             type={type}
             onSave={(newValue) => handleChange(field, newValue, data, saveData)}
-            textColor={textColor}
+            textColor={textColorSecondary}
             highlight={highlight === label}
           />
         ))}
@@ -67,7 +68,7 @@ const InfoTributaria: React.FC = () => {
             value={data[field]}
             type={type}
             onSave={(newValue) => handleChange(field, newValue, data, saveData)}
-            textColor={textColor}
+            textColor={textColorSecondary}
             highlight={highlight === label}
             dataList={list}
           />
