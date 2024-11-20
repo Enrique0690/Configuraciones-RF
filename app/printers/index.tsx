@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import SearchBar from '@/components/navigation/SearchBar';
@@ -21,17 +21,15 @@ interface Printer {
 
 const PrintersListScreen: React.FC = () => {
   const { data: printers, loading, error, reloadData,  } = useStorage<Printer[]>('printers', []);
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const textColor = useThemeColor({}, 'textsecondary');
   const router = useRouter();
   const { t } = useTranslation();
 
   const handleCreateNewPrinter = () => {
-    router.push('./Printers/newprinter');
+    router.push('./printers/newprinter');
   };
 
   const handlePrinterClick = (id: string) => {
-    router.push(`./Printers/${id}`);
+    router.push('./printers/${id}');
   };
   
   if (loading) {
@@ -55,21 +53,21 @@ const PrintersListScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container]}>
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: textColor }]}>{t('printers.titleindex')}</Text>
+        <Text style={[styles.title, { color: Colors.text }]}>{t('printers.titleindex')}</Text>
         <TouchableOpacity onPress={handleCreateNewPrinter} style={styles.addButton}>
-          <Ionicons name="add-circle-outline" size={30} color={textColor} />
+          <Ionicons name="add-circle-outline" size={30} color={Colors.text} />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {printers.length === 0 ? (
           <TouchableOpacity onPress={handleCreateNewPrinter}>
-            <Text style={[styles.noPrintersText, { color: textColor }]}>
+            <Text style={[styles.noPrintersText, { color: Colors.text }]}>
               {t('printers.noPrinters')}
             </Text>
           </TouchableOpacity>
@@ -82,8 +80,8 @@ const PrintersListScreen: React.FC = () => {
             >
               <View style={[styles.colorCircle, { backgroundColor: printer.connection === 'wifi' ? '#4CAF50' : '#FF5722' }]} />
               <View style={styles.printerDetails}>
-                <Text style={[styles.printerText, { color: textColor }]}>{printer.name}</Text>
-                <Text style={[styles.printerConnection, { color: textColor }]}>{printer.connection}</Text>
+                <Text style={[styles.printerText, { color: Colors.text }]}>{printer.name}</Text>
+                <Text style={[styles.printerConnection, { color: Colors.text }]}>{printer.connection}</Text>
               </View>
             </TouchableOpacity>
           ))

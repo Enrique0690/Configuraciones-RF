@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import SearchBar from '@/components/navigation/SearchBar';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';
 import useStorage from '@/hooks/useStorage';
+import { Colors } from '@/constants/Colors';
 
 const OrderingStationsScreen: React.FC = () => {
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const textColor = useThemeColor({}, 'textsecondary');
   const { t } = useTranslation();
   const { data: stations, loading, error, saveData: saveStations, reloadData } = useStorage<string[]>('stations', []);
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -49,28 +47,28 @@ const OrderingStationsScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container]}>
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
       <View style={styles.titleContainer}>
-        <Text style={[styles.sectionTitle, { color: textColor }]}>{t('stations.header')}</Text>
+        <Text style={[styles.sectionTitle, { color: Colors.text }]}>{t('stations.header')}</Text>
         <TouchableOpacity style={styles.addButton} onPress={() => setDialogVisible(true)}>
-          <Ionicons name="add-circle-outline" size={28} color={textColor} />
+          <Ionicons name="add-circle-outline" size={28} color={Colors.text} />
         </TouchableOpacity>
       </View>
       <View style={styles.descriptionBox}>
         <View style={styles.imagePlaceholder} />
-        <Text style={[styles.descriptionText, { color: textColor }]}>
+        <Text style={[styles.descriptionText, { color: Colors.text }]}>
           {t('stations.description1')}
         </Text>
-        <Text style={[styles.descriptionText, { color: textColor }]}>
+        <Text style={[styles.descriptionText, { color: Colors.text }]}>
           {t('stations.description2')}
         </Text>
       </View>
       {stations.length === 0 ? (
         <TouchableOpacity onPress={() => setDialogVisible(true)} style={styles.noStationsContainer}>
-          <Text style={[styles.noStationsText, { color: textColor }]}>
+          <Text style={[styles.noStationsText, { color: Colors.text }]}>
             {t('stations.noStations')}
           </Text>
         </TouchableOpacity>
@@ -78,7 +76,7 @@ const OrderingStationsScreen: React.FC = () => {
         <ScrollView contentContainerStyle={styles.contentContainer}>
           {stations.map((station, index) => (
             <View key={index} style={styles.stationContainer}>
-              <Text style={[styles.stationName, { color: textColor }]}>{station}</Text>
+              <Text style={[styles.stationName, { color: Colors.text }]}>{station}</Text>
               <TouchableOpacity onPress={() => handleDeleteStation(index)}>
                 <Ionicons name="trash-outline" size={24} color="#FF0000" />
               </TouchableOpacity>

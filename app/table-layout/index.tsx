@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform, ScrollView } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { Colors } from '@/constants/Colors';
 import { handleChange } from '@/hooks/handleChange';
 import useStorage from '@/hooks/useStorage';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +11,6 @@ import { useLocalSearchParams } from 'expo-router';
 import TabletConfiguration from '@/components/Tablet-configuration/Tablet-configuration';
 
 const TabletConfigurationScreen: React.FC = () => {
-  const textColor = useThemeColor({}, 'textsecondary');
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const { t } = useTranslation();
   const { data, loading, error, saveData, reloadData } = useStorage('tabletConfiguration', defaultData);
   const { highlight } = useLocalSearchParams();
@@ -39,11 +37,11 @@ const TabletConfigurationScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container]}>
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
-      <Text style={[styles.sectionTitle, { color: textColor }]}>
+      <Text style={[styles.sectionTitle, { color: Colors.text }]}>
         {t('tabletConfiguration.header')}
       </Text>
       <ScrollView>
@@ -60,7 +58,7 @@ const TabletConfigurationScreen: React.FC = () => {
               value={data[id]}
               type={type}
               onSave={(newValue) => handleChange(id, newValue, data, saveData)}
-              textColor={textColor}
+              textColor={Colors.text}
               highlight={highlight === id}
             />
           ))}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { Colors } from '@/constants/Colors';
 import { handleChange } from '@/hooks/handleChange';
 import useStorage from '@/hooks/useStorage';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +11,6 @@ import SearchBar from '@/components/navigation/SearchBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const SecurityScreen: React.FC = () => {
-  const textColor = useThemeColor({}, 'textsecondary');
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const { t } = useTranslation();
   const router = useRouter();
   const { data, loading, error, saveData, reloadData } = useStorage('securityData', defaultData);
@@ -41,11 +39,11 @@ const SecurityScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container]}>
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
-      <Text style={[styles.sectionTitle, { color: textColor }]}>
+      <Text style={[styles.sectionTitle, { color: Colors.text }]}>
         {t('security.header')}
       </Text>
       <View style={styles.groupContainer}>
@@ -56,24 +54,24 @@ const SecurityScreen: React.FC = () => {
             value={data[id]}
             type={type}
             onSave={(newValue) => handleChange(id, newValue, data, saveData)}
-            textColor={textColor}
+            textColor={Colors.text}
             finalText={t(finalText as string)}
             highlight={highlight === id}
           />
         ))}
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('./Security/users/userlist')}>
-        <Ionicons name="people-outline" size={24} color={textColor} />
-        <Text style={[styles.buttonLabel, { color: textColor }]}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('./security/users/userlist')}>
+        <Ionicons name="people-outline" size={24} color={Colors.text} />
+        <Text style={[styles.buttonLabel, { color: Colors.text }]}>
           {t('security.users')}{' '}
           {!usersError && usersData && usersData.length > 0 ? `(${usersData.length})` : ''}
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('./Security/rols/rollist')}>
-        <Ionicons name="briefcase-outline" size={24} color={textColor} />
-        <Text style={[styles.buttonLabel, { color: textColor }]}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('./security/rols/rollist')}>
+        <Ionicons name="briefcase-outline" size={24} color={Colors.text} />
+        <Text style={[styles.buttonLabel, { color: Colors.text }]}>
           {t('security.roles')}{' '}
           {!rolesError && rolesData && rolesData.length > 0 ? `(${rolesData.length})` : ''}
         </Text>

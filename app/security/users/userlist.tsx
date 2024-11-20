@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import useStorage from '@/hooks/useStorage';
 import SearchBar from '@/components/navigation/SearchBar';
+import { Colors } from '@/constants/Colors';
 
 interface User {
   id: string;
@@ -16,8 +16,6 @@ interface User {
 
 const UserListScreen: React.FC = () => {
   const { data: users, loading, error, reloadData} = useStorage<User[]>('users', []);
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const textColor = useThemeColor({}, 'textsecondary');
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -50,21 +48,21 @@ const UserListScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container]}>
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: textColor }]}>{t('security.user.header')}</Text>
+        <Text style={[styles.title, { color: Colors.text }]}>{t('security.user.header')}</Text>
         <TouchableOpacity onPress={handleCreateNewUser} style={styles.addButton}>
-          <Ionicons name="add-circle-outline" size={30} color={textColor} />
+          <Ionicons name="add-circle-outline" size={30} color={Colors.text} />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {users.length === 0 ? (
           <TouchableOpacity onPress={handleCreateNewUser}>
-            <Text style={[styles.noUsersText, { color: textColor }]}>
+            <Text style={[styles.noUsersText, { color: Colors.text }]}>
               {t('security.user.noUsers')}
             </Text>
           </TouchableOpacity>
@@ -77,8 +75,8 @@ const UserListScreen: React.FC = () => {
             >
               <View style={[styles.colorCircle, { backgroundColor: user.color }]} />
               <View style={styles.userDetails}>
-                <Text style={[styles.userText, { color: textColor }]}>{user.name}</Text>
-                <Text style={[styles.userEmail, { color: textColor }]}>{user.email}</Text>
+                <Text style={[styles.userText, { color: Colors.text }]}>{user.name}</Text>
+                <Text style={[styles.userEmail, { color: Colors.text }]}>{user.email}</Text>
               </View>
             </TouchableOpacity>
           ))

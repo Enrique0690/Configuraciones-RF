@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import useStorage from '@/hooks/useStorage';
 import SearchBar from '@/components/navigation/SearchBar';
+import { Colors } from '@/constants/Colors';
 
 interface Role {
   id: string;
@@ -15,8 +15,6 @@ interface Role {
 
 const RoleListScreen: React.FC = () => {
   const { data: roles, loading, error, reloadData } = useStorage<Role[]>('roles', []);
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const textColor = useThemeColor({}, 'textsecondary');
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -49,21 +47,21 @@ const RoleListScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container]}>
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: textColor }]}>{t('security.role.header')}</Text>
+        <Text style={[styles.title, { color: Colors.text }]}>{t('security.role.header')}</Text>
         <TouchableOpacity onPress={handleCreateNewRole} style={styles.addButton}>
-          <Ionicons name="add-circle-outline" size={30} color={textColor} />
+          <Ionicons name="add-circle-outline" size={30} color={Colors.text} />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {roles.length === 0 ? (
           <TouchableOpacity onPress={handleCreateNewRole}>
-            <Text style={[styles.noRolesText, { color: textColor }]}>{t('security.role.noRoles')}</Text>
+            <Text style={[styles.noRolesText, { color: Colors.text }]}>{t('security.role.noRoles')}</Text>
           </TouchableOpacity>
         ) : (
           roles.map((role) => (
@@ -73,7 +71,7 @@ const RoleListScreen: React.FC = () => {
               onPress={() => handleRoleClick(role.id)}
             >
               <View style={styles.roleDetails}>
-                <Text style={[styles.roleText, { color: textColor }]}>{role.name}</Text>
+                <Text style={[styles.roleText, { color: Colors.text }]}>{role.name}</Text>
               </View>
             </TouchableOpacity>
           ))

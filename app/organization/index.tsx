@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from 'react-i18next';
 import useStorage from '@/hooks/useStorage';
 import SearchBar from '@/components/navigation/SearchBar';
@@ -9,13 +8,12 @@ import { organizationConfig, defaultData } from '@/constants/DataConfig/organiza
 import * as ImagePicker from 'expo-image-picker';
 import { handleChange } from '@/hooks/handleChange';
 import { useLocalSearchParams } from 'expo-router';
+import { Colors } from '@/constants/Colors';
 
 const IMAGE_PREVIEW_SIZE = 250;
 
 const BusinessInfoScreen: React.FC = () => {
   const { t } = useTranslation();
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const textColor = useThemeColor({}, 'textsecondary');
   const { data, loading, error, saveData, reloadData } = useStorage('businessInfo', defaultData);
   const [imageUri, setImageUri] = useState<string | null>(null);
   const { highlight } = useLocalSearchParams();
@@ -77,13 +75,13 @@ const BusinessInfoScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container]}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.searchBarContainer}>
           <SearchBar />
         </View>
 
-        <Text style={[styles.sectionTitle, { color: textColor }]}>
+        <Text style={[styles.sectionTitle, { color: Colors.text }]}>
           {t('businessInfo.header')}
         </Text>
 
@@ -100,10 +98,17 @@ const BusinessInfoScreen: React.FC = () => {
             value={data[id]}
             type={type}
             onSave={(newValue) => handleChange(id, newValue, data, saveData)}
-            textColor={textColor}
+            textColor={Colors.text}
             highlight={highlight === id}
           />
         ))}
+        <DataRenderer
+            label={t('taxConfigurationEC.infoTributaria.sectionTitle')} 
+            value="/organization/ecuador/tax-info"
+            type='buttonlist'
+            iconName='document-text' 
+            textColor={Colors.text} 
+          />
       </ScrollView>
     </View>
   );

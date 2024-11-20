@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { handleChange } from '@/hooks/handleChange';
 import useStorage from '@/hooks/useStorage';
 import { useTranslation } from 'react-i18next';
@@ -8,11 +7,9 @@ import { infoTributariaConfig, defaultInfoTributariaData } from '@/constants/Dat
 import DataRenderer from '@/components/DataRenderer'; 
 import SearchBar from '@/components/navigation/SearchBar';
 import { useLocalSearchParams } from 'expo-router';
+import { Colors } from '@/constants/Colors';
 
 const InfoTributaria: React.FC = () => {
-  const textColor = useThemeColor({}, 'text');
-  const textColorSecondary = useThemeColor({}, 'textsecondary');
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const { t } = useTranslation();
   const { data, loading, error, saveData, reloadData } = useStorage('infoTributariaData', defaultInfoTributariaData);
   const { highlight } = useLocalSearchParams();
@@ -40,11 +37,11 @@ const InfoTributaria: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container]}>
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
-      <Text style={[styles.sectionTitle, { color: textColor }]}>
+      <Text style={[styles.sectionTitle, { color: Colors.text }]}>
         {t('taxConfigurationEC.infoTributaria.sectionTitle')}
       </Text>
       <View style={styles.groupContainer}>
@@ -55,7 +52,7 @@ const InfoTributaria: React.FC = () => {
             value={data[id]}
             type={type}
             onSave={(newValue) => handleChange(id, newValue, data, saveData)}
-            textColor={textColorSecondary}
+            textColor={Colors.text}
             highlight={highlight === id}
           />
         ))}
@@ -68,7 +65,7 @@ const InfoTributaria: React.FC = () => {
             value={data[id]}
             type={type}
             onSave={(newValue) => handleChange(id, newValue, data, saveData)}
-            textColor={textColorSecondary}
+            textColor={Colors.text}
             highlight={highlight === id}
             dataList={list}
           />
