@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform, BackHandler } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import SearchBar from '@/components/navigation/SearchBar';
-import useStorage from '@/hooks/useStorage';
 
 interface Printer {
   id: string;
@@ -20,20 +20,41 @@ interface Printer {
 }
 
 const PrintersListScreen: React.FC = () => {
-  const { data: printers, loading, error, reloadData,  } = useStorage<Printer[]>('printers', []);
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
+  const [printers, setPrinters] = useState<Printer[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'textsecondary');
   const router = useRouter();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const loadPrinters = async () => {
+      try {
+        setLoading(true);
+        const storedPrinters = await AsyncStorage.getItem('printers');
+        if (storedPrinters) {
+          setPrinters(JSON.parse(storedPrinters));
+        }
+      } catch (err) {
+        setError(t('printers.errorLoadingData')); 
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPrinters();
+  }, []);
 
   const handleCreateNewPrinter = () => {
     router.push('./Printers/newprinter');
   };
 
   const handlePrinterClick = (id: string) => {
-    router.push(`./Printers/${id}`);
+      router.push(`./Printers/${id}`);
   };
-  
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -46,9 +67,9 @@ const PrintersListScreen: React.FC = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('printers.errorLoadingData')}</Text>
-        <TouchableOpacity onPress={reloadData} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('printers.retry')}</Text>
+        <Text style={styles.errorMessage}>{error}</Text>
+        <TouchableOpacity onPress={() => router.push('/')} style={styles.goBackButton}>
+          <Text style={styles.goBackButtonText}>{t('printers.goBackHome')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -68,16 +89,12 @@ const PrintersListScreen: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {printers.length === 0 ? (
-          <TouchableOpacity onPress={handleCreateNewPrinter}>
-            <Text style={[styles.noPrintersText, { color: textColor }]}>
-              {t('printers.noPrinters')}
-            </Text>
-          </TouchableOpacity>
+          <Text style={[styles.noPrintersText, { color: textColor }]}>{t('printers.noPrinters')}</Text>
         ) : (
           printers.map((printer) => (
-            <TouchableOpacity
-              key={printer.id}
-              style={styles.printerItem}
+            <TouchableOpacity 
+              key={printer.id} 
+              style={styles.printerItem} 
               onPress={() => handlePrinterClick(printer.id)}
             >
               <View style={[styles.colorCircle, { backgroundColor: printer.connection === 'wifi' ? '#4CAF50' : '#FF5722' }]} />

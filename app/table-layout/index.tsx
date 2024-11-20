@@ -1,22 +1,62 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Switch, Platform, ActivityIndicator } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { handleChange } from '@/hooks/handleChange';
-import useStorage from '@/hooks/useStorage';
-import { useTranslation } from 'react-i18next';
-import { TabletConfig, defaultData } from '@/constants/DataConfig/TabletConfig';
-import DataRenderer from '@/components/DataRenderer';
 import SearchBar from '@/components/navigation/SearchBar';
-import { useLocalSearchParams } from 'expo-router';
 import TabletConfiguration from '@/components/Tablet-configuration/Tablet-configuration';
+import { useTranslation } from 'react-i18next'; 
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 const TabletConfigurationScreen: React.FC = () => {
+  const { t } = useTranslation(); 
+  const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'textsecondary');
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const { t } = useTranslation();
-  const { data, loading, error, saveData, reloadData } = useStorage('tabletConfiguration', defaultData);
-  const { highlight } = useLocalSearchParams();
-  const { Mesa_mostrarCliente, PedidoEnMesa_MostrarReloj, showCommercialName } = data;
+
+  const [showUser, setShowUser] = useState(false);
+  const [showTime, setShowTime] = useState(false);
+  const [showCommercialName, setShowCommercialName] = useState(false);
+  const [loading, setLoading] = useState(true); 
+  const [loadError, setLoadError] = useState(false); 
+
+  const saveSettings = async () => {
+    setLoading(true); 
+    const settings = {
+      showUser,
+      showTime,
+      showCommercialName,
+    };
+    try {
+      await AsyncStorage.setItem('tabletConfiguration', JSON.stringify(settings));
+      setLoading(false); 
+    } catch (error) {
+      console.error('Error al guardar la configuración:', error);
+      setLoading(false); 
+    }
+  };
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await AsyncStorage.getItem('tabletConfiguration');
+        if (settings) {
+          const parsedSettings = JSON.parse(settings);
+          setShowUser(parsedSettings.showUser);
+          setShowTime(parsedSettings.showTime);
+          setShowCommercialName(parsedSettings.showCommercialName);
+        }
+        setLoading(false); 
+      } catch (error) {
+        console.error('Error al cargar la configuración:', error);
+        setLoadError(true);
+        setLoading(false); 
+      }
+    };
+    loadSettings();
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      saveSettings();
+    }
+  }, [showUser, showTime, showCommercialName]);
 
   if (loading) {
     return (
@@ -27,46 +67,43 @@ const TabletConfigurationScreen: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (loadError) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorMessage}>{t('tabletConfiguration.loadError')}</Text>
-        <TouchableOpacity onPress={reloadData} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>{t('tabletConfiguration.retry')}</Text>
-        </TouchableOpacity>
       </View>
     );
   }
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
+      <Text style={[styles.title, { color: textColor }]}>{t('tabletConfiguration.header')}</Text>
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
-      <Text style={[styles.sectionTitle, { color: textColor }]}>
-        {t('tabletConfiguration.header')}
-      </Text>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
         <TabletConfiguration
-          showUser={Mesa_mostrarCliente}
-          showTime={PedidoEnMesa_MostrarReloj}
+          showUser={showUser}
+          showTime={showTime}
           showCommercialName={showCommercialName}
         />
-        <View style={styles.groupContainer}>
-          {TabletConfig.map(({ label, id, type }) => (
-            <DataRenderer
-              key={label}
-              label={t(label)}
-              value={data[id]}
-              type={type}
-              onSave={(newValue) => handleChange(id, newValue, data, saveData)}
-              textColor={textColor}
-              highlight={highlight === label}
-            />
-          ))}
+        <View style={styles.switchContainer}>
+          <View style={styles.switchRow}>
+            <Text style={[styles.switchLabel, { color: textColor }]}>{t('tabletConfiguration.showUser')}</Text>
+            <Switch value={showUser} onValueChange={setShowUser} />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={[styles.switchLabel, { color: textColor }]}>{t('tabletConfiguration.showTime')}</Text>
+            <Switch value={showTime} onValueChange={setShowTime} />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={[styles.switchLabel, { color: textColor }]}>{t('tabletConfiguration.showCommercialName')}</Text>
+            <Switch value={showCommercialName} onValueChange={setShowCommercialName} />
+          </View>
         </View>
       </ScrollView>
-
     </View>
   );
 };
@@ -75,13 +112,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    borderRadius: 10,
   },
-  sectionTitle: {
-    fontSize: 20,
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
-    marginVertical: 16,
+    marginBottom: 16,
     textAlign: 'center',
+  },
+  contentContainer: {
+    paddingBottom: 16,
   },
   searchBarContainer: {
     display: Platform.select({
@@ -90,8 +129,18 @@ const styles = StyleSheet.create({
       default: 'none',
     }),
   },
-  groupContainer: {
-    marginBottom: 20,
+  switchContainer: {
+    paddingHorizontal: 16,
+    marginTop: 24,
+  },
+  switchRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  switchLabel: {
+    fontSize: 16,
   },
   loadingContainer: {
     flex: 1,
@@ -114,33 +163,6 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginBottom: 20,
-  },
-  retryButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  retryButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    marginVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#f5f5f5',
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  buttonLabel: {
-    fontSize: 16,
-    marginLeft: 12,
-    fontWeight: '600',
   },
 });
 
