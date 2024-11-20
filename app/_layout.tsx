@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
-        maxWidth: 800,
+        maxWidth: 900,
         marginHorizontal: 'auto',
     },
     fullScreenContent: {

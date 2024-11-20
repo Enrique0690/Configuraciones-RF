@@ -1,28 +1,24 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { handleChange } from '@/hooks/handleChange';
 import useStorage from '@/hooks/useStorage';
 import { useTranslation } from 'react-i18next';
-import { TableConfig, defaultData } from '@/constants/DataConfig/table-layout';
+import { reglasConfig, defaultReglasData } from '@/constants/DataConfig/TaxConfig';
 import DataRenderer from '@/components/DataRenderer';
+import { handleChange } from '@/hooks/handleChange';
 import SearchBar from '@/components/navigation/SearchBar';
-import { useLocalSearchParams } from 'expo-router';
-import TabletConfiguration from '@/components/Tablet-configuration/Tablet-configuration';
 
-const TabletConfigurationScreen: React.FC = () => {
+const Reglas: React.FC = () => {
+  const { t } = useTranslation();
   const textColor = useThemeColor({}, 'textsecondary');
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const { t } = useTranslation();
-  const { data, loading, error, saveData, reloadData } = useStorage('tabletConfiguration', defaultData);
-  const { highlight } = useLocalSearchParams();
-  const { Mesa_mostrarCliente, PedidoEnMesa_MostrarReloj, showCommercialName } = data;
+  const { data, loading, error, saveData, reloadData } = useStorage('reglasNotasEntregaFacturaData', defaultReglasData);
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('tabletConfiguration.loading')}</Text>
+        <Text style={styles.loadingText}>{t('taxConfigurationEC.reglas.loading')}</Text>
       </View>
     );
   }
@@ -30,9 +26,9 @@ const TabletConfigurationScreen: React.FC = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('tabletConfiguration.loadError')}</Text>
+        <Text style={styles.errorMessage}>{t('taxConfigurationEC.reglas.loadError')}</Text>
         <TouchableOpacity onPress={reloadData} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>{t('tabletConfiguration.retry')}</Text>
+          <Text style={styles.retryButtonText}>{t('taxConfigurationEC.reglas.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -44,29 +40,20 @@ const TabletConfigurationScreen: React.FC = () => {
         <SearchBar />
       </View>
       <Text style={[styles.sectionTitle, { color: textColor }]}>
-        {t('tabletConfiguration.header')}
+        {t('taxConfigurationEC.reglas.sectionTitle')}
       </Text>
-      <ScrollView>
-        <TabletConfiguration
-          showUser={Mesa_mostrarCliente}
-          showTime={PedidoEnMesa_MostrarReloj}
-          showCommercialName={showCommercialName}
-        />
-        <View style={styles.groupContainer}>
-          {TableConfig.map(({ id, label, type }) => (
-            <DataRenderer
-              key={id}
-              label={t(label)}
-              value={data[id]}
-              type={type}
-              onSave={(newValue) => handleChange(id, newValue, data, saveData)}
-              textColor={textColor}
-              highlight={highlight === id}
-            />
-          ))}
-        </View>
-      </ScrollView>
-
+      <View style={styles.groupContainer}>
+        {reglasConfig.map(({ label, field, type }) => (
+          <DataRenderer
+            key={field}
+            label={t(label)}
+            value={data[field]}
+            type={type}
+            onSave={(newValue) => handleChange(field, newValue, data, saveData)}
+            textColor={textColor}
+          />
+        ))}
+      </View>
     </View>
   );
 };
@@ -126,22 +113,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    marginVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#f5f5f5',
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  buttonLabel: {
-    fontSize: 16,
-    marginLeft: 12,
-    fontWeight: '600',
-  },
 });
 
-export default TabletConfigurationScreen;
+export default Reglas;

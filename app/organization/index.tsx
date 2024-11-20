@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import useStorage from '@/hooks/useStorage';
 import SearchBar from '@/components/navigation/SearchBar';
 import DataRenderer from '@/components/DataRenderer';
-import { businessInfoConfig, defaultData } from '@/constants/DataConfig/BusinessConfig';
+import { organizationConfig, defaultData } from '@/constants/DataConfig/organization';
 import * as ImagePicker from 'expo-image-picker';
 import { handleChange } from '@/hooks/handleChange';
 import { useLocalSearchParams } from 'expo-router';
@@ -93,15 +93,15 @@ const BusinessInfoScreen: React.FC = () => {
           buttonText={t('businessInfo.uploadImage')}
         />
 
-        {businessInfoConfig.map(({ label, field, type }) => (
+        {organizationConfig.map(({ label, id, type }) => (
           <DataRenderer
-            key={field}
+            key={id}
             label={t(label)}
-            value={data[field]}
+            value={data[id]}
             type={type}
-            onSave={(newValue) => handleChange(field, newValue, data, saveData)}
+            onSave={(newValue) => handleChange(id, newValue, data, saveData)}
             textColor={textColor}
-            highlight={highlight === label}
+            highlight={highlight === id}
           />
         ))}
       </ScrollView>

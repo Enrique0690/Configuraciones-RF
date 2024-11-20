@@ -5,8 +5,8 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { handleChange } from '@/hooks/handleChange';
 import useStorage from '@/hooks/useStorage';
 import { useTranslation } from 'react-i18next';
-import { securityConfig, defaultData } from '@/constants/DataConfig/SecurityConfig'; 
-import DataRenderer from '@/components/DataRenderer'; 
+import { securityConfig, defaultData } from '@/constants/DataConfig/SecurityConfig';
+import DataRenderer from '@/components/DataRenderer';
 import SearchBar from '@/components/navigation/SearchBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -49,20 +49,20 @@ const SecurityScreen: React.FC = () => {
         {t('security.header')}
       </Text>
       <View style={styles.groupContainer}>
-      {securityConfig.map(({ label, field, type, finalText }) => (
+        {securityConfig.map(({ label, id, type, finalText }) => (
           <DataRenderer
             key={label}
             label={t(label)}
-            value={data[field]}
+            value={data[id]}
             type={type}
-            onSave={(newValue) => handleChange(field, newValue, data, saveData)}
+            onSave={(newValue) => handleChange(id, newValue, data, saveData)}
             textColor={textColor}
             finalText={t(finalText as string)}
-            highlight={highlight === label}
+            highlight={highlight === id}
           />
         ))}
       </View>
-      
+
       <TouchableOpacity style={styles.button} onPress={() => router.push('./Security/users/userlist')}>
         <Ionicons name="people-outline" size={24} color={textColor} />
         <Text style={[styles.buttonLabel, { color: textColor }]}>
