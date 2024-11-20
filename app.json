@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "Configuraciones-RF",
+    "scheme": "ConfiguracionesRF",
     "newArchEnabled": true,
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -19,14 +19,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "permissions": [
-        "BLUETOOTH",
-        "BLUETOOTH_ADMIN",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "BLUETOOTH_SCAN"
-      ]
+        "backgroundColor": "#ffffff"
       }
     },
     "web": {

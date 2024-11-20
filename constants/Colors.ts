@@ -10,7 +10,7 @@ export const Colors = {
   backgroundsecondary: '',
   itemBackground: '#0c9540', // Color de fondo para los ítems
   text: '#000', // Color principal de texto
-  textsecondary: '#a1a1a1',
+  textsecondary: '#fff',
   icon: '#687076', // Color de íconos
   tabIconDefault: '#687076', // Color de íconos por defecto
   tabIconSelected: '#13d45b', // Color de íconos seleccionados

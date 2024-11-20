@@ -2,7 +2,7 @@
     "layout": {
         "header": "Configuraciones",
         "menuItems": {
-            "businessInfo": "Información del Negocio",
+            "businessInfo": "Información Fiscal",
             "printers": "Impresoras",
             "paymentMethods": "Métodos de Pago",
             "integrations": "Integraciones con otras Apps",
@@ -14,7 +14,7 @@
         }
     },
     "businessInfo": {
-        "header": "Información del Negocio",
+        "header": "Información Fiscal",
         "name": "Nombre del Negocio",
         "address": "Dirección",
         "phone": "Número de teléfono",

@@ -4,20 +4,20 @@ function withGlobalRoute<T>(config: T[], route: string): (T & { route: string })
 
 type TabletConfigField = {
   label: string;
-  field: keyof typeof defaultData;
+  id: keyof typeof defaultData;
   type: 'text' | 'switch' | 'input' | 'inputlist';
   route?: string;
   list?: string[];
 };
 
 export const defaultData = {
-  showUser: false,
-  showTime: false,
+  Mesa_mostrarCliente: false,
+  PedidoEnMesa_MostrarReloj: false,
   showCommercialName: false,
 };
 
 export const TabletConfig: Array<TabletConfigField> = withGlobalRoute([
-  { label: 'tabletConfiguration.showUser', field: 'showUser', type: 'switch' },
-  { label: 'tabletConfiguration.showTime', field: 'showTime', type: 'switch' },
-  { label: 'tabletConfiguration.showCommercialName', field: 'showCommercialName', type: 'switch' },
-], '/Tablet-configuration/');
+  { label: 'tabletConfiguration.showUser', id: 'Mesa_mostrarCliente', type: 'switch' },
+  { label: 'tabletConfiguration.showTime', id: 'PedidoEnMesa_MostrarReloj', type: 'switch' },
+  { label: 'tabletConfiguration.showCommercialName', id: 'showCommercialName', type: 'switch' },
+], '/table-layout/');

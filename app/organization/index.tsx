@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import useStorage from '@/hooks/useStorage';
 import SearchBar from '@/components/navigation/SearchBar';
@@ -8,14 +8,14 @@ import DataRenderer from '@/components/DataRenderer';
 import { businessInfoConfig, defaultData } from '@/constants/DataConfig/BusinessConfig';
 import * as ImagePicker from 'expo-image-picker';
 import { handleChange } from '@/hooks/handleChange';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Colors } from '@/constants/Colors';
 
 const IMAGE_PREVIEW_SIZE = 250;
 
 const BusinessInfoScreen: React.FC = () => {
   const { t } = useTranslation();
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const textColor = useThemeColor({}, 'textsecondary');
+  const router = useRouter();
   const { data, loading, error, saveData, reloadData } = useStorage('businessInfo', defaultData);
   const [imageUri, setImageUri] = useState<string | null>(null);
   const { highlight } = useLocalSearchParams();
@@ -53,7 +53,7 @@ const BusinessInfoScreen: React.FC = () => {
 
   const saveImage = (uri: string) => {
     setImageUri(uri);
-    saveData({ ...data, imageUrl: uri }); 
+    saveData({ ...data, imageUrl: uri });
   };
 
   if (loading) {
@@ -77,33 +77,40 @@ const BusinessInfoScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.searchBarContainer}>
           <SearchBar />
         </View>
 
-        <Text style={[styles.sectionTitle, { color: textColor }]}>
+        <Text style={[styles.sectionTitle, { color: Colors.text }]}>
           {t('businessInfo.header')}
         </Text>
 
-        <ImageUploadSection 
+        <ImageUploadSection
           imageUri={imageUri}
           onSelectImage={openImagePicker}
           buttonText={t('businessInfo.uploadImage')}
         />
 
-        {businessInfoConfig.map(({ label, field, type }) => (
+        {businessInfoConfig.map(({ id, label, type }) => (
           <DataRenderer
-            key={field}
+            key={id}
             label={t(label)}
-            value={data[field]}
+            value={data[id]}
             type={type}
-            onSave={(newValue) => handleChange(field, newValue, data, saveData)}
-            textColor={textColor}
-            highlight={highlight === label}
+            onSave={(newValue) => handleChange(id, newValue, data, saveData)}
+            textColor={Colors.text}
+            highlight={highlight === id}
           />
         ))}
+        <DataRenderer 
+          label={t('taxConfigurationEC.infoTributaria.sectionTitle')}
+          type='buttonlist'
+          textColor={Colors.text}
+          value='./organization/ecuador/tax-info'
+          iconName='document-text'
+        />
       </ScrollView>
     </View>
   );

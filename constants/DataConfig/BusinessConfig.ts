@@ -3,28 +3,29 @@ function withGlobalRoute<T>(config: T[], route: string): (T & { route: string })
 }
 
 type FieldConfig = {
+  id:  keyof typeof defaultData;
   label: string;
-  field: keyof typeof defaultData;
   type: 'text' | 'image' | 'input';
   route?: string;
   imageUrl?: string | null;
 };
 
 export const defaultData = {
-  name: '',
-  address: '',
-  phone: '',
+  id: '',
+  nombreComercial: '',
+  direccion: '',
+  telefono: '',
   email: '',
-  businessType: '',
+  base: '',
   currency: '',
   pruebas: '',
   imageUrl: '',
 };
 
 export const businessInfoConfig: Array<FieldConfig> =  withGlobalRoute([
-  { label: 'businessInfo.name', field: 'name', type: 'input'},
-  { label: 'businessInfo.address', field: 'address', type: 'input'},
-  { label: 'businessInfo.phone', field: 'phone', type: 'input'},
-  { label: 'businessInfo.email', field: 'email', type: 'input'},
-  { label: 'businessInfo.businessType', field: 'businessType', type: 'input'},
+  { id: 'nombreComercial', label: 'businessInfo.name', type: 'input'},
+  { id: 'direccion', label: 'businessInfo.address', type: 'input'},
+  { id: 'telefono', label: 'businessInfo.phone', type: 'input'},
+  { id: 'email', label: 'businessInfo.email', type: 'input'},
+  { id: 'base', label: 'businessInfo.businessType', type: 'input'},
 ], '/Business-info');

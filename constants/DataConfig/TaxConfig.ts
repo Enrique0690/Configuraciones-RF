@@ -17,7 +17,7 @@ export const taxConfig: Array<FieldConfig> = [
 
 type InfoTributariaFieldConfig = {
   label: string;
-  field: keyof typeof defaultInfoTributariaData;
+  id: keyof typeof defaultInfoTributariaData;
   type: 'text' | 'switch' | 'input' | 'inputlist';
   route?: string;
   list?: string[]
@@ -27,25 +27,27 @@ export const defaultInfoTributariaData = {
   ruc: '',
   razonSocial: '',
   direccionMatriz: '',
-  obligadollevarcontabilidad: false,
-  agenteRetencion: false,
+  ObligadoContabilidad: false,
+  es_agente_retencion_microempresa: false,
+  agente_retencion_microempresa_resolucion: '',
   regimenContribuyente: '',
-  numeroCalificacionArtesanal: '',
+  calificacionArtesanal: '',
   sitioWebFacturaElectronica: '',
   correoEnvioComprobantes: '',
 };
 
 export const infoTributariaConfig: Array<InfoTributariaFieldConfig> = withGlobalRoute([
-  { label: 'taxConfigurationEC.infoTributaria.ruc', field: 'ruc', type: 'input' },
-  { label: 'taxConfigurationEC.infoTributaria.razonSocial', field: 'razonSocial', type: 'input' },
-  { label: 'taxConfigurationEC.infoTributaria.direccionMatriz', field: 'direccionMatriz', type: 'input' },
-  { label: 'taxConfigurationEC.infoTributaria.obligadollevarcontabilidad', field: 'obligadollevarcontabilidad', type: 'switch' },
-  { label: 'taxConfigurationEC.infoTributaria.agenteRetencion', field: 'agenteRetencion', type: 'switch' },
-  { label: 'taxConfigurationEC.infoTributaria.regimenContribuyente', field: 'regimenContribuyente', type: 'inputlist', list: ['No Incluir Leyenda', 'Contribuyente Regimen General', 'Contribuyente Rigemen RIMPE', 'Contribuyente Negocio Popular - Regimen RIMPE'] },
-  { label: 'taxConfigurationEC.infoTributaria.numeroCalificacionArtesanal', field: 'numeroCalificacionArtesanal', type: 'input' },
-  { label: 'taxConfigurationEC.infoTributaria.sitioWebFacturaElectronica', field: 'sitioWebFacturaElectronica', type: 'input' },
+  { label: 'taxConfigurationEC.infoTributaria.ruc', id: 'ruc', type: 'input' },
+  { label: 'taxConfigurationEC.infoTributaria.razonSocial', id: 'razonSocial', type: 'input' },
+  { label: 'taxConfigurationEC.infoTributaria.direccionMatriz', id: 'direccionMatriz', type: 'input' },
+  { label: 'taxConfigurationEC.infoTributaria.obligadollevarcontabilidad', id: 'ObligadoContabilidad', type: 'switch' },
+  { label: 'taxConfigurationEC.infoTributaria.agenteRetencion', id: 'es_agente_retencion_microempresa', type: 'switch' },
+  { label: 'taxConfigurationEC.infoTributaria.agente_retencion_microempresa_resolucion', id: 'agente_retencion_microempresa_resolucion', type: 'input' },
+  { label: 'taxConfigurationEC.infoTributaria.regimenContribuyente', id: 'regimenContribuyente', type: 'inputlist', list: ['No Incluir Leyenda', 'Contribuyente Regimen General', 'Contribuyente Rigemen RIMPE', 'Contribuyente Negocio Popular - Regimen RIMPE'] },
+  { label: 'taxConfigurationEC.infoTributaria.numeroCalificacionArtesanal', id: 'calificacionArtesanal', type: 'input' },
+  { label: 'taxConfigurationEC.infoTributaria.sitioWebFacturaElectronica', id: 'sitioWebFacturaElectronica', type: 'input' },
   //{ label: 'taxConfigurationEC.infoTributaria.correoEnvioComprobantes', field: 'correoEnvioComprobantes', type: 'input' },
-], '/Tax-configuration-ec/SRI/InfoTributaria/');
+], '/organization/ecuador/tax-info');
 
 type ReglasFieldConfig = {
   label: string;
