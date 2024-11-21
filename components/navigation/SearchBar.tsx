@@ -40,7 +40,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
       params: { highlight: id },  
     });
   };
-  
+
+  const clearSearch = () => {
+    setQuery('');
+    setFilteredResults(allConfigs);
+  };
+
   const renderSearchResult = (item: any, index: number) => (
     <TouchableOpacity
       key={index}
@@ -60,21 +65,32 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        value={query}
-        onChangeText={handleSearch}
-        placeholder={t('search.placeholder')}
-        style={styles.input}
-        placeholderTextColor="#A1A1A1"
-        onSubmitEditing={() => handleSearch(query)} 
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          value={query}
+          onChangeText={handleSearch}
+          placeholder={t('search.placeholder')}
+          style={styles.input}
+          placeholderTextColor="#A1A1A1"
+          onSubmitEditing={() => handleSearch(query)} 
+        />
+        {query.length > 0 && (
+          <TouchableOpacity style={styles.clearButton} onPress={clearSearch}>
+            <Text style={styles.clearButtonText}>✕</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       {query.length > 0 && (
         <View style={styles.overlay}>
           <ScrollView
             style={styles.scrollContainer}
             contentContainerStyle={styles.resultsContainer}
           >
-            {filteredResults.map(renderSearchResult)}
+            {filteredResults.length > 0 ? (
+              filteredResults.map(renderSearchResult)
+            ) : (
+              <Text style={styles.noResultsText}>{t('search.noResults')}</Text>
+            )}
           </ScrollView>
         </View>
       )}
@@ -90,6 +106,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: '100%',
   },
+  inputContainer: {
+    position: 'relative',
+    width: '100%',
+  },
   input: {
     height: 50,
     borderColor: '#DDD',
@@ -99,6 +119,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#F9F9F9',
     width: '100%',
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 15,
+    top: 15,
+    backgroundColor: '#DDDDDD',
+    borderRadius: 15,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  clearButtonText: {
+    color: '#555',
+    fontSize: 14,
   },
   overlay: {
     position: 'absolute',
@@ -116,6 +151,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: '#E0E0E0',
     borderWidth: 1,
+    paddingHorizontal: 10,
   },
   resultsContainer: {
     paddingVertical: 0,
@@ -130,5 +166,12 @@ const styles = StyleSheet.create({
   },
   resultTextLast: {
     borderBottomWidth: 0,
+  },
+  noResultsText: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    fontSize: 16,
+    color: '#A1A1A1',
+    textAlign: 'center',
   },
 });
