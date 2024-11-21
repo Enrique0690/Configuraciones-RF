@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler, Platform, TouchableWithoutFeedback, Keyboard, Pressable } from 'react-native';
 
 type EditDialogProps = {
   visible: boolean;
@@ -10,30 +10,71 @@ type EditDialogProps = {
   title: string;
 };
 
-const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, onSave, onClose, title }) => {
+const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, onSave, onClose, title, }) => {
+  const inputRef = useRef<TextInput>(null);
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (visible) {
+        onClose();
+        return true;
+      }
+      return false;
+    };
+
+    if (visible) {
+      inputRef.current?.focus();
+      if (Platform.OS !== 'web') {
+        BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+      }
+    }
+
+    return () => {
+      if (Platform.OS !== 'web') {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+      }
+    };
+  }, [visible, onClose]);
+
+  const handleKeyPress = (event: any) => {
+    if (event.nativeEvent.key === 'Escape') {
+      onClose();
+    }
+  };
+
   return (
-    <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.modalContainer}>
-        <View style={styles.dialog}>
-          <Text style={styles.title}>{title}</Text>
-          <TextInput
-            style={styles.input}
-            value={value}
-            onChangeText={onChangeText}
-            autoFocus
-            placeholder="Escribe aquí..."
-            placeholderTextColor="#999"
-          />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={onClose} style={styles.button}>
-              <Text style={styles.buttonTextCancel}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onSave} style={styles.button}>
-              <Text style={styles.buttonTextSave}>Guardar</Text>
-            </TouchableOpacity>
-          </View>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); onClose(); }}>
+        <View style={styles.modalContainer}>
+          <TouchableWithoutFeedback>
+            <View style={styles.dialog}>
+              <Text style={styles.title}>{title}</Text>
+              <TextInput
+                ref={inputRef}
+                style={styles.input}
+                value={value}
+                onChangeText={onChangeText}
+                onKeyPress={handleKeyPress}
+                autoFocus
+                placeholder="Escribe aquí..."
+                placeholderTextColor="#999"
+              />
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity onPress={onClose} style={styles.button}>
+                  <Text style={styles.buttonTextCancel}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={onSave} style={styles.button}>
+                  <Text style={styles.buttonTextSave}>Guardar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
@@ -81,11 +122,11 @@ const styles = StyleSheet.create({
   },
   buttonTextCancel: {
     fontSize: 16,
-    color: '#FF3B30', 
+    color: '#FF3B30',
   },
   buttonTextSave: {
     fontSize: 16,
-    color: '#007AFF', 
+    color: '#007AFF',
     fontWeight: '600',
   },
 });
