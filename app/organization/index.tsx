@@ -91,7 +91,7 @@ const BusinessInfoScreen: React.FC = () => {
           buttonText={t('businessInfo.uploadImage')}
         />
 
-        {organizationConfig.map(({ label, id, type }) => (
+        {organizationConfig.map(({ label, id, type, list }) => (
           <DataRenderer
             key={id}
             label={t(label)}
@@ -99,6 +99,7 @@ const BusinessInfoScreen: React.FC = () => {
             type={type}
             onSave={(newValue) => handleChange(id, newValue, data, saveData)}
             textColor={Colors.text}
+            dataList={list}
             highlight={highlight === id}
           />
         ))}
@@ -125,7 +126,7 @@ const ImageUploadSection: React.FC<{
         <Text style={styles.uploadButtonText}>{buttonText}</Text>
       </TouchableOpacity>
     ) : (
-      <TouchableOpacity onPress={onSelectImage}>
+      <TouchableOpacity style={styles.imageContainer} onPress={onSelectImage}>
         <Image source={{ uri: imageUri }} style={styles.imagePreview} />
       </TouchableOpacity>
     )}
@@ -148,14 +149,20 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 16,
-    textAlign: 'center',
+  },
+  imageContainer: {
+    alignItems: 'center',  
+    justifyContent: 'center',  
+    marginBottom: 16,
   },
   imagePreview: {
-    width: '100%',
-    height: IMAGE_PREVIEW_SIZE,
-    resizeMode: 'contain',
-    borderRadius: 10,
-    marginBottom: 16,
+    width: '100%', 
+    height: undefined, 
+    aspectRatio: 1, 
+    maxWidth: 500,  
+    maxHeight: 300, 
+    resizeMode: 'contain',  
+    borderRadius: 15,  
   },
   uploadButton: {
     backgroundColor: '#4CAF50',

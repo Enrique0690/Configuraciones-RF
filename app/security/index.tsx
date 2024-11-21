@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginVertical: 16,
-    textAlign: 'center',
   },
   searchBarContainer: {
     display: Platform.select({

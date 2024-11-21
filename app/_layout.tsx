@@ -42,7 +42,6 @@ const MenuSection = ({ items, router, setIsFullScreen, selectedRoute, setSelecte
         ))}
     </View>
 );
-
 export default function Layout() {
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
@@ -52,22 +51,16 @@ export default function Layout() {
     const [selectedRoute, setSelectedRoute] = useState('');
     const { width } = useWindowDimensions();
     const isTabletOrMobile = width <= 768;
-    useEffect(() => {
-        setIsFullScreen(isTabletOrMobile);
-    }, [isTabletOrMobile]);
-    useEffect(() => {
-        if (segments && segments.length > 0) {
-            const currentRoute = `/${segments.join('/')}`;
-            setSelectedRoute(currentRoute);
-        }
-    }, [segments]);
 
     useEffect(() => {
-        if (Number(segments.length) === 0) {
+        const currentRoute = `/${segments.join('/')}`;
+        if (isTabletOrMobile && currentRoute === '/') {
+            setIsFullScreen(false);
+        } else {
             setIsFullScreen(isTabletOrMobile);
-            setSelectedRoute('');
         }
-    }, [segments, isTabletOrMobile]);
+        setSelectedRoute(currentRoute);
+    }, [isTabletOrMobile, segments]);
 
     useEffect(() => {
         if (isTabletOrMobile && isFullScreen) {
@@ -145,7 +138,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         maxWidth: 900,
-        marginHorizontal: 'auto',
+        marginHorizontal: 'auto'
     },
     fullScreenContent: {
         width: '100%',

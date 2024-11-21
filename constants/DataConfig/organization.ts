@@ -5,9 +5,10 @@ function withGlobalRoute<T>(config: T[], route: string): (T & { route: string })
 type FieldConfig = {
   id:  keyof typeof defaultData;
   label: string;
-  type: 'text' | 'image' | 'input';
+  type: 'text' | 'image' | 'input' | 'inputlist';
   route?: string;
   imageUrl?: string | null;
+  list?: string[]
 };
 
 export const defaultData = {
@@ -27,7 +28,7 @@ export const organizationConfig: Array<FieldConfig> =  withGlobalRoute([
   { id: 'direccion', label: 'businessInfo.address', type: 'input'},
   { id: 'telefono', label: 'businessInfo.phone', type: 'input'},
   { id: 'email', label: 'businessInfo.email', type: 'input'},
-  { id: 'base', label: 'businessInfo.businessType', type: 'input'},
+  { id: 'base', label: 'businessInfo.businessType', type: 'inputlist',list: ['FOODTRUCK / PUESTO DE COMIDA', 'RESTAURANT', 'REATIL/ LOCAL COMERCIAL', 'HOTEL']},
 ], '/Business-info');
 
 type InfoTributariaFieldConfig = {
