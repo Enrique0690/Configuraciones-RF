@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   label: {
-    fontWeight: 400,
+    fontWeight: 600,
     fontSize: 16,
     marginRight: 8,
   },

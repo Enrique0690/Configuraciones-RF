@@ -2,7 +2,7 @@
     "layout": {
         "header": "Configuraciones",
         "menuItems": {
-            "businessInfo": "Información Fiscal",
+            "businessInfo": "Información del Negocio",
             "printers": "Impresoras",
             "paymentMethods": "Métodos de Pago",
             "integrations": "Integraciones con otras Apps",
@@ -99,7 +99,7 @@
         "userName": "Nombre Usuario",
         "commercialName": "Nombre Comercial",
         "tableNumber": "# Mesa",
-        "time": "Tiempo ⏰",
+        "time": "Tiempo",
         "totalAmount": "$ Total de mesa"
     },
     "security": {

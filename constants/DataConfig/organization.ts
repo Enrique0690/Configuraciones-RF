@@ -29,7 +29,7 @@ export const organizationConfig: Array<FieldConfig> =  withGlobalRoute([
   { id: 'telefono', label: 'businessInfo.phone', type: 'input'},
   { id: 'email', label: 'businessInfo.email', type: 'input'},
   { id: 'base', label: 'businessInfo.businessType', type: 'inputlist',list: ['FOODTRUCK / PUESTO DE COMIDA', 'RESTAURANT', 'REATIL/ LOCAL COMERCIAL', 'HOTEL']},
-], '/Business-info');
+], '/organization'); 
 
 type InfoTributariaFieldConfig = {
   label: string;

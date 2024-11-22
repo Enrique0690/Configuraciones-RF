@@ -103,7 +103,10 @@ export default function Layout() {
             <View style={[styles.content, isFullScreen && !isTabletOrMobile && styles.fullScreenContent]}>
                 <Stack
                     screenOptions={{
-                        headerShown: false
+                        headerShown: false,
+                        contentStyle: {
+                            backgroundColor: 'white', 
+                        },
                     }}
                 />
             </View>
@@ -115,7 +118,6 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         flexDirection: 'row',
-        zIndex: 1,
     },
     sidebar: {
         padding: 16,
@@ -132,7 +134,7 @@ const styles = StyleSheet.create({
     },
     menuItem: {
         fontSize: 16,
-        paddingVertical: 7,
+        paddingVertical: 10,
         color: Colors.text,
     },
     content: {
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     section: {
-        paddingVertical: 15,
+        paddingVertical: 10,
     },
     searchBarContainer: {
         zIndex: 10,
