@@ -11,14 +11,13 @@ interface DataRendererProps {
   type: 'input' | 'image' | 'switch' | 'buttonlist' | 'text' | 'inputlist'; 
   onPress?: () => void;
   textColor: string;
-  finalText?: string;
   iconName?: string;
   onSave?: (value: string | boolean) => void; 
   highlight?: boolean;
   dataList?: string[]; 
 }
 
-const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onPress, textColor, finalText, iconName, onSave, highlight, dataList}) => {
+const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onPress, textColor, iconName, onSave, highlight, dataList}) => {
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [tempValue, setTempValue] = useState(value as string);
   const [switchValue, setSwitchValue] = useState(value as boolean);
@@ -79,7 +78,6 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
           <TouchableOpacity onPress={openEditDialog}>
             <Text style={[styles.textValue]}>
               <Text style={styles.label}>{label}</Text> {value || 'Editar'}
-              {finalText && <Text style={styles.finalText}> {finalText}</Text>}
             </Text>
           </TouchableOpacity>
         );
@@ -89,20 +87,21 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
           <TouchableOpacity onPress={() => setListModalVisible(true)}>
             <Text style={[styles.textValue, { color: textColor }]}>
               <Text style={styles.label}>{label}:</Text> {value || 'Seleccione una opcion'}
-              {finalText && <Text style={styles.finalText}> {finalText}</Text>}
             </Text>
           </TouchableOpacity>
         );
 
-      case 'switch':
-        return (
-          <View style={styles.switchContainer}>
-            <Text style={[styles.label, { color: textColor }]}>{label}:</Text>
-            <Switch value={switchValue} onValueChange={handleSwitchChange} />
-            {finalText && <Text style={[styles.finalText, { color: textColor }]}>{finalText}</Text>}
-          </View>
-        );
-
+        case 'switch':
+          return (
+            <TouchableOpacity 
+              style={styles.switchContainer} 
+              onPress={() => handleSwitchChange(!switchValue)}
+            >
+              <Text style={[styles.label, { color: textColor }]}>{label}:</Text>
+              <Switch value={switchValue} onValueChange={handleSwitchChange} />
+            </TouchableOpacity>
+          );
+        
       case 'image':
         return (
           <View style={styles.imageContainer}>
@@ -126,7 +125,7 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
   return (
     <View style={[styles.inputGroup, highlightActive && styles.highlightedContainer]}>
       {renderContent()}
-
+  
       {isDialogVisible && (
         <EditDialog
           visible={isDialogVisible}
@@ -148,13 +147,19 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
         />
       )}
     </View>
-  );
+  );  
 };
 
 const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: 20,
     flexDirection: 'column',
+    borderWidth: 2,            
+    borderColor: 'transparent',
+    borderRadius: 10,          
+  },
+  highlightedContainer: {
+    borderColor: '#4CAF50',     
   },
   label: {
     fontWeight: 600,
@@ -165,12 +170,6 @@ const styles = StyleSheet.create({
     fontWeight: 400,
     fontSize: 16,
     paddingVertical: 4,
-    
-  },
-  finalText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 4,
   },
   switchContainer: {
     flexDirection: 'row',
@@ -201,22 +200,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 12,
     fontWeight: '600',
-  },
-  highlightedContainer: {
-    borderColor: '#4CAF50',
-    borderWidth: 2,
-    padding: 5,
-    borderRadius: 10,
-  },
-  highlightedText: {
-    backgroundColor: '#e6ffe6',
-  },
-  inputListContainer: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 20,
   },
 });
 

@@ -55,7 +55,6 @@ const SecurityScreen: React.FC = () => {
             type={type}
             onSave={(newValue) => handleChange(id, newValue, data, saveData)}
             textColor={Colors.text}
-            finalText={t(finalText as string)}
             highlight={highlight === id}
           />
         ))}
