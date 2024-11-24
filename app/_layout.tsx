@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Platform, BackHandler, Dimensions, useWindowDimensions } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, BackHandler, useWindowDimensions } from "react-native";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
@@ -7,41 +7,35 @@ import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
 import { useTranslation } from "react-i18next";
 
-const MenuItem = ({ item, router, setIsFullScreen, selectedRoute, setSelectedRoute }: {
-    item: { text: string, route: string, icon: string },
-    router: any, setIsFullScreen: Function, selectedRoute: string, setSelectedRoute: (route: string) => void
-}) => {
-    const isActive = selectedRoute.startsWith(item.route);
-
-    return (
-        <TouchableOpacity
-            onPress={() => {
-                router.push(item.route);
-                setIsFullScreen(true);
-                setSelectedRoute(item.route);
-            }}
-            style={[styles.menuItem, isActive && styles.activeMenuItem]}>
-            <Text style={styles.menuItemText}>{item.icon} {item.text}</Text>
-        </TouchableOpacity>
-    );
-};
-
-const MenuSection = ({ items, router, setIsFullScreen, selectedRoute, setSelectedRoute }: {
-    items: any[], router: any, setIsFullScreen: Function, selectedRoute: string, setSelectedRoute: (route: string) => void
+// Componente para un elemento de menú
+const MenuItem = ({ item, onPress, isActive }: {
+    item: { text: string, icon: string },
+    onPress: () => void,
+    isActive: boolean
 }) => (
-    <View style={[styles.section]}>
+    <TouchableOpacity onPress={onPress} style={[styles.menuItem, isActive && styles.activeMenuItem]}>
+        <Text style={styles.menuItemText}>{item.icon} {item.text}</Text>
+    </TouchableOpacity>
+);
+
+// Componente para una sección de menú
+const MenuSection = ({ items, onItemPress, selectedRoute }: {
+    items: { text: string, route: string, icon: string }[],
+    onItemPress: (route: string) => void,
+    selectedRoute: string
+}) => (
+    <View style={styles.section}>
         {items.map(item => (
             <MenuItem
                 key={item.text}
                 item={item}
-                router={router}
-                setIsFullScreen={setIsFullScreen}
-                selectedRoute={selectedRoute}
-                setSelectedRoute={setSelectedRoute}
+                isActive={selectedRoute.startsWith(item.route)}
+                onPress={() => onItemPress(item.route)}
             />
         ))}
     </View>
 );
+
 export default function Layout() {
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
@@ -52,38 +46,59 @@ export default function Layout() {
     const { width } = useWindowDimensions();
     const isTabletOrMobile = width <= 768;
 
+    // Función para manejar la navegación y actualización del estado
+    const handleNavigation = useCallback((route: string) => {
+        router.push(route as any);
+        setIsFullScreen(true);
+        setSelectedRoute(route);
+    }, [router]);
+
     useEffect(() => {
+        // Actualiza el estado de la pantalla completa según la ruta y el tamaño del dispositivo
         const currentRoute = `/${segments.join('/')}`;
-        if (isTabletOrMobile && currentRoute === '/') {
-            setIsFullScreen(false);
-        } else {
-            setIsFullScreen(isTabletOrMobile);
-        }
+        setIsFullScreen(isTabletOrMobile && currentRoute !== '/');
         setSelectedRoute(currentRoute);
     }, [isTabletOrMobile, segments]);
 
     useEffect(() => {
+        // Manejo del botón de retroceso en dispositivos móviles
         if (isTabletOrMobile && isFullScreen) {
-            const backAction = () => {
+            const handleBackPress = () => {
                 if (Number(segments.length) === 0) {
                     setIsFullScreen(false);
                     return true;
                 }
                 return false;
             };
-            BackHandler.addEventListener("hardwareBackPress", backAction);
-            return () => BackHandler.removeEventListener("hardwareBackPress", backAction);
+            BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+            return () => BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
         }
     }, [isTabletOrMobile, isFullScreen, segments]);
 
-    const menuItems = [
-        { text: t("layout.menuItems.businessInfo"), route: "/organization", icon: "👁️" },
-        { text: t("layout.menuItems.orderingstations"), route: "/order-station", icon: "👨‍🍳" },
-        { text: t("layout.menuItems.printers"), route: "/printers", icon: "🖨️" },
-        { text: t("layout.menuItems.tabletConfiguration"), route: "/table-layout", icon: "🍽️" },
-        { text: t("layout.menuItems.security"), route: "/security", icon: "🔒" },
-        { text: t("layout.menuItems.advancedOptions"), route: "/advanced", icon: "⚙️" }
+    // Elementos del menú divididos en 3 grupos
+    const menuGroups = [
+        [
+            { text: t("layout.menuItems.businessInfo"), route: "/organization", icon: "👁️" },
+        ],
+        [
+            { text: t("layout.menuItems.orderingstations"), route: "/order-station", icon: "👨‍🍳" },
+            { text: t("layout.menuItems.printers"), route: "/printers", icon: "🖨️" },
+            { text: t("layout.menuItems.tabletConfiguration"), route: "/table-layout", icon: "🍽️" },
+        ],
+        [
+            { text: t("layout.menuItems.security"), route: "/security", icon: "🔒" },
+            { text: t("layout.menuItems.advancedOptions"), route: "/advanced", icon: "⚙️" },
+        ],
     ];
+
+    // Muestra un loader mientras carga la interfaz
+    if (!selectedRoute) {
+        return (
+            <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+                <View style={[styles.sidebarLoading, { width: isTabletOrMobile ? '100%' : 300 }]} />
+            </View>
+        );
+    }
 
     return (
         <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
@@ -94,19 +109,22 @@ export default function Layout() {
                         <SearchBar setIsFullScreen={setIsFullScreen} />
                     </View>
                     <ScrollView>
-                        <MenuSection items={menuItems.slice(0, 1)} router={router} setIsFullScreen={setIsFullScreen} selectedRoute={selectedRoute} setSelectedRoute={setSelectedRoute} />
-                        <MenuSection items={menuItems.slice(1, 4)} router={router} setIsFullScreen={setIsFullScreen} selectedRoute={selectedRoute} setSelectedRoute={setSelectedRoute} />
-                        <MenuSection items={menuItems.slice(4)} router={router} setIsFullScreen={setIsFullScreen} selectedRoute={selectedRoute} setSelectedRoute={setSelectedRoute} />
+                        {menuGroups.map((group, index) => (
+                            <MenuSection
+                                key={index}
+                                items={group}
+                                onItemPress={handleNavigation}
+                                selectedRoute={selectedRoute}
+                            />
+                        ))}
                     </ScrollView>
                 </View>
             )}
-            <View style={[styles.content, isFullScreen && !isTabletOrMobile && styles.fullScreenContent]}>
+            <View style={[styles.content, isFullScreen && styles.fullScreenContent]}>
                 <Stack
                     screenOptions={{
                         headerShown: false,
-                        contentStyle: {
-                            backgroundColor: 'white', 
-                        },
+                        contentStyle: { backgroundColor: 'white' },
                     }}
                 />
             </View>
@@ -121,8 +139,10 @@ const styles = StyleSheet.create({
     },
     sidebar: {
         padding: 16,
-        paddingRight: 20,
-        paddingLeft: 20,
+    },
+    sidebarLoading: {
+        height: '100%',
+        backgroundColor: '#fff',
     },
     header: {
         fontSize: 24,
@@ -130,17 +150,16 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         textAlign: 'center',
         color: Colors.text,
-        display: Platform.select({ ios: 'flex', android: 'flex', default: 'none' }),
     },
     menuItem: {
+        paddingVertical: 12,
+        paddingHorizontal: 20,
         fontSize: 16,
-        paddingVertical: 10,
-        color: Colors.text,
     },
     content: {
         flex: 1,
         maxWidth: 900,
-        marginHorizontal: 'auto'
+        marginHorizontal: 'auto',
     },
     fullScreenContent: {
         width: '100%',
@@ -157,8 +176,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     menuItemText: {
-        paddingLeft: 15,
         fontSize: 16,
-        fontWeight: 600,
+        fontWeight: '600',
     },
 });

@@ -1,15 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  TextInput,
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Keyboard,
-  Platform,
-  BackHandler
-} from 'react-native';
+import { TextInput, View, Text, TouchableOpacity, ScrollView, StyleSheet, Keyboard, Platform, BackHandler } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { allConfigs } from '@/constants/DataConfig';
@@ -68,7 +58,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
 
   const handleKeyDown = (event: any): void => {
     if (event.key === 'Escape') {
-      clearSearch(); // Clear search when Escape key is pressed
+      clearSearch(); 
     }
 
     if (filteredResults.length === 0) return;
@@ -132,7 +122,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
     </TouchableOpacity>
   );
 
-  // Handle the 'Escape' key press and back button action on mobile
   useEffect(() => {
     if (Platform.OS === 'web') {
       const handleEscapePress = (event: KeyboardEvent) => {
@@ -150,10 +139,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
 
     const backAction = () => {
       if (query.length > 0) {
-        clearSearch(); // Clear search if the back button is pressed
-        return true; // Prevent default back action
+        clearSearch();
+        return true;
       }
-      return false; // Allow the default back action
+      return false;
     };
 
     if (Platform.OS === 'android') {
@@ -165,7 +154,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
         BackHandler.removeEventListener('hardwareBackPress', backAction);
       }
     };
-  }, [query]); // Dependency on 'query' to evaluate changes
+  }, [query]);
 
   return (
     <View style={styles.container}>
