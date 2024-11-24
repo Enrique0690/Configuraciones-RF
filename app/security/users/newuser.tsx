@@ -7,12 +7,10 @@ import { router } from 'expo-router';
 import UUID from 'react-native-uuid';
 import DataRenderer from '@/components/DataRenderer';
 import useStorage from '@/hooks/useStorage';
+import { Colors } from '@/constants/Colors';
 
 const NewUserScreen: React.FC = () => {
   const { t } = useTranslation();
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const textColor = useThemeColor({}, 'text');
-  const buttonColor = useThemeColor({}, 'buttonColor');
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [role, setRole] = useState<string>('');
@@ -60,14 +58,14 @@ const NewUserScreen: React.FC = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
-      <Text style={[styles.title, { color: textColor }]}>{t('security.user.Newuser')}</Text>
+    <ScrollView contentContainerStyle={[styles.container]}>
+      <Text style={[styles.title, { color: Colors.text }]}>{t('security.user.Newuser')}</Text>
 
       <DataRenderer
         label={t('security.user.namePlaceholder')}
         value={name}
         type="input"
-        textColor={textColor}
+        textColor={Colors.text}
         onSave={(newValue) => setName(newValue as string)}
       />
 
@@ -75,7 +73,7 @@ const NewUserScreen: React.FC = () => {
         label={t('security.user.emailPlaceholder')}
         value={email}
         type="input"
-        textColor={textColor}
+        textColor={Colors.text}
         onSave={(newValue) => setEmail(newValue as string)}
       />
 
@@ -83,7 +81,7 @@ const NewUserScreen: React.FC = () => {
         label={t('security.user.rolePlaceholder')}
         value={role}
         type="inputlist"
-        textColor={textColor}
+        textColor={Colors.text}
         dataList={roleNames}  
         onSave={(selectedRole) => setRole(selectedRole as string)}
       />
@@ -92,16 +90,16 @@ const NewUserScreen: React.FC = () => {
         label={t('security.user.passwordPlaceholder')}
         value={password}
         type="input"
-        textColor={textColor}
+        textColor={Colors.text}
         onSave={(newValue) => setPassword(newValue as string)}
       />
 
       <View style={styles.colorPickerContainer}>
         <TouchableOpacity
-          style={[styles.saveButton, { backgroundColor: buttonColor }]}
+          style={[styles.saveButton, { backgroundColor: Colors.buttonColor }]}
           onPress={handleSave}
         >
-          <Text style={styles.saveButtonText}>{t('security.user.saveButton')}</Text>
+          <Text style={styles.saveButtonText}>{t('common.save')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -112,14 +110,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    paddingTop: Platform.OS === 'ios' ? 20 : 0,
-    backgroundColor: '#d9ffe6',
   },
   title: {
+    paddingTop: 16,
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
-    textAlign: 'center',
   },
   saveButton: {
     paddingVertical: 12,
@@ -127,6 +123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 16,
     width: '100%',
+    maxWidth: 100,
   },
   saveButtonText: {
     color: '#fff',

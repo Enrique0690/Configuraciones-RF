@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useLocalSearchParams } from 'expo-router';
 import DataRenderer from '@/components/DataRenderer';
 import useStorage from '@/hooks/useStorage';
+import { Colors } from '@/constants/Colors';
 
 const EditUserScreen: React.FC = () => {
   const { t } = useTranslation();
   const { userId } = useLocalSearchParams();
-  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const textColor = useThemeColor({}, 'textsecondary');
-  const buttonColor = useThemeColor({}, 'buttonColor');
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [role, setRole] = useState<string>('');
@@ -20,44 +17,45 @@ const EditUserScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { data: roles, loading: rolesLoading } = useStorage('roles', []);
-
-  const loadUserData = async () => {
-    if (!userId) {
-      setError(t('security.user.userNotFound'));
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const storedUsers = await AsyncStorage.getItem('users');
-      const users = storedUsers ? JSON.parse(storedUsers) : [];
-      const user = users.find((user: any) => user.id === userId);
-
-      if (user) {
-        setName(user.name);
-        setEmail(user.email);
-        setRole(user.role);
-        setPassword(user.password || '');
-      } else {
-        setError(t('security.user.userNotFound'));
-      }
-    } catch (error) {
-      setError(t('security.user.loadError'));
-    } finally {
-      setLoading(false);
-    }
-  };
+  const roleNames = roles.map((role: { name: string }) => role.name);
 
   useEffect(() => {
+    const loadUserData = async () => {
+      if (!userId) {
+        setError(t('security.user.userNotFound'));
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const storedUsers = await AsyncStorage.getItem('users');
+        const users = storedUsers ? JSON.parse(storedUsers) : [];
+        const user = users.find((user: { id: string }) => user.id === userId);
+
+        if (user) {
+          setName(user.name);
+          setEmail(user.email);
+          setRole(user.role);
+          setPassword(user.password || '');
+        } else {
+          setError(t('security.user.userNotFound'));
+        }
+      } catch (error) {
+        setError(t('security.user.loadError'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadUserData();
-  }, [userId]);
+  }, [userId, t]);
 
   const handleSave = async () => {
     setLoading(true);
     try {
       const storedUsers = await AsyncStorage.getItem('users');
       const users = storedUsers ? JSON.parse(storedUsers) : [];
-      const userIndex = users.findIndex((user: any) => user.id === userId);
+      const userIndex = users.findIndex((user: { id: string }) => user.id === userId);
 
       if (userIndex !== -1) {
         users[userIndex] = { id: userId, name, email, role, password };
@@ -74,7 +72,7 @@ const EditUserScreen: React.FC = () => {
   if (loading || rolesLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={buttonColor} />
+        <ActivityIndicator size="large" color={Colors.buttonColor} />
         <Text style={styles.loadingText}>{t('security.user.loading')}</Text>
       </View>
     );
@@ -92,45 +90,48 @@ const EditUserScreen: React.FC = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
-      <Text style={[styles.title, { color: textColor }]}>{t('security.user.editUser')}</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={[styles.title, { color: Colors.text }]}>{t('security.user.editUser')}</Text>
 
       <DataRenderer
         label={t('security.user.namePlaceholder')}
         value={name}
         type="input"
-        textColor={textColor}
+        textColor={Colors.text}
         onSave={(newValue) => setName(newValue as string)}
       />
+
       <DataRenderer
         label={t('security.user.emailPlaceholder')}
         value={email}
         type="input"
-        textColor={textColor}
+        textColor={Colors.text}
         onSave={(newValue) => setEmail(newValue as string)}
       />
+
       <DataRenderer
         label={t('security.user.rolePlaceholder')}
         value={role}
         type="inputlist"
-        textColor={textColor}
-        dataList={roles}
+        textColor={Colors.text}
+        dataList={roleNames}
         onSave={(selectedRole) => setRole(selectedRole as string)}
       />
+
       <DataRenderer
         label={t('security.user.passwordPlaceholder')}
         value={password}
         type="input"
-        textColor={textColor}
+        textColor={Colors.text}
         onSave={(newValue) => setPassword(newValue as string)}
       />
 
       <View style={styles.colorPickerContainer}>
         <TouchableOpacity
-          style={[styles.saveButton, { backgroundColor: buttonColor }]}
+          style={[styles.saveButton, { backgroundColor: Colors.buttonColor }]}
           onPress={handleSave}
         >
-          <Text style={styles.saveButtonText}>{t('security.user.saveButton')}</Text>
+          <Text style={styles.saveButtonText}>{t('common.save')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -141,14 +142,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    paddingTop: Platform.OS === 'ios' ? 20 : 0,
-    backgroundColor: '#d9ffe6',
+    paddingTop: 16
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
-    textAlign: 'center',
   },
   colorPickerContainer: {
     alignItems: 'center',
@@ -159,6 +158,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 16,
     width: '100%',
+    maxWidth: 100,
   },
   saveButtonText: {
     color: '#fff',
