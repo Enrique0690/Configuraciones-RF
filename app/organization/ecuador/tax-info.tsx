@@ -8,11 +8,13 @@ import DataRenderer from '@/components/DataRenderer';
 import SearchBar from '@/components/navigation/SearchBar';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
+import { useRouter } from 'expo-router';
 
 const InfoTributaria: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['organization', 'common']);
   const { data, loading, error, saveData, reloadData } = useStorage('infoTributariaData', defaultInfoTributariaData);
   const { highlight } = useLocalSearchParams();
+  const router = useRouter();
   const firstGroup = infoTributariaConfig.slice(0, 3);
   const secondGroup = infoTributariaConfig.slice(3);
 
@@ -20,7 +22,7 @@ const InfoTributaria: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('taxConfigurationEC.infoTributaria.loading')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -28,9 +30,9 @@ const InfoTributaria: React.FC = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('taxConfigurationEC.infoTributaria.loadError')}</Text>
-        <TouchableOpacity onPress={reloadData} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>{t('taxConfigurationEC.infoTributaria.retry')}</Text>
+        <Text style={styles.errorMessage}>{t('common.loadError')}</Text>
+        <TouchableOpacity onPress={() => router.push('/')} style={styles.goBackButton}>
+          <Text style={styles.goBackButtonText}>{t('printers.goBackHome')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -119,16 +121,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  retryButton: {
-    backgroundColor: '#4CAF50',
+  goBackButtonText: { color: 'white', fontSize: 16 },
+  connectionOptionContainer: {
+    alignItems: 'center',
+  },
+  goBackButton: {
+    marginTop: 20,
+    backgroundColor: '#007AFF',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  retryButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    borderRadius: 8,
   },
 });
 

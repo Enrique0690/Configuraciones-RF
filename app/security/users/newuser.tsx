@@ -11,7 +11,7 @@ import useStorage from '@/hooks/useStorage';
 const NewUserScreen: React.FC = () => {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
-  const textColor = useThemeColor({}, 'textsecondary');
+  const textColor = useThemeColor({}, 'text');
   const buttonColor = useThemeColor({}, 'buttonColor');
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');

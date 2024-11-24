@@ -168,7 +168,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
         <TextInput
           value={query}
           onChangeText={handleSearch}
-          placeholder={t('search.placeholder')}
+          placeholder={t('common.search')}
           style={styles.input}
           placeholderTextColor={ICON_COLOR}
           onKeyPress={handleKeyDown}

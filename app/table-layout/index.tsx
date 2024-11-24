@@ -4,7 +4,7 @@ import { Colors } from '@/constants/Colors';
 import { handleChange } from '@/hooks/handleChange';
 import useStorage from '@/hooks/useStorage';
 import { useTranslation } from 'react-i18next';
-import { TableConfig, defaultData } from '@/constants/DataConfig/table-layout';
+import { TableConfig, defaultData } from '@/constants/DataConfig/tablelayout';
 import DataRenderer from '@/components/DataRenderer';
 import SearchBar from '@/components/navigation/SearchBar';
 import { useLocalSearchParams } from 'expo-router';
@@ -28,9 +28,9 @@ const TabletConfigurationScreen: React.FC = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('tabletConfiguration.loadError')}</Text>
+        <Text style={styles.errorMessage}>{t('tablelayout.loadError')}</Text>
         <TouchableOpacity onPress={reloadData} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>{t('tabletConfiguration.retry')}</Text>
+          <Text style={styles.retryButtonText}>{t('tablelayout.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -42,7 +42,7 @@ const TabletConfigurationScreen: React.FC = () => {
         <SearchBar />
       </View>
       <Text style={[styles.sectionTitle, { color: Colors.text }]}>
-        {t('tabletConfiguration.header')}
+        {t('tablelayout.header')}
       </Text>
       <ScrollView>
         <TabletConfiguration

@@ -1,0 +1,14 @@
+{
+    "header": "Configuraciones",
+    "menuItems": {
+        "businessInfo": "Información del Negocio",
+        "printers": "Impresoras",
+        "paymentMethods": "Métodos de Pago",
+        "integrations": "Integraciones con otras Apps",
+        "tabletConfiguration": "Configuración de Mesas",
+        "security": "Seguridad",
+        "advancedOptions": "Opciones Avanzadas",
+        "taxConfigurationEC": "Configuración de Tributaria",
+        "orderingstations": "Estaciones de Pedidos"
+    }
+}

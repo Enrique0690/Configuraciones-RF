@@ -1,0 +1,11 @@
+{
+    "save": "Save",
+    "loading": "Loading...",
+    "error": "Error",
+    "uploadImage": "Upload Image",
+    "loadError": "Error loading",
+    "goBackHome": "Go back home",
+    "permissionDenied": "Permission denied",
+    "saveError": "Changes could not be saved.",
+    "search": "Search"
+}

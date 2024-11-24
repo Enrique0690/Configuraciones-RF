@@ -82,7 +82,7 @@ const NewPrinterScreen = () => {
     try {
       const updatedPrinters: Printer[] = [...(printersData || []), newPrinter];
       await savePrintersData(updatedPrinters);
-      router.push('/Printers');
+      router.push('/printers');
     } catch (error) {
       console.error('Error saving printer data:', error);
       setError(t('printers.errorSaving'));

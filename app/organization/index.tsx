@@ -82,13 +82,13 @@ const BusinessInfoScreen: React.FC = () => {
         </View>
 
         <Text style={[styles.sectionTitle, { color: Colors.text }]}>
-          {t('businessInfo.header')}
+          {t('header')}
         </Text>
 
         <ImageUploadSection 
           imageUri={imageUri}
           onSelectImage={openImagePicker}
-          buttonText={t('businessInfo.uploadImage')}
+          buttonText={t('uploadImage')}
         />
 
         {organizationConfig.map(({ label, id, type, list }) => (
@@ -104,7 +104,7 @@ const BusinessInfoScreen: React.FC = () => {
           />
         ))}
         <DataRenderer
-            label={t('taxConfigurationEC.infoTributaria.sectionTitle')} 
+            label={t('organization.taxinfo.header')} 
             value="/organization/ecuador/tax-info"
             type='buttonlist'
             iconName='document-text' 

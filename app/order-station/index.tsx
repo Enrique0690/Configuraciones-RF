@@ -30,7 +30,7 @@ const OrderingStationsScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('stations.loading')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -38,9 +38,9 @@ const OrderingStationsScreen: React.FC = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('stations.loadError')}</Text>
+        <Text style={styles.errorMessage}>{t('common.loadError')}</Text>
         <TouchableOpacity onPress={reloadData} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('stations.retry')}</Text>
+          <Text style={styles.goBackButtonText}>{t('common.retry')}</Text>
         </TouchableOpacity>
       </View>
     );

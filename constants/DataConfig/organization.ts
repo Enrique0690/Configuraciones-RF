@@ -24,11 +24,11 @@ export const defaultData = {
 };
 
 export const organizationConfig: Array<FieldConfig> =  withGlobalRoute([
-  { id: 'nombreComercial', label: 'businessInfo.name', type: 'input'},
-  { id: 'direccion', label: 'businessInfo.address', type: 'input'},
-  { id: 'telefono', label: 'businessInfo.phone', type: 'input'},
-  { id: 'email', label: 'businessInfo.email', type: 'input'},
-  { id: 'base', label: 'businessInfo.businessType', type: 'inputlist',list: ['FOODTRUCK / PUESTO DE COMIDA', 'RESTAURANT', 'REATIL/ LOCAL COMERCIAL', 'HOTEL']},
+  { id: 'nombreComercial', label: 'organization.name', type: 'input'},
+  { id: 'direccion', label: 'organization.address', type: 'input'},
+  { id: 'telefono', label: 'organization.phone', type: 'input'},
+  { id: 'email', label: 'organization.email', type: 'input'},
+  { id: 'base', label: 'organization.businessType', type: 'inputlist',list: ['FOODTRUCK / PUESTO DE COMIDA', 'RESTAURANT', 'REATIL/ LOCAL COMERCIAL', 'HOTEL']},
 ], '/organization'); 
 
 type InfoTributariaFieldConfig = {
@@ -53,16 +53,16 @@ export const defaultInfoTributariaData = {
 };
 
 export const infoTributariaConfig: Array<InfoTributariaFieldConfig> = withGlobalRoute([
-  { id: 'ruc', label: 'taxConfigurationEC.infoTributaria.ruc', type: 'input' },
-  { id: 'razonSocial', label: 'taxConfigurationEC.infoTributaria.razonSocial', type: 'input' },
-  { id: 'direccionMatriz', label: 'taxConfigurationEC.infoTributaria.direccionMatriz', type: 'input' },
-  { id: 'ObligadoContabilidad', label: 'taxConfigurationEC.infoTributaria.obligadollevarcontabilidad', type: 'switch' },
-  { id: 'es_agente_retencion_microempresa', label: 'taxConfigurationEC.infoTributaria.agenteRetencion', type: 'switch' },
-  { id: 'agente_retencion_microempresa_resolucion', label: 'taxConfigurationEC.infoTributaria.agente_retencion_microempresa_resolucion', type: 'input' },
-  { id: 'regimenContribuyente', label: 'taxConfigurationEC.infoTributaria.regimenContribuyente', type: 'inputlist', list: ['No Incluir Leyenda', 'Contribuyente Regimen General', 'Contribuyente Rigemen RIMPE', 'Contribuyente Negocio Popular - Regimen RIMPE'] },
-  { id: 'calificacionArtesanal', label: 'taxConfigurationEC.infoTributaria.numeroCalificacionArtesanal',type: 'input' },
-  { id: 'sitioWebFacturaElectronica', label: 'taxConfigurationEC.infoTributaria.sitioWebFacturaElectronica', type: 'input' },
-  //{ label: 'taxConfigurationEC.infoTributaria.correoEnvioComprobantes', field: 'correoEnvioComprobantes', type: 'input' },
+  { id: 'ruc', label: 'organization.taxinfo.ruc', type: 'input' },
+  { id: 'razonSocial', label: 'organization.taxinfo.razonSocial', type: 'input' },
+  { id: 'direccionMatriz', label: 'organization.taxinfo.direccionMatriz', type: 'input' },
+  { id: 'ObligadoContabilidad', label: 'organization.taxinfo.obligadollevarcontabilidad', type: 'switch' },
+  { id: 'es_agente_retencion_microempresa', label: 'organization.taxinfo.agenteRetencion', type: 'switch' },
+  { id: 'agente_retencion_microempresa_resolucion', label: 'organization.taxinfo.agente_retencion_microempresa_resolucion', type: 'input' },
+  { id: 'regimenContribuyente', label: 'organization.taxinfo.regimenContribuyente', type: 'inputlist', list: ['No Incluir Leyenda', 'Contribuyente Regimen General', 'Contribuyente Rigemen RIMPE', 'Contribuyente Negocio Popular - Regimen RIMPE'] },
+  { id: 'calificacionArtesanal', label: 'organization.taxinfo.numeroCalificacionArtesanal',type: 'input' },
+  { id: 'sitioWebFacturaElectronica', label: 'organization.taxinfo.sitioWebFacturaElectronica', type: 'input' },
+  //{ label: 'taxinfo.correoEnvioComprobantes', field: 'correoEnvioComprobantes', type: 'input' },
 ], '/organization/ecuador/tax-info');
 
 export const organizationall = {

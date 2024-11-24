@@ -1,8 +1,7 @@
 import { organizationall} from "./organization";
 import { Securityall } from "./SecurityConfig";
-import { taxConfigall } from "./TaxConfig";
 import { PrintersConfig } from "./PrintersConfig";
-import { TableConfig } from "./table-layout";
+import { TableConfig } from "./tablelayout";
 import { paymentMethodsConfig } from "./PaymentmethodsConfig";
 import { IntegrationsConfig } from "./IntegrationsConfig";
 import { StationsConfig } from "./StationsConfig";

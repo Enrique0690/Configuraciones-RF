@@ -1,0 +1,14 @@
+{
+    "header": "Settings",
+    "menuItems": {
+        "businessInfo": "Business Information",
+        "printers": "Printers",
+        "paymentMethods": "Payment Methods",
+        "integrations": "Integrations with other Apps",
+        "tabletConfiguration": "Table Configuration",
+        "security": "Security",
+        "advancedOptions": "Advanced Options",
+        "taxConfigurationEC": "Tax Configuration",
+        "orderingstations": "Ordering Stations"
+    }
+}
