@@ -1,5 +1,5 @@
-function withGlobalRoute<T>(config: T[], route: string): (T & { route: string })[] {
-  return config.map(item => ({ ...item, route }));
+function withGlobalRoute<T>(config: T[], route: string, category?: string): (T & { route: string, category?: string })[] {
+  return config.map(item => ({ ...item, route, category}));
 }
 
 type TabletConfigField = {
@@ -20,4 +20,4 @@ export const TableConfig: Array<TabletConfigField> = withGlobalRoute([
   { id: 'Mesa_mostrarCliente', label: 'tablelayout.showUser', type: 'switch' },
   { id: 'PedidoEnMesa_MostrarReloj', label: 'tablelayout.showTime', type: 'switch' },
   { id: 'showCommercialName', label: 'tablelayout.showCommercialName', type: 'switch' },
-], '/table-layout/');
+], '/table-layout/', "layout.categorys.tabletConfiguration");

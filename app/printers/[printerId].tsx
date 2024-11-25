@@ -113,7 +113,7 @@ const handleSave = async () => {
       printer.id === String(printerId) ? updatedPrinter : printer 
     );
     await savePrintersData(updatedPrinters || []);
-    router.push('/Printers');
+    router.push('/printers');
   } catch (error) {
     console.error('Error saving printer data:', error);
     setError(t('printers.errorSaving'));
@@ -144,7 +144,7 @@ const handleSave = async () => {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity onPress={() => router.push('/')} style={styles.goBackButton}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.goBackButton}>
           <Text style={styles.goBackButtonText}>{t('printers.goBackHome')}</Text>
         </TouchableOpacity>
       </View>

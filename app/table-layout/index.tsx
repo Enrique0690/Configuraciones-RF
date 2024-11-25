@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     }),
   },
   groupContainer: {
+    paddingTop: 40,
     marginBottom: 20,
   },
   loadingContainer: {

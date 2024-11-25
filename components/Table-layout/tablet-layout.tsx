@@ -14,19 +14,19 @@ const TabletConfiguration: React.FC<TabletConfigurationProps> = ({ showUser, sho
   return (
     <View style={styles.tableBox}>
       {showUser && (
-        <Text style={styles.tableLabel}>{t('tabletConfiguration.userName')}</Text>
+        <Text style={styles.tableLabel}>{t('tablelayout.userName')}</Text>
       )}
       {showCommercialName && (
-        <Text style={styles.tableLabel}>{t('tabletConfiguration.commercialName')}</Text>
+        <Text style={styles.tableLabel}>{t('tablelayout.commercialName')}</Text>
       )}
-      <Text style={styles.tableInfo}>{t('tabletConfiguration.tableNumber')}</Text>
+      <Text style={styles.tableInfo}>{t('tablelayout.tableNumber')}</Text>
       {showTime && (
         <View style={styles.timeContainer}>
-        <Text style={styles.timeText}>{t('tabletConfiguration.time')}</Text>
+        <Text style={styles.timeText}>{t('tablelayout.time')}</Text>
         <Ionicons name="time-outline" size={16} color="#000" style={styles.timeIcon} />
       </View>
       )}
-      <Text style={styles.tableInfo}>{t('tabletConfiguration.totalAmount')}</Text>
+      <Text style={styles.tableInfo}>{t('tablelayout.totalAmount')}</Text>
     </View>
   );
 };

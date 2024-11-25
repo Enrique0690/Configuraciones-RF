@@ -1,5 +1,5 @@
-function withGlobalRoute<T>(config: T[], route: string): (T & { route: string })[] {
-  return config.map(item => ({ ...item, route }));
+function withGlobalRoute<T>(config: T[], route: string, category?: string): (T & { route: string, category?: string })[] {
+  return config.map(item => ({ ...item, route, category }));
 }
 
 type FieldConfig = {
@@ -8,7 +8,8 @@ type FieldConfig = {
   type: 'text' | 'image' | 'input' | 'inputlist';
   route?: string;
   imageUrl?: string | null;
-  list?: string[]
+  list?: string[];
+  category?: string;
 };
 
 export const defaultData = {
@@ -29,7 +30,7 @@ export const organizationConfig: Array<FieldConfig> =  withGlobalRoute([
   { id: 'telefono', label: 'organization.phone', type: 'input'},
   { id: 'email', label: 'organization.email', type: 'input'},
   { id: 'base', label: 'organization.businessType', type: 'inputlist',list: ['FOODTRUCK / PUESTO DE COMIDA', 'RESTAURANT', 'REATIL/ LOCAL COMERCIAL', 'HOTEL']},
-], '/organization'); 
+], '/organization', "layout.categorys.businessInfo"); 
 
 type InfoTributariaFieldConfig = {
   label: string;
@@ -63,7 +64,7 @@ export const infoTributariaConfig: Array<InfoTributariaFieldConfig> = withGlobal
   { id: 'calificacionArtesanal', label: 'organization.taxinfo.numeroCalificacionArtesanal',type: 'input' },
   { id: 'sitioWebFacturaElectronica', label: 'organization.taxinfo.sitioWebFacturaElectronica', type: 'input' },
   //{ label: 'taxinfo.correoEnvioComprobantes', field: 'correoEnvioComprobantes', type: 'input' },
-], '/organization/ecuador/tax-info');
+], '/organization/ecuador/tax-info', "layout.categorys.businessInfo");
 
 export const organizationall = {
   organization: organizationConfig,

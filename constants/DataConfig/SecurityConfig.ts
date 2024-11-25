@@ -1,11 +1,11 @@
-function withGlobalRoute<T>(config: T[], route: string): (T & { route: string })[] {
-  return config.map(item => ({ ...item, route }));
+function withGlobalRoute<T>(config: T[], route: string, category?: string): (T & { route: string, category?: string })[] {
+  return config.map(item => ({ ...item, route, category }));
 }
 
 type FieldConfig = {
   label: string;
   id: keyof typeof defaultData;
-  type: 'text'| 'buttonlist' | 'input';
+  type: 'text' | 'buttonlist' | 'input';
   route?: string;
   iconName?: string;
   finalText?: string;
@@ -20,13 +20,13 @@ export const defaultData = {
 
 export const securityConfig: Array<FieldConfig> = withGlobalRoute([
   { id: 'eliminarMotivo', label: 'security.deleteProductReason', type: 'input' },
-  { id: 'minimo_caracteres_justificar_anulacion', label: 'security.cancelInvoiceReason', type: 'input'},
-  { id: 'anularPedidoMotivo', label: 'security.cancelOrderReason', type: 'input'},
-], '/security');
+  { id: 'minimo_caracteres_justificar_anulacion', label: 'security.cancelInvoiceReason', type: 'input' },
+  { id: 'anularPedidoMotivo', label: 'security.cancelOrderReason', type: 'input' },
+], '/security', "layout.categorys.security");
 
 const linksConfig = [
-  { label: 'security.users', route: '/security/users/userlist' },
-  { label: 'security.roles', route: '/security/rols/rollist' },
+  { label: 'security.users', route: '/security/users/userlist', category:"layout.categorys.security" },
+  { label: 'security.roles', route: '/security/rols/rollist', category:"layout.categorys.security" },
 ];
 
 export const Securityall = {

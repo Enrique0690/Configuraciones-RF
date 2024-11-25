@@ -82,7 +82,7 @@ const BusinessInfoScreen: React.FC = () => {
         </View>
 
         <Text style={[styles.sectionTitle, { color: Colors.text }]}>
-          {t('header')}
+          {t('organization.header')}
         </Text>
 
         <ImageUploadSection 

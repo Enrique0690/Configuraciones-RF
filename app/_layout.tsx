@@ -9,18 +9,18 @@ import { useTranslation } from "react-i18next";
 
 // Componente para un elemento de menú
 const MenuItem = ({ item, onPress, isActive }: {
-    item: { text: string, icon: string },
+    item: { text: string},
     onPress: () => void,
     isActive: boolean
 }) => (
     <TouchableOpacity onPress={onPress} style={[styles.menuItem, isActive && styles.activeMenuItem]}>
-        <Text style={styles.menuItemText}>{item.icon} {item.text}</Text>
+        <Text style={styles.menuItemText}>{item.text}</Text>
     </TouchableOpacity>
 );
 
 // Componente para una sección de menú
 const MenuSection = ({ items, onItemPress, selectedRoute }: {
-    items: { text: string, route: string, icon: string }[],
+    items: { text: string, route: string}[],
     onItemPress: (route: string) => void,
     selectedRoute: string
 }) => (
@@ -75,19 +75,18 @@ export default function Layout() {
         }
     }, [isTabletOrMobile, isFullScreen, segments]);
 
-    // Elementos del menú divididos en 3 grupos
     const menuGroups = [
         [
-            { text: t("layout.menuItems.businessInfo"), route: "/organization", icon: "👁️" },
+            { text: t("layout.categorys.businessInfo"), route: "/organization"},
         ],
         [
-            { text: t("layout.menuItems.orderingstations"), route: "/order-station", icon: "👨‍🍳" },
-            { text: t("layout.menuItems.printers"), route: "/printers", icon: "🖨️" },
-            { text: t("layout.menuItems.tabletConfiguration"), route: "/table-layout", icon: "🍽️" },
+            { text: t("layout.categorys.orderingstations"), route: "/order-station"},
+            { text: t("layout.categorys.printers"), route: "/printers"},
+            { text: t("layout.categorys.tabletConfiguration"), route: "/table-layout"},
         ],
         [
-            { text: t("layout.menuItems.security"), route: "/security", icon: "🔒" },
-            { text: t("layout.menuItems.advancedOptions"), route: "/advanced", icon: "⚙️" },
+            { text: t("layout.categorys.security"), route: "/security"},
+            { text: t("layout.categorys.advancedOptions"), route: "/advanced"},
         ],
     ];
 

@@ -1,14 +1,13 @@
 {
     "header": "Configuraciones",
-    "menuItems": {
-        "businessInfo": "Información del Negocio",
-        "printers": "Impresoras",
-        "paymentMethods": "Métodos de Pago",
+    "categorys": {
+        "businessInfo": "👁️ Información del Negocio",
+        "printers": "🖨️ Impresoras",
+        "paymentMethods": " Métodos de Pago",
         "integrations": "Integraciones con otras Apps",
-        "tabletConfiguration": "Configuración de Mesas",
-        "security": "Seguridad",
-        "advancedOptions": "Opciones Avanzadas",
-        "taxConfigurationEC": "Configuración de Tributaria",
-        "orderingstations": "Estaciones de Pedidos"
+        "tabletConfiguration": "🍽️ Configuración de Mesas",
+        "security": "🔒 Seguridad",
+        "advancedOptions": "⚙️ Opciones Avanzadas",
+        "orderingstations": "👨‍🍳 Estaciones de Pedidos"
     }
 }
