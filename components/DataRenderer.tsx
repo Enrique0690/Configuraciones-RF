@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, Switch, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Switch, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';  
 import ListModal from './modals/ListModal';
@@ -17,127 +17,110 @@ interface DataRendererProps {
   highlight?: boolean;
   dataList?: string[]; 
 }
-
 const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onPress, textColor, iconName, onSave, highlight, dataList}) => {
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [tempValue, setTempValue] = useState(value as string);
   const [switchValue, setSwitchValue] = useState(value as boolean);
-  const [highlightActive, setHighlightActive] = useState(highlight);
+  const [isHighlighted, setHighlighted] = useState(highlight);
   const [isListModalVisible, setListModalVisible] = useState(false);
   const { t } = useTranslation();
   const interpolatedLabel = t(label, { value: value || '_____' });
+  const { width } = useWindowDimensions();
+  const isSmallScreen = width < 768;
 
   const openEditDialog = () => {
-    if (type === 'input' || type === 'text') {
-      setTempValue(value as string); 
-      setDialogVisible(true);
-    }
-  };
-
-  const handleSelectItem = (selectedItem: string) => {
-    setTempValue(selectedItem); 
-    setListModalVisible(false);  
-    if (onSave) {
-      onSave(selectedItem); 
-    }
+    setTempValue(value as string);
+    setDialogVisible(true);
   };
 
   const handleSave = () => {
-    if (onSave) {
-      onSave(tempValue); 
-    }
+    onSave?.(tempValue);
     setDialogVisible(false);
   };
 
   const handleSwitchChange = (newValue: boolean) => {
     setSwitchValue(newValue);
-    if (onSave) {
-      onSave(newValue as any); 
-    }
+    onSave?.(newValue);
   };
+
+  const handleSelectItem = (selectedItem: string) => {
+    setTempValue(selectedItem);
+    setListModalVisible(false);
+    onSave?.(selectedItem);
+  };
+
   useEffect(() => {
     if (highlight) {
-      setHighlightActive(true);
-      const timeout = setTimeout(() => {
-        setHighlightActive(false);
-      }, 8000); 
-
-      return () => clearTimeout(timeout); 
+      setHighlighted(true);
+      const timeout = setTimeout(() => setHighlighted(false), 8000);
+      return () => clearTimeout(timeout);
     }
   }, [highlight]);
-  
+
   useEffect(() => {
-    if (type === 'switch') {
-      setSwitchValue(value as boolean);
-    } else {
-      setTempValue(value as string);
-    }
+    type === 'switch' ? setSwitchValue(value as boolean) : setTempValue(value as string);
   }, [value, type]);
+
+  const renderInput = () => (
+    <TouchableOpacity onPress={openEditDialog}>
+    <View style={[styles.inputContainer, isSmallScreen && styles.smallScreenInputContainer]}>
+      <Text style={[styles.label, isSmallScreen && styles.smallScreenLabel]}>{label}</Text>
+      <Text style={[styles.textValue, isSmallScreen && styles.smallScreenValue]}>{value || 'Editar'}</Text>
+    </View>
+  </TouchableOpacity>
+  );
+
+  const renderText = () => (
+    <TouchableOpacity onPress={openEditDialog}>
+      <Text style={[styles.textValue, { color: textColor }]}>
+        <Text style={styles.label}>{interpolatedLabel}</Text>
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const renderInputList = () => (
+    <TouchableOpacity onPress={() => setListModalVisible(true)}>
+      <Text style={[styles.textValue, { color: textColor }]}>
+        <Text style={styles.label}>{label}</Text> {value || 'Seleccione una opción'}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const renderSwitch = () => (
+    <TouchableOpacity style={styles.switchContainer} onPress={() => handleSwitchChange(!switchValue)}>
+      <Text style={[styles.label, { color: textColor }]}>{label}</Text>
+      <Switch value={switchValue} onValueChange={handleSwitchChange} />
+    </TouchableOpacity>
+  );
+
+  const renderImage = () => (
+    <View style={styles.imageContainer}>
+      <Image style={styles.image} source={{ uri: value as string }} resizeMode="contain" />
+    </View>
+  );
+
+  const renderButtonList = () => (
+    <TouchableOpacity style={styles.button} onPress={() => router.push(value as any)}>
+      {iconName && <Ionicons name={iconName as any} size={20} color={textColor} />}
+      <Text style={[styles.buttonLabel, { color: textColor }]}>{label}</Text>
+    </TouchableOpacity>
+  );
 
   const renderContent = () => {
     switch (type) {
-      case 'input':  
-        return (
-          <TouchableOpacity onPress={openEditDialog}>
-            <Text style={[styles.textValue]}>
-              <Text style={styles.label}>{label}</Text> {value || 'Editar'}
-            </Text>
-          </TouchableOpacity>
-        );
-
-        case 'text':
-          return (
-            <TouchableOpacity onPress={openEditDialog}>
-              <Text style={[styles.textValue, { color: textColor }]}>
-                <Text style={styles.label}>{interpolatedLabel}</Text>
-              </Text>
-            </TouchableOpacity>
-          );
-
-        case 'inputlist': 
-        return (
-          <TouchableOpacity onPress={() => setListModalVisible(true)}>
-            <Text style={[styles.textValue, { color: textColor }]}>
-              <Text style={styles.label}>{label}:</Text> {value || 'Seleccione una opcion'}
-            </Text>
-          </TouchableOpacity>
-        );
-
-        case 'switch':
-          return (
-            <TouchableOpacity 
-              style={styles.switchContainer} 
-              onPress={() => handleSwitchChange(!switchValue)}
-            >
-              <Text style={[styles.label, { color: textColor }]}>{label}:</Text>
-              <Switch value={switchValue} onValueChange={handleSwitchChange} />
-            </TouchableOpacity>
-          );
-        
-      case 'image':
-        return (
-          <View style={styles.imageContainer}>
-            <Image style={styles.image} source={{ uri: value as string }} resizeMode="contain" />
-          </View>
-        );
-
-      case 'buttonlist':
-        return (
-          <TouchableOpacity style={styles.button} onPress={() => router.push(value as any)} >
-            {iconName && <Ionicons name={iconName as any} size={20} color={textColor} />}
-            <Text style={[styles.buttonLabel, { color: textColor }]}>{label}</Text>
-          </TouchableOpacity>
-        );
-
-      default:
-        return null;
+      case 'input': return renderInput();
+      case 'text': return renderText();
+      case 'inputlist': return renderInputList();
+      case 'switch': return renderSwitch();
+      case 'image': return renderImage();
+      case 'buttonlist': return renderButtonList();
+      default: return null;
     }
   };
 
   return (
-    <View style={[styles.inputGroup, highlightActive && styles.highlightedContainer]}>
+    <View style={[styles.inputGroup, isHighlighted && styles.highlightedContainer]}>
       {renderContent()}
-  
       {isDialogVisible && (
         <EditDialog
           visible={isDialogVisible}
@@ -159,27 +142,27 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
         />
       )}
     </View>
-  );  
+  );
 };
 
 const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: 20,
     flexDirection: 'column',
-    borderWidth: 2,            
+    borderWidth: 2,
     borderColor: 'transparent',
-    borderRadius: 10,          
+    borderRadius: 10,
   },
   highlightedContainer: {
-    borderColor: '#4CAF50',     
+    borderColor: '#4CAF50',
   },
   label: {
-    fontWeight: 600,
+    fontWeight: '600',
     fontSize: 16,
     marginRight: 8,
   },
   textValue: {
-    fontWeight: 400,
+    fontWeight: '400',
     fontSize: 16,
     paddingVertical: 4,
   },
@@ -187,7 +170,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%', 
+    width: '100%',
   },
   imageContainer: {
     marginTop: 10,
@@ -213,6 +196,20 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontWeight: '600',
   },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  smallScreenInputContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  smallScreenLabel: {
+    marginBottom: 4,
+  },
+  smallScreenValue: {
+    marginLeft: 15,
+  }
 });
 
 export default DataRenderer;
