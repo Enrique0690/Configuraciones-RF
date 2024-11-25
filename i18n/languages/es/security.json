@@ -19,6 +19,7 @@
         "Newuser": "Nuevo Usuario"
     },
     "role": {
+        "header": "Lista de Roles",
         "roleNotFound": "Rol no encontrado",
         "noRoles": "No hay roles registrados, Haga click aqui para agregar uno",
         "addNewRole": "Agregar Nuevo Rol",
@@ -26,8 +27,13 @@
         "roleName": "Nombre del Rol",
         "selectAllPermissions": "Seleccionar Todos los Permisos",
         "save": "Guardar",
+        "SALES": "Ventas",
+        "INVENTORY": "Inventario",
+        "CONFIGURATION": "Configuración",
+        "SPECIALPERMISSIONS": "Permisos Especiales",
+        "CLIENTS": "Clientes",
+        "REPORT": "Reportes",
         "sales": {
-            "header": "Ventas",
             "directSale": "Venta Directa",
             "tableOrder": "Pedido en Mesa",
             "cashRegister": "Arqueo de Caja",
@@ -35,7 +41,6 @@
             "closureQuery": "Consulta de Cierre"
         },
         "inventory": {
-            "header": "Inventario",
             "articles": "Artículos",
             "inventoryEntry": "Ingreso de Inventario",
             "inventoryExit": "Egreso de Inventario",
@@ -45,11 +50,9 @@
             "production": "Producción"
         },
         "configuration": {
-            "header": "Configuración",
             "config": "Configuración"
         },
         "specialPermissions": {
-            "header": "Permisos Especiales",
             "singleWaiter":"La mesa sólo puede ser atendida por un mesero",
             "cancelTables": "Cancelar Mesas",
             "cancelCashClosures": "Cancelar Cierres de Caja",
@@ -64,11 +67,9 @@
             "moveOrderItems": "Mover Artículos de Pedido"
         },
         "clients": {
-            "header": "Clientes",
             "clientQuery": "Consulta de Clientes"
         },
         "report": {
-            "header": "Reportes",
             "salesReport": "Informe de Ventas",
             "inventoryReport": "Informe de Inventario"
         }
