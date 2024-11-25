@@ -103,9 +103,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    textAlign: 'center',
+    marginBottom: 16,
   },
   addButton: {
     padding: 8,

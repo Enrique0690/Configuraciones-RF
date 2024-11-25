@@ -83,7 +83,7 @@ const EditUserScreen: React.FC = () => {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(users));
 
         alert('Usuario actualizado');
-        router.push('./userlist'); // Redirigimos a la lista de usuarios
+        router.push('./userlist'); 
       }
     } catch (error) {
       console.error('Error al guardar los cambios:', error);
@@ -92,7 +92,7 @@ const EditUserScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
+    <ScrollView contentContainerStyle={[styles.container]}>
       <Text style={[styles.title, { color: textColor }]}>NUEVO USUARIO</Text>
 
       <TextInput
@@ -167,15 +167,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    paddingTop: Platform.OS === 'ios' ? 20 : 0,
-    backgroundColor: '#d9ffe6',
-    alignItems: 'center',
+    paddingTop: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 16,
-    textAlign: 'center',
   },
   input: {
     borderWidth: 1,

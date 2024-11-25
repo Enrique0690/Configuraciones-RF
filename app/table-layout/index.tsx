@@ -8,7 +8,7 @@ import { TableConfig, defaultData } from '@/constants/DataConfig/tablelayout';
 import DataRenderer from '@/components/DataRenderer';
 import SearchBar from '@/components/navigation/SearchBar';
 import { useLocalSearchParams } from 'expo-router';
-import TabletConfiguration from '@/components/Table-layout/tablet-layout';
+import TabletConfiguration from '@/components/Table-layout/tablelayout';
 
 const TabletConfigurationScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginVertical: 16,
+    marginBottom: 16,
   },
   searchBarContainer: {
     display: Platform.select({

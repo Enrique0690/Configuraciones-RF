@@ -120,10 +120,9 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   header: {
-    fontSize: 22,
-    fontWeight: '500',
-    marginBottom: 12,
-    color: '#333',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
   },
   saveButton: {
     paddingVertical: 12,

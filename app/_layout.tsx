@@ -7,7 +7,6 @@ import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
 import { useTranslation } from "react-i18next";
 
-// Componente para un elemento de menú
 const MenuItem = ({ item, onPress, isActive }: {
     item: { text: string},
     onPress: () => void,
@@ -18,7 +17,6 @@ const MenuItem = ({ item, onPress, isActive }: {
     </TouchableOpacity>
 );
 
-// Componente para una sección de menú
 const MenuSection = ({ items, onItemPress, selectedRoute }: {
     items: { text: string, route: string}[],
     onItemPress: (route: string) => void,
@@ -44,9 +42,8 @@ export default function Layout() {
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [selectedRoute, setSelectedRoute] = useState('');
     const { width } = useWindowDimensions();
-    const isTabletOrMobile = width <= 768;
+    const isSmallScreen = width <= 768;
 
-    // Función para manejar la navegación y actualización del estado
     const handleNavigation = useCallback((route: string) => {
         router.push(route as any);
         setIsFullScreen(true);
@@ -54,15 +51,13 @@ export default function Layout() {
     }, [router]);
 
     useEffect(() => {
-        // Actualiza el estado de la pantalla completa según la ruta y el tamaño del dispositivo
         const currentRoute = `/${segments.join('/')}`;
-        setIsFullScreen(isTabletOrMobile && currentRoute !== '/');
+        setIsFullScreen(isSmallScreen && currentRoute !== '/');
         setSelectedRoute(currentRoute);
-    }, [isTabletOrMobile, segments]);
+    }, [isSmallScreen, segments]);
 
     useEffect(() => {
-        // Manejo del botón de retroceso en dispositivos móviles
-        if (isTabletOrMobile && isFullScreen) {
+        if (isSmallScreen && isFullScreen) {
             const handleBackPress = () => {
                 if (Number(segments.length) === 0) {
                     setIsFullScreen(false);
@@ -73,7 +68,7 @@ export default function Layout() {
             BackHandler.addEventListener("hardwareBackPress", handleBackPress);
             return () => BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
         }
-    }, [isTabletOrMobile, isFullScreen, segments]);
+    }, [isSmallScreen, isFullScreen, segments]);
 
     const menuGroups = [
         [
@@ -90,19 +85,18 @@ export default function Layout() {
         ],
     ];
 
-    // Muestra un loader mientras carga la interfaz
     if (!selectedRoute) {
         return (
             <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-                <View style={[styles.sidebarLoading, { width: isTabletOrMobile ? '100%' : 300 }]} />
+                <View style={[styles.sidebarLoading, { width: isSmallScreen ? '100%' : 300 }]} />
             </View>
         );
     }
 
     return (
         <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-            {(!isFullScreen || !isTabletOrMobile) && (
-                <View style={[styles.sidebar, { width: isTabletOrMobile ? '100%' : 300 }]}>
+            {(!isFullScreen || !isSmallScreen) && (
+                <View style={[styles.sidebar, { width: isSmallScreen ? '100%' : 300 }]}>
                     <Text style={styles.header}>{t("layout.header")}</Text>
                     <View style={styles.searchBarContainer}>
                         <SearchBar setIsFullScreen={setIsFullScreen} />

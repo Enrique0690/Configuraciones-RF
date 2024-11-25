@@ -110,10 +110,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    paddingTop: 16,
   },
   title: {
-    paddingTop: 16,
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 16,
   },

@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginVertical: 16,
+    marginBottom: 16,
   },
   searchBarContainer: {
     display: Platform.select({
