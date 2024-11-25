@@ -19,9 +19,9 @@ export const defaultData = {
 };
 
 export const securityConfig: Array<FieldConfig> = withGlobalRoute([
-  { id: 'eliminarMotivo', label: 'security.deleteProductReason', type: 'input' },
-  { id: 'minimo_caracteres_justificar_anulacion', label: 'security.cancelInvoiceReason', type: 'input' },
-  { id: 'anularPedidoMotivo', label: 'security.cancelOrderReason', type: 'input' },
+  { id: 'eliminarMotivo', label: 'security.deleteProductReason', type: 'text' },
+  { id: 'minimo_caracteres_justificar_anulacion', label: 'security.cancelInvoiceReason', type: 'text' },
+  { id: 'anularPedidoMotivo', label: 'security.cancelOrderReason', type: 'text' },
 ], '/security', "layout.categorys.security");
 
 const linksConfig = [

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';  
 import ListModal from './modals/ListModal';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 interface DataRendererProps {
   label: string;
@@ -23,9 +24,11 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
   const [switchValue, setSwitchValue] = useState(value as boolean);
   const [highlightActive, setHighlightActive] = useState(highlight);
   const [isListModalVisible, setListModalVisible] = useState(false);
+  const { t } = useTranslation();
+  const interpolatedLabel = t(label, { value: value || '_____' });
 
   const openEditDialog = () => {
-    if (type === 'input') {
+    if (type === 'input' || type === 'text') {
       setTempValue(value as string); 
       setDialogVisible(true);
     }
@@ -82,6 +85,15 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
           </TouchableOpacity>
         );
 
+        case 'text':
+          return (
+            <TouchableOpacity onPress={openEditDialog}>
+              <Text style={[styles.textValue, { color: textColor }]}>
+                <Text style={styles.label}>{interpolatedLabel}</Text>
+              </Text>
+            </TouchableOpacity>
+          );
+
         case 'inputlist': 
         return (
           <TouchableOpacity onPress={() => setListModalVisible(true)}>
@@ -133,7 +145,7 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
           onChangeText={setTempValue}
           onSave={handleSave}
           onClose={() => setDialogVisible(false)}
-          title={label}
+          title={type === 'text' ? interpolatedLabel : label}
         />
       )}
       {isListModalVisible && dataList && (

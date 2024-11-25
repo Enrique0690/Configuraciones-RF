@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler, Platform, TouchableWithoutFeedback, Keyboard, Pressable } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 type EditDialogProps = {
   visible: boolean;
@@ -12,6 +12,7 @@ type EditDialogProps = {
 
 const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, onSave, onClose, title, }) => {
   const inputRef = useRef<TextInput>(null);
+
   useEffect(() => {
     const handleBackPress = () => {
       if (visible) {
@@ -36,6 +37,9 @@ const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, o
   }, [visible, onClose]);
 
   const handleKeyPress = (event: any) => {
+    if (event.nativeEvent.key === 'Enter') {
+      onSave();
+    }
     if (event.nativeEvent.key === 'Escape') {
       onClose();
     }
@@ -59,6 +63,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, o
                 value={value}
                 onChangeText={onChangeText}
                 onKeyPress={handleKeyPress}
+                onSubmitEditing={onSave} // Manejador para "Enter" en móviles
                 autoFocus
                 placeholder="Escribe aquí..."
                 placeholderTextColor="#999"

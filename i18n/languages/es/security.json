@@ -1,8 +1,8 @@
 {
     "header": "Seguridad",
-    "deleteProductReason": "La eliminación de productos requiere un motivo de {{characters}} caracteres",
-    "cancelInvoiceReason": "La anulación de una factura requiere un motivo de {{characters}} caracteres",
-    "cancelOrderReason": "La anulación de un pedido requiere un motivo de {{characters}} caracteres",
+    "deleteProductReason": "La eliminación de productos requiere un motivo de {{value}} caracteres",
+    "cancelInvoiceReason": "La anulación de una factura requiere un motivo de {{value}} caracteres",
+    "cancelOrderReason": "La anulación de un pedido requiere un motivo de {{value}} caracteres",
     "characters": "caracteres",
     "users": "Usuarios",
     "roles": "Roles",

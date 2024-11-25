@@ -47,7 +47,7 @@ const SecurityScreen: React.FC = () => {
         {t('security.header')}
       </Text>
       <View style={styles.groupContainer}>
-        {securityConfig.map(({ label, id, type, finalText }) => (
+        {securityConfig.map(({ label, id, type}) => (
           <DataRenderer
             key={label}
             label={t(label)}
