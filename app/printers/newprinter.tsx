@@ -43,8 +43,7 @@ const NewPrinterScreen = () => {
   const [ethernetConnectionStatus, setEthernetConnectionStatus] = useState<string | null>(null);
   const [bluetoothConnectionStatus, setBluetoothConnectionStatus] = useState<string | null>(null);
   const [noStation, setNoStation] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const tooltipText = 'Con este valor puedes ajustar las estaciones de impresoras disponibles.';
+  const [tooltipVisible, setTooltipVisible] = useState(false);
   const [stations, setStations] = useState<{ name: string; enabled: boolean }[]>([]);
 
 
@@ -90,12 +89,6 @@ const NewPrinterScreen = () => {
       setError(t('printers.errorSaving'));
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleOutsidePress = () => {
-    if (showTooltip) {
-      setShowTooltip(false);
     }
   };
 
@@ -185,6 +178,14 @@ const NewPrinterScreen = () => {
     );
   }
 
+  const toggleTooltip = () => {
+    setTooltipVisible(!tooltipVisible);
+  };
+
+  const handleCloseTooltip = () => {
+    setTooltipVisible(false); 
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
@@ -220,13 +221,12 @@ const NewPrinterScreen = () => {
             <Text style={styles.label}>{t('printers.stations')}</Text>
             <TouchableOpacity
               style={styles.helpIconContainer}
-              onPress={() => setShowTooltip(true)}
-              onBlur={() => setShowTooltip(false)}
+              onPress={toggleTooltip}
             >
               <Text style={styles.helpIcon}>?</Text>
             </TouchableOpacity>
           </View>
-          <Tooltip text={t('stations.description1')} visible={showTooltip} />
+          <Tooltip text={t('stations.description1')} visible={tooltipVisible} onClose={handleCloseTooltip} />
           <DataRenderer
             label={t('printers.noStation')}
             value={noStation}

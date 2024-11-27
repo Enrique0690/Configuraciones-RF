@@ -99,7 +99,7 @@ export default function Layout() {
                 <View style={[styles.sidebar, { width: isSmallScreen ? '100%' : 300 }]}>
                     <Text style={styles.header}>{t("layout.header")}</Text>
                     <View style={styles.searchBarContainer}>
-                        <SearchBar setIsFullScreen={setIsFullScreen} />
+                        <SearchBar/>
                     </View>
                     <ScrollView>
                         {menuGroups.map((group, index) => (

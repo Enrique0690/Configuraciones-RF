@@ -1,48 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { TextInput, View, Text, TouchableOpacity, ScrollView, StyleSheet, Keyboard, Platform, BackHandler } from 'react-native';
+import { TextInput, View, Text, TouchableOpacity, ScrollView, StyleSheet, Keyboard, Platform, BackHandler, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { allConfigs } from '@/constants/DataConfig';
 import { Ionicons } from '@expo/vector-icons';
-
-interface SearchBarProps {
-  setIsFullScreen?: (value: boolean) => void;
-}
-
-interface ConfigItem {
-  label: string;
-  route?: string;
-  id?: string;
-  category?: string;
-}
+import useSearch from '@/hooks/useSearch';
 
 const ICON_COLOR = '#A1A1A1';
 const SEARCH_BAR_HEIGHT = 54;
 
-const normalizeText = (text: string): string =>
-  text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-
-const filterResults = (
-  query: string,
-  configs: ConfigItem[],
-  translate: (key: string) => string
-): ConfigItem[] => {
-  const normalizedQuery = normalizeText(query);
-  return configs.filter((item) =>
-    normalizeText(translate(item.label)).includes(normalizedQuery) ||
-    normalizeText(translate(item.category || '')).includes(normalizedQuery)
-  );
-};
-
-const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
-  const [query, setQuery] = useState<string>('');
-  const [filteredResults, setFilteredResults] = useState<ConfigItem[]>(allConfigs);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+const SearchBar: React.FC = () => {
   const searchBarRef = useRef<View>(null);
-  const flatResults = useRef<ConfigItem[]>([]); 
   const scrollViewRef = useRef<ScrollView>(null);
-  const { t } = useTranslation();
   const router = useRouter();
+  const { t } = useTranslation();
+  const { query, setQuery, filteredResults } = useSearch(allConfigs);
+  const flatResults = Object.values(filteredResults).flat();
+  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
+  const { width } = useWindowDimensions();
+
+  const handleSearchFocus = () => {
+    if (width < 768) {
+      Keyboard.dismiss();
+      router.push('/searchscreen');
+    }
+  };
+  
 
   if (Platform.OS === 'web' || Platform.OS === 'windows') {
   useEffect(() => {
@@ -59,60 +42,57 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
   }, []);
   }
 
-  const handleSearch = (text: string): void => {
-    setQuery(text);
-    const results = text ? filterResults(text, allConfigs, t) : allConfigs;
-    setFilteredResults(results);
-    setSelectedIndex(null);
-    flatResults.current = results.flatMap((item) => item); 
-  };
-
   const handleSelectResult = (route?: string, id?: string): void => {
     if (route) {
       Keyboard.dismiss();
-      setIsFullScreen?.(true);
-      clearSearch();
-      router.push(id ? { pathname: route as any, params: { highlight: id } } : route as any);
+      setQuery('');
+      router.push(id ? { pathname: route, params: { highlight: id } } : route as any);
     }
   };
   
   const clearSearch = (): void => {
     setQuery('');
-    setFilteredResults(allConfigs);
     setSelectedIndex(null);
-    flatResults.current = allConfigs.flatMap((item) => item); 
   };
+
+  useEffect(() => {
+    if (selectedIndex !== null && (selectedIndex < 0 || selectedIndex >= flatResults.length)) {
+      setSelectedIndex(null); 
+    }
+  }, [flatResults, selectedIndex]);  
 
   const handleKeyDown = (event: any): void => {
     if (event.key === 'Escape') clearSearch();
-    if (flatResults.current.length === 0) return;
+    if (flatResults.length === 0) return; 
+  
     switch (event.key) {
       case 'ArrowDown':
         updateSelectedIndex((prevIndex) =>
-          prevIndex === null || prevIndex === flatResults.current.length - 1 ? 0 : prevIndex + 1
+          prevIndex === null || prevIndex === flatResults.length - 1 ? 0 : prevIndex + 1
         );
         break;
       case 'ArrowUp':
         updateSelectedIndex((prevIndex) =>
-          prevIndex === null || prevIndex === 0 ? flatResults.current.length - 1 : prevIndex - 1
+          prevIndex === null || prevIndex === 0 ? flatResults.length - 1 : prevIndex - 1
         );
         break;
       case 'Enter':
-        if (selectedIndex !== null && flatResults.current[selectedIndex]) {
-          const { route, id } = flatResults.current[selectedIndex];
+        if (selectedIndex !== null && flatResults[selectedIndex]) {
+          const { route, id } = flatResults[selectedIndex];
           handleSelectResult(route, id);
         }
         break;
     }
-  };
+  };  
 
   const updateSelectedIndex = (calculateIndex: (prevIndex: number | null) => number): void => {
+    if (flatResults.length === 0) return; 
     setSelectedIndex((prevIndex) => {
       const newIndex = calculateIndex(prevIndex);
       scrollToSelectedIndex(newIndex);
       return newIndex;
     });
-  };
+  };  
 
 const scrollToSelectedIndex = (index: number): void => {
   const itemHeight = 50; 
@@ -124,17 +104,9 @@ const scrollToSelectedIndex = (index: number): void => {
   });
 };
 
-  const groupResultsByCategory = (results: ConfigItem[]) =>
-    results.reduce<{ [key: string]: ConfigItem[] }>((acc, item) => {
-      const category = item.category || 'default';
-      if (!acc[category]) acc[category] = [];
-      acc[category].push(item);
-      return acc;
-    }, {});
-
   const highlightMatchedText = (text: string) => {
-    const normalizedQuery = normalizeText(query);
-    const startIndex = normalizeText(text).indexOf(normalizedQuery);
+    const normalizedQuery = query.toLowerCase();
+    const startIndex = text.toLowerCase().indexOf(normalizedQuery);
 
     if (startIndex === -1) return <Text>{text}</Text>;
 
@@ -149,13 +121,11 @@ const scrollToSelectedIndex = (index: number): void => {
   };
 
   const renderSearchResults = () => {
-    const groupedResults = groupResultsByCategory(filteredResults);
-
-    return Object.entries(groupedResults).map(([category, items]) => (
+    return Object.entries(filteredResults).map(([category, items]) => (
       <View key={category} style={styles.categoryContainer}>
-        <Text style={styles.categoryHeader}>{t(category)}</Text>
+        <Text style={styles.categoryHeader}>{category}</Text>
         {items.map((item, index) => {
-          const globalIndex = flatResults.current.indexOf(item);
+          const globalIndex = flatResults.indexOf(item);
           return (
             <TouchableOpacity
               key={item.id || index}
@@ -172,7 +142,7 @@ const scrollToSelectedIndex = (index: number): void => {
                   selectedIndex === globalIndex && styles.selectedResultText,
                 ]}
               >
-                {highlightMatchedText(t(item.label))}
+                {highlightMatchedText(item.label)}
               </Text>
             </TouchableOpacity>
           );
@@ -210,11 +180,12 @@ const scrollToSelectedIndex = (index: number): void => {
         <Ionicons name="search-outline" size={20} color={ICON_COLOR} style={styles.searchIcon} />
         <TextInput
           value={query}
-          onChangeText={handleSearch}
+          onChangeText={setQuery}
           placeholder={t('common.search')}
           style={styles.input}
           placeholderTextColor={ICON_COLOR}
           onKeyPress={handleKeyDown}
+          onFocus={handleSearchFocus}
         />
         {query.length > 0 && (
           <TouchableOpacity style={styles.clearButton} onPress={clearSearch}>
@@ -227,10 +198,9 @@ const scrollToSelectedIndex = (index: number): void => {
           <ScrollView
             ref={scrollViewRef}
             style={styles.scrollContainer}
-            contentContainerStyle={styles.resultsContainer}
             keyboardShouldPersistTaps="handled"
           >
-            {filteredResults.length > 0 ? renderSearchResults() : (
+            {flatResults.length > 0 ? renderSearchResults() : (
               <Text style={styles.noResultsText}>{t('search.noResults')}</Text>
             )}
           </ScrollView>
@@ -243,26 +213,28 @@ const scrollToSelectedIndex = (index: number): void => {
 const styles = StyleSheet.create({
   container: {
     marginTop: 5,
-    marginBottom: 20,
     width: '100%',
   },
   searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: ICON_COLOR,
-    backgroundColor: '#F9F9F9',
-    borderRadius: 15,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+    borderWidth: 1,  
+    borderColor: '#000',  
   },
   input: {
     flex: 1,
+    height: 40,
     fontSize: 16,
+    color: '#333333',
     backgroundColor: 'transparent',
+    borderRadius: 8,  
     marginLeft: 10,
   },
   searchIcon: {
-    marginLeft: 5,
+    marginLeft: 10,
   },
   clearButton: {
     backgroundColor: '#DDDDDD',
@@ -291,11 +263,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
   },
-  resultsContainer: {
-    paddingVertical: 10,
-  },
   noResultsText: {
-    color: ICON_COLOR,
+    color: '#A1A1A1',  
     textAlign: 'center',
     marginVertical: 10,
   },
