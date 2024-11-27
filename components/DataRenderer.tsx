@@ -22,6 +22,7 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
   const [tempValue, setTempValue] = useState(value as string);
   const [switchValue, setSwitchValue] = useState(value as boolean);
   const [isHighlighted, setHighlighted] = useState(highlight);
+  const [isActive, setIsActive] = useState(false);
   const [isListModalVisible, setListModalVisible] = useState(false);
   const { t } = useTranslation();
   const interpolatedLabel = t(label, { value: value || '_____' });
@@ -65,7 +66,7 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
     <TouchableOpacity onPress={openEditDialog}>
     <View style={[styles.inputContainer, isSmallScreen && styles.smallScreenInputContainer]}>
       <Text style={[styles.label, isSmallScreen && styles.smallScreenLabel]}>{label}</Text>
-      <Text style={[styles.textValue, isSmallScreen && styles.smallScreenValue]}>{value || 'Editar'}</Text>
+      <Text style={styles.textValue}>{value || 'Editar'}</Text>
     </View>
   </TouchableOpacity>
   );
@@ -164,7 +165,6 @@ const styles = StyleSheet.create({
   textValue: {
     fontWeight: '400',
     fontSize: 16,
-    paddingVertical: 4,
   },
   switchContainer: {
     flexDirection: 'row',
@@ -207,9 +207,6 @@ const styles = StyleSheet.create({
   smallScreenLabel: {
     marginBottom: 4,
   },
-  smallScreenValue: {
-    marginLeft: 15,
-  }
 });
 
 export default DataRenderer;

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator,TouchableWithoutFeedback } from 'react-native';
 import UUID from 'react-native-uuid';
 import { useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import useStorage from '@/hooks/useStorage';
 import DataRenderer from '@/components/DataRenderer';
 import BluetoothModal from '@/components/Printersconnection/BluetoohModal';
 import EthernetModal from '@/components/Printersconnection/EthernetModal';
 import UsbModal from '@/components/Printersconnection/USBModal';
+import Tooltip from '@/components/elements/tooltip';
 
 interface Printer {
   id: string;
@@ -32,16 +32,21 @@ const NewPrinterScreen = () => {
   const router = useRouter();
   const { data: stationsData, loading: stationsLoading, error: stationsError, reloadData: reloadStations } = useStorage<string[]>('stations', []);
   const { data: printersData, saveData: savePrintersData } = useStorage<Printer[]>('printers', []);
-  const [printerName, setPrinterName] = useState('');
-  const [connection, setConnection] = useState<'USB' | 'Ethernet' | 'Bluetooth' | ''>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [printerName, setPrinterName] = useState('');
+  const [connection, setConnection] = useState<'USB' | 'Ethernet' | 'Bluetooth' | ''>('');
   const [isBluetoothModalVisible, setBluetoothModalVisible] = useState(false);
   const [isUsbModalVisible, setUsbModalVisible] = useState(false);
   const [isEthernetModalVisible, setEthernetModalVisible] = useState(false);
   const [usbConnectionStatus, setUsbConnectionStatus] = useState<string | null>(null);
   const [ethernetConnectionStatus, setEthernetConnectionStatus] = useState<string | null>(null);
   const [bluetoothConnectionStatus, setBluetoothConnectionStatus] = useState<string | null>(null);
+  const [noStation, setNoStation] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const tooltipText = 'Con este valor puedes ajustar las estaciones de impresoras disponibles.';
+  const [stations, setStations] = useState<{ name: string; enabled: boolean }[]>([]);
+
 
   const [printOptions, setPrintOptions] = useState({
     deliveryNote: false,
@@ -50,9 +55,6 @@ const NewPrinterScreen = () => {
     reports: false,
     order: false,
   });
-
-  const [noStation, setNoStation] = useState(false);
-  const [stations, setStations] = useState<{ name: string; enabled: boolean }[]>([]);
 
   useEffect(() => {
     if (!stationsLoading && !stationsError) {
@@ -88,6 +90,12 @@ const NewPrinterScreen = () => {
       setError(t('printers.errorSaving'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOutsidePress = () => {
+    if (showTooltip) {
+      setShowTooltip(false);
     }
   };
 
@@ -207,37 +215,48 @@ const NewPrinterScreen = () => {
         ))}
 
         {printOptions.order && (
-          <>
+          <View style={styles.stationsContainer}>
+          <View style={styles.labelContainer}>
             <Text style={styles.label}>{t('printers.stations')}</Text>
-            <DataRenderer
-              label={t('printers.noStation')}
-              value={noStation}
-              type="switch"
-              textColor="#333"
-              onSave={(newValue) => setNoStation(newValue as boolean)}
-            />
-            {stations.length > 0 && (
-              <>
-                {stations.map((station, index) => (
-                  <DataRenderer
-                    key={index}
-                    label={station.name}
-                    value={station.enabled}
-                    type="switch"
-                    textColor="#333"
-                    onSave={(newValue) =>
-                      setStations((prevStations) =>
-                        prevStations.map((s, i) =>
-                          i === index ? { ...s, enabled: newValue as boolean } : s
-                        )
+            <TouchableOpacity
+              style={styles.helpIconContainer}
+              onPress={() => setShowTooltip(true)}
+              onBlur={() => setShowTooltip(false)}
+            >
+              <Text style={styles.helpIcon}>?</Text>
+            </TouchableOpacity>
+          </View>
+          <Tooltip text={t('stations.description1')} visible={showTooltip} />
+          <DataRenderer
+            label={t('printers.noStation')}
+            value={noStation}
+            type="switch"
+            textColor="#333"
+            onSave={(newValue) => setNoStation(newValue as boolean)}
+          />
+          {stations.length > 0 && (
+            <>
+              {stations.map((station, index) => (
+                <DataRenderer
+                  key={index}
+                  label={station.name}
+                  value={station.enabled}
+                  type="switch"
+                  textColor="#333"
+                  onSave={(newValue) =>
+                    setStations((prevStations) =>
+                      prevStations.map((s, i) =>
+                        i === index ? { ...s, enabled: newValue as boolean } : s
                       )
-                    }
-                  />
-                ))}
-              </>
-            )}
-          </>
+                    )
+                  }
+                />
+              ))}
+            </>
+          )}
+        </View>
         )}
+        
 
         <Text style={styles.label}>{t('printers.connection')}</Text>
         <View style={styles.buttonContainer}>
@@ -246,8 +265,7 @@ const NewPrinterScreen = () => {
           {renderConnectionOption(t('printers.bluetooth'), 'Bluetooth')}
         </View>
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <MaterialIcons name="save" size={24} color="white" />
-          <Text style={styles.saveButtonText}>{t('printers.savePrinter')}</Text>
+          <Text style={styles.saveButtonText}>{t('common.save')}</Text>
         </TouchableOpacity>
         <BluetoothModal
           visible={isBluetoothModalVisible}
@@ -273,11 +291,30 @@ const NewPrinterScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: { flexGrow: 1 },
-  container: { flex: 1, padding: 20, backgroundColor: '#f9f9f9' },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 16, color: '#333' },
-  label: { fontSize: 16, color: '#666', marginTop: 20, marginBottom: 8 },
-  buttonContainer: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 16 },
+  scrollContainer: {
+    flexGrow: 1
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#333'
+  },
+  label: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
+    marginBottom: 8
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 16
+  },
   connectionButton: {
     padding: 10,
     borderRadius: 8,
@@ -286,9 +323,16 @@ const styles = StyleSheet.create({
     minWidth: 80,
     alignItems: 'center',
   },
-  selectedButton: { backgroundColor: '#007AFF' },
-  buttonText: { fontSize: 14, color: '#007AFF' },
-  selectedButtonText: { color: '#fff' },
+  selectedButton: {
+    backgroundColor: '#007AFF'
+  },
+  buttonText: {
+    fontSize: 14,
+    color: '#007AFF'
+  },
+  selectedButtonText: {
+    color: '#fff'
+  },
   saveButton: {
     flexDirection: 'row',
     backgroundColor: '#28a745',
@@ -299,11 +343,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
-  saveButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold', marginLeft: 8 },
-  errorText: { color: 'red', marginTop: 10, fontSize: 16 },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { fontSize: 18, color: '#4CAF50', marginTop: 10 },
-  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+    fontSize: 16
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#4CAF50',
+    marginTop: 10
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20
+  },
   goBackButton: {
     marginTop: 20,
     backgroundColor: '#007AFF',
@@ -311,7 +377,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
   },
-  goBackButtonText: { color: 'white', fontSize: 16 },
+  goBackButtonText: {
+    color: 'white',
+    fontSize: 16
+  },
   connectionOptionContainer: {
     alignItems: 'center',
   },
@@ -319,6 +388,37 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 12,
     color: '#333',
+  },
+  stationsContainer: {
+    marginTop: -20,
+    paddingLeft: 40,
+    borderRadius: 8,
+  },
+  helpIconContainer: {
+    marginLeft: 10,
+    paddingTop: 10,
+  },
+  helpIcon: {
+    fontSize: 18,
+    color: '#007AFF', 
+    fontWeight: 'bold',
+  },
+  tooltip: {
+    position: 'absolute',
+    top: 50, 
+    left: 50, 
+    backgroundColor: '#333',
+    padding: 10,
+    borderRadius: 8,
+    zIndex: 1,
+  },
+  tooltipText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  labelContainer: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
   },
 });
 

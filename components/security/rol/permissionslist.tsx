@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   permissionList: {
-    maxHeight: 200,
+    maxHeight: 300,
     paddingVertical: 10,
   },
 });

@@ -11,7 +11,7 @@ import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 
 const InfoTributaria: React.FC = () => {
-  const { t } = useTranslation(['organization', 'common']);
+  const { t } = useTranslation();
   const { data, loading, error, saveData, reloadData } = useStorage('infoTributariaData', defaultInfoTributariaData);
   const { highlight } = useLocalSearchParams();
   const router = useRouter();
@@ -44,7 +44,7 @@ const InfoTributaria: React.FC = () => {
         <SearchBar />
       </View>
       <Text style={[styles.sectionTitle, { color: Colors.text }]}>
-        {t('taxConfigurationEC.infoTributaria.sectionTitle')}
+        {t('organization.taxinfo.header')}
       </Text>
       <View style={styles.groupContainer}>
         {firstGroup.map(({ label, id, type, list }) => (

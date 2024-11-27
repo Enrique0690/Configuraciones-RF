@@ -7,33 +7,6 @@ import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
 import { useTranslation } from "react-i18next";
 
-const MenuItem = ({ item, onPress, isActive }: {
-    item: { text: string},
-    onPress: () => void,
-    isActive: boolean
-}) => (
-    <TouchableOpacity onPress={onPress} style={[styles.menuItem, isActive && styles.activeMenuItem]}>
-        <Text style={styles.menuItemText}>{item.text}</Text>
-    </TouchableOpacity>
-);
-
-const MenuSection = ({ items, onItemPress, selectedRoute }: {
-    items: { text: string, route: string}[],
-    onItemPress: (route: string) => void,
-    selectedRoute: string
-}) => (
-    <View style={styles.section}>
-        {items.map(item => (
-            <MenuItem
-                key={item.text}
-                item={item}
-                isActive={selectedRoute.startsWith(item.route)}
-                onPress={() => onItemPress(item.route)}
-            />
-        ))}
-    </View>
-);
-
 export default function Layout() {
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
@@ -69,6 +42,33 @@ export default function Layout() {
             return () => BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
         }
     }, [isSmallScreen, isFullScreen, segments]);
+
+    const MenuItem = ({ item, onPress, isActive }: {
+        item: { text: string},
+        onPress: () => void,
+        isActive: boolean
+    }) => (
+        <TouchableOpacity onPress={onPress} style={[styles.menuItem, { paddingVertical: isSmallScreen ? 20 : 10 }, isActive && styles.activeMenuItem]}>
+            <Text style={styles.menuItemText}>{item.text}</Text>
+        </TouchableOpacity>
+    );
+    
+    const MenuSection = ({ items, onItemPress, selectedRoute }: {
+        items: { text: string, route: string}[],
+        onItemPress: (route: string) => void,
+        selectedRoute: string
+    }) => (
+        <View style={styles.section}>
+            {items.map(item => (
+                <MenuItem
+                    key={item.text}
+                    item={item}
+                    isActive={selectedRoute.startsWith(item.route)}
+                    onPress={() => onItemPress(item.route)}
+                />
+            ))}
+        </View>
+    );
 
     const menuGroups = [
         [
@@ -145,7 +145,6 @@ const styles = StyleSheet.create({
         color: Colors.text,
     },
     menuItem: {
-        paddingVertical: 12,
         paddingHorizontal: 20,
         fontSize: 16,
     },

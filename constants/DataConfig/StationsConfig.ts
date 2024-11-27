@@ -4,4 +4,4 @@ function withGlobalRoute<T>(config: T[], route: string, category?: string): (T &
   export const StationsConfig = withGlobalRoute([
     { label: 'stations.header' },
     { label: 'stations.addStationTitle'},
-  ], '/Ordering-stations', "layout.categorys.orderingstations");
+  ], '/order-station', "layout.categorys.orderingstations");

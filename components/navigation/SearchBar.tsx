@@ -38,10 +38,26 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
   const [query, setQuery] = useState<string>('');
   const [filteredResults, setFilteredResults] = useState<ConfigItem[]>(allConfigs);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const searchBarRef = useRef<View>(null);
   const flatResults = useRef<ConfigItem[]>([]); 
   const scrollViewRef = useRef<ScrollView>(null);
   const { t } = useTranslation();
   const router = useRouter();
+
+  if (Platform.OS === 'web' || Platform.OS === 'windows') {
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const node = searchBarRef.current;
+      if (node && !(node as any).contains(event.target)) {
+        clearSearch();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  }
 
   const handleSearch = (text: string): void => {
     setQuery(text);
@@ -52,11 +68,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
   };
 
   const handleSelectResult = (route?: string, id?: string): void => {
-    if (route && id) {
+    if (route) {
       Keyboard.dismiss();
       setIsFullScreen?.(true);
       clearSearch();
-      router.push({ pathname: route as any, params: { highlight: id } });
+      router.push(id ? { pathname: route as any, params: { highlight: id } } : route as any);
     }
   };
   
@@ -189,7 +205,7 @@ const scrollToSelectedIndex = (index: number): void => {
   }, [query]);
 
   return (
-    <View style={styles.container}>
+    <View ref={searchBarRef} style={styles.container}>
       <View style={styles.searchBarContainer}>
         <Ionicons name="search-outline" size={20} color={ICON_COLOR} style={styles.searchIcon} />
         <TextInput
@@ -236,10 +252,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: ICON_COLOR,
+    backgroundColor: '#F9F9F9',
+    borderRadius: 15,
   },
   input: {
     flex: 1,
-    height: 40,
     fontSize: 16,
     backgroundColor: 'transparent',
     marginLeft: 10,
@@ -269,7 +286,10 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   scrollContainer: {
-    maxHeight: 300,
+    maxHeight: 400,
+    borderColor: "#333",
+    borderWidth: 1,
+    borderRadius: 10,
   },
   resultsContainer: {
     paddingVertical: 10,
@@ -277,7 +297,7 @@ const styles = StyleSheet.create({
   noResultsText: {
     color: ICON_COLOR,
     textAlign: 'center',
-    marginTop: 20,
+    marginVertical: 10,
   },
   categoryContainer: {
     marginBottom: 15,
