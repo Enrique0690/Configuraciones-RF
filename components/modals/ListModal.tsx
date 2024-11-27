@@ -1,37 +1,63 @@
-import React from 'react';
-import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet, BackHandler, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 type ListModalProps<T> = {
   visible: boolean;
   data: T[];
-  renderItem: (item: T) => React.ReactNode;  
-  onSelect: (item: T) => void;              
-  onClose: () => void;                      
+  renderItem: (item: T) => React.ReactNode;
+  onSelect: (item: T) => void;
+  onClose: () => void;
   title: string;
 };
 
 const ListModal = <T extends {}>({ visible, data, renderItem, onSelect, onClose, title }: ListModalProps<T>) => {
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (visible) {
+        onClose(); 
+        return true; 
+      }
+      return false;
+    };
+
+    if (visible) {
+      if (Platform.OS !== 'web') {
+        BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+      }
+    }
+
+    return () => {
+      if (Platform.OS !== 'web') {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+      }
+    };
+  }, [visible, onClose]);
+
   return (
-    <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.modalContainer}>
-        <View style={styles.dialog}>
-          <Text style={styles.title}>{title}</Text>
-          <FlatList
-            data={data}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.item} onPress={() => onSelect(item)}>
-                {renderItem(item)}
-              </TouchableOpacity>
-            )}
-          />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={onClose} style={styles.button}>
-              <Text style={styles.buttonTextCancel}>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.modalContainer}>
+          <TouchableWithoutFeedback>
+            <View style={styles.dialog}>
+              <Text style={styles.title}>{title}</Text>
+              <FlatList
+                data={data}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.item} onPress={() => onSelect(item)}>
+                    {renderItem(item)}
+                  </TouchableOpacity>
+                )}
+              />
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity onPress={onClose} style={styles.button}>
+                  <Text style={styles.buttonTextCancel}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };

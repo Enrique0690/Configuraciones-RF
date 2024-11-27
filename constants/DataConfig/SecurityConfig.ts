@@ -1,71 +1,71 @@
-function withGlobalRoute<T>(config: T[], route: string): (T & { route: string })[] {
-    return config.map(item => ({ ...item, route }));
-  }
+function withGlobalRoute<T>(config: T[], route: string, category?: string): (T & { route: string, category?: string })[] {
+  return config.map(item => ({ ...item, route, category }));
+}
 
 type FieldConfig = {
-    label: string;
-    field: keyof typeof defaultData;
-    type: 'text'| 'buttonlist' | 'input';
-    route?: string;
-    iconName?: string;
-    finalText?: string;
+  label: string;
+  id: keyof typeof defaultData;
+  type: 'text' | 'buttonlist' | 'input';
+  route?: string;
+  iconName?: string;
+  finalText?: string;
 };
 
 export const defaultData = {
-    eliminarMotivo: '',
-    anularFacturaMotivo: '',
-    anularPedidoMotivo: '',
-    none: ''
+  eliminarMotivo: '',
+  minimo_caracteres_justificar_anulacion: '',
+  anularPedidoMotivo: '',
+  none: ''
 };
 
 export const securityConfig: Array<FieldConfig> = withGlobalRoute([
-    { label: 'security.deleteProductReason', field: 'eliminarMotivo', type: 'input', finalText:'security.characters' },
-    { label: 'security.cancelInvoiceReason', field: 'anularFacturaMotivo', type: 'input',finalText:'security.characters' },
-    { label: 'security.cancelOrderReason', field: 'anularPedidoMotivo', type: 'input',finalText:'security.characters' },
-], '/Security');
+  { id: 'eliminarMotivo', label: 'security.deleteProductReason', type: 'text' },
+  { id: 'minimo_caracteres_justificar_anulacion', label: 'security.cancelInvoiceReason', type: 'text' },
+  { id: 'anularPedidoMotivo', label: 'security.cancelOrderReason', type: 'text' },
+], '/security', "layout.categorys.security");
 
 const linksConfig = [
-    { label: 'security.users', route: '/Security/users/userlist' },
-    { label: 'security.roles', route: '/Security/rols/rollist' },
+  { label: 'security.users', route: '/security/users/userlist', category:"layout.categorys.security" },
+  { label: 'security.roles', route: '/security/rols/rollist', category:"layout.categorys.security" },
 ];
 
 export const Securityall = {
-    general: securityConfig,
-    links: linksConfig
+  general: securityConfig,
+  links: linksConfig
 }
 
 export const rolePermissions = {
-    sales: [
-      'directSale',
-      'tableOrder',
-      'cashRegister',
-      'expenseRecord',
-      'closureQuery',
-    ],
-    inventory: [
-      'articles',
-      'inventoryEntry',
-      'inventoryExit',
-      'kardex',
-      'viewMovements',
-      'transformation',
-      'production',
-    ],
-    configuration: ['config'],
-    specialPermissions: [
-      'singleWaiter',
-      'cancelTables',
-      'cancelCashClosures',
-      'cancelSales',
-      'cancelInventoryMovements',
-      'removeItemsFromOrder',
-      'verifyCashClosures',
-      'chargePendingOrders',
-      'accessAnyTable',
-      'reprintSalesDocuments',
-      'modifySalesData',
-      'moveOrderItems',
-    ],
-    clients: ['clientQuery'],
-    report: ['salesReport', 'inventoryReport'],
-  };
+  sales: [
+    'directSale',
+    'tableOrder',
+    'cashRegister',
+    'expenseRecord',
+    'closureQuery',
+  ],
+  inventory: [
+    'articles',
+    'inventoryEntry',
+    'inventoryExit',
+    'kardex',
+    'viewMovements',
+    'transformation',
+    'production',
+  ],
+  configuration: ['config'],
+  specialPermissions: [
+    'singleWaiter',
+    'cancelTables',
+    'cancelCashClosures',
+    'cancelSales',
+    'cancelInventoryMovements',
+    'removeItemsFromOrder',
+    'verifyCashClosures',
+    'chargePendingOrders',
+    'accessAnyTable',
+    'reprintSalesDocuments',
+    'modifySalesData',
+    'moveOrderItems',
+  ],
+  clients: ['clientQuery'],
+  report: ['salesReport', 'inventoryReport'],
+};

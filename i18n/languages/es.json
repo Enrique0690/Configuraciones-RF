@@ -14,7 +14,7 @@
         }
     },
     "businessInfo": {
-        "header": "Información del Negocio",
+        "header": "Información Fiscal",
         "name": "Nombre del Negocio",
         "address": "Dirección",
         "phone": "Número de teléfono",
@@ -99,7 +99,7 @@
         "userName": "Nombre Usuario",
         "commercialName": "Nombre Comercial",
         "tableNumber": "# Mesa",
-        "time": "Tiempo ⏰",
+        "time": "Tiempo",
         "totalAmount": "$ Total de mesa"
     },
     "security": {

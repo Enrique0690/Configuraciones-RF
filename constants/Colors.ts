@@ -6,11 +6,11 @@
 export const Colors = {
   primary: '#09b048', // El color principal de la paleta
   secondary: '#7cf9aa', // Un color secundario más suave
-  background: '#d9ffe6', // Color de fondo
-  backgroundsecondary: '#effef4',
+  background: '', // Color de fondo
+  backgroundsecondary: '',
   itemBackground: '#0c9540', // Color de fondo para los ítems
-  text: '#ffffff', // Color principal de texto
-  textsecondary: '#013215',
+  text: '#000', // Color principal de texto
+  textsecondary: '#fff',
   icon: '#687076', // Color de íconos
   tabIconDefault: '#687076', // Color de íconos por defecto
   tabIconSelected: '#13d45b', // Color de íconos seleccionados

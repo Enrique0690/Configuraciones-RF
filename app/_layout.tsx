@@ -1,28 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Platform, BackHandler } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, BackHandler, useWindowDimensions } from "react-native";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
 import { useTranslation } from "react-i18next";
-
-
-const MenuItem = ({ item, router, setIsFullScreen }: { item: { text: string, route: string, icon: string }, router: any, setIsFullScreen: Function }) => (
-    <TouchableOpacity onPress={() => {
-        router.push(item.route);
-        setIsFullScreen(true);
-    }}>
-        <Text style={styles.menuItem}>{item.icon} {item.text}</Text>
-    </TouchableOpacity>
-);
-
-const MenuSection = ({ items, router, borderColor, setIsFullScreen }: { items: any[], router: any, borderColor: string, setIsFullScreen: Function }) => (
-    <View style={[styles.section, { borderColor }]}>
-        {items.map(item => <MenuItem key={item.text} item={item} router={router} setIsFullScreen={setIsFullScreen} />)}
-    </View>
-);
 
 export default function Layout() {
     const { t } = useTranslation();
@@ -30,73 +13,113 @@ export default function Layout() {
     const router = useRouter();
     const segments = useSegments();
     const [isFullScreen, setIsFullScreen] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
+    const [selectedRoute, setSelectedRoute] = useState('');
+    const { width } = useWindowDimensions();
+    const isSmallScreen = width <= 768;
 
-    const backgroundColor = useThemeColor({}, 'background');
-    const borderColor = useThemeColor({}, 'border');
-    const secondaryTextColor = useThemeColor({}, 'textsecondary');
-
-    useEffect(() => {
-        setIsMobile(Platform.OS === 'android' || Platform.OS === 'ios');
-    }, []);
-
-    useEffect(() => {
-        if (Number(segments.length) === 0) {
-            setIsFullScreen(false);
-        }
-    }, [segments]);
+    const handleNavigation = useCallback((route: string) => {
+        router.push(route as any);
+        setIsFullScreen(true);
+        setSelectedRoute(route);
+    }, [router]);
 
     useEffect(() => {
-        if (isMobile && isFullScreen) {
-            const backAction = () => {
+        const currentRoute = `/${segments.join('/')}`;
+        setIsFullScreen(isSmallScreen && currentRoute !== '/');
+        setSelectedRoute(currentRoute);
+    }, [isSmallScreen, segments]);
+
+    useEffect(() => {
+        if (isSmallScreen && isFullScreen) {
+            const handleBackPress = () => {
                 if (Number(segments.length) === 0) {
                     setIsFullScreen(false);
                     return true;
                 }
                 return false;
             };
-            BackHandler.addEventListener("hardwareBackPress", backAction);
-            return () => BackHandler.removeEventListener("hardwareBackPress", backAction);
+            BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+            return () => BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
         }
-    }, [isMobile, isFullScreen, segments]);
+    }, [isSmallScreen, isFullScreen, segments]);
 
-    const menuItems = [
-        { text: t("layout.menuItems.businessInfo"), route: "/Business-info", icon: "👁️" },
-        { text: t("layout.menuItems.orderingstations"), route: "/Ordering-stations", icon: "👨‍🍳" },
-        { text: t("layout.menuItems.printers"), route: "/Printers", icon: "🖨️" },
-        //{ text: t("layout.menuItems.paymentMethods"), route: "/Payment-methods", icon: "💳" },
-        //{ text: t("layout.menuItems.integrations"), route: "/Integrations", icon: "🔗" },
-        { text: t("layout.menuItems.tabletConfiguration"), route: "/Tablet-configuration", icon: "🍽️" },
-        { text: t("layout.menuItems.security"), route: "/Security", icon: "🔒" },
-        { text: t("layout.menuItems.advancedOptions"), route: "/Advanced-options", icon: "⚙️" },
-        { text: t("layout.menuItems.taxConfigurationEC"), route: "/Tax-configuration-ec/SRI/InfoTributaria", icon: "📝" }
+    const MenuItem = ({ item, onPress, isActive }: {
+        item: { text: string},
+        onPress: () => void,
+        isActive: boolean
+    }) => (
+        <TouchableOpacity onPress={onPress} style={[styles.menuItem, { paddingVertical: isSmallScreen ? 20 : 10 }, isActive && styles.activeMenuItem]}>
+            <Text style={styles.menuItemText}>{item.text}</Text>
+        </TouchableOpacity>
+    );
+    
+    const MenuSection = ({ items, onItemPress, selectedRoute }: {
+        items: { text: string, route: string}[],
+        onItemPress: (route: string) => void,
+        selectedRoute: string
+    }) => (
+        <View style={styles.section}>
+            {items.map(item => (
+                <MenuItem
+                    key={item.text}
+                    item={item}
+                    isActive={selectedRoute.startsWith(item.route)}
+                    onPress={() => onItemPress(item.route)}
+                />
+            ))}
+        </View>
+    );
+
+    const menuGroups = [
+        [
+            { text: t("layout.categorys.businessInfo"), route: "/organization"},
+        ],
+        [
+            { text: t("layout.categorys.orderingstations"), route: "/order-station"},
+            { text: t("layout.categorys.printers"), route: "/printers"},
+            { text: t("layout.categorys.tabletConfiguration"), route: "/table-layout"},
+        ],
+        [
+            { text: t("layout.categorys.security"), route: "/security"},
+            { text: t("layout.categorys.advancedOptions"), route: "/advanced"},
+        ],
     ];
+
+    if (!selectedRoute) {
+        return (
+            <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+                <View style={[styles.sidebarLoading, { width: isSmallScreen ? '100%' : 300 }]} />
+            </View>
+        );
+    }
 
     return (
         <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-            <View style={styles.container}>
-                {/* Panel izquierdo (Menú) */}
-                {(!isFullScreen || !isMobile) && (
-                    <View style={[styles.sidebar, { backgroundColor, width: isMobile ? '100%' : 300 }]}>
-                        <Text style={[styles.header, { color: secondaryTextColor }]}>{t("layout.header")}</Text>
-                        <ScrollView contentContainerStyle={styles.itemsContainer}>
-                            <View style={styles.searchBarContainer}>
-                                <SearchBar setIsFullScreen={setIsFullScreen} />
-                            </View>
-                            <MenuSection items={menuItems.slice(0, 4)} router={router} borderColor={borderColor} setIsFullScreen={setIsFullScreen} />
-                            <MenuSection items={menuItems.slice(4)} router={router} borderColor={borderColor} setIsFullScreen={setIsFullScreen} />
-                        </ScrollView>
+            {(!isFullScreen || !isSmallScreen) && (
+                <View style={[styles.sidebar, { width: isSmallScreen ? '100%' : 300 }]}>
+                    <Text style={styles.header}>{t("layout.header")}</Text>
+                    <View style={styles.searchBarContainer}>
+                        <SearchBar/>
                     </View>
-                )}
-
-                {/* Panel derecho (Contenido dinámico) */}
-                <View style={[styles.content, isFullScreen && isMobile && styles.fullScreenContent]}>
-                <Stack
-                        screenOptions={{
-                            headerShown: false
-                        }}
-                    />
+                    <ScrollView>
+                        {menuGroups.map((group, index) => (
+                            <MenuSection
+                                key={index}
+                                items={group}
+                                onItemPress={handleNavigation}
+                                selectedRoute={selectedRoute}
+                            />
+                        ))}
+                    </ScrollView>
                 </View>
+            )}
+            <View style={[styles.content, isFullScreen && styles.fullScreenContent]}>
+                <Stack
+                    screenOptions={{
+                        headerShown: false,
+                        contentStyle: { backgroundColor: 'white' },
+                    }}
+                />
             </View>
         </View>
     );
@@ -105,16 +128,14 @@ export default function Layout() {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: Colors.background,
-    },
-    container: {
-        flex: 1,
         flexDirection: 'row',
-        zIndex: 1,
     },
     sidebar: {
         padding: 16,
-        backgroundColor: Colors.background,
+    },
+    sidebarLoading: {
+        height: '100%',
+        backgroundColor: '#fff',
     },
     header: {
         fontSize: 24,
@@ -124,43 +145,30 @@ const styles = StyleSheet.create({
         color: Colors.text,
     },
     menuItem: {
+        paddingHorizontal: 20,
         fontSize: 16,
-        paddingVertical: 8,
-        color: Colors.textsecondary,
     },
     content: {
         flex: 1,
-        backgroundColor: Colors.background,
-        padding: 16,
-        borderRadius: 8,
+        maxWidth: 900,
+        marginHorizontal: 'auto',
     },
     fullScreenContent: {
         width: '100%',
         height: '100%',
     },
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        borderRadius: 8,
-        marginBottom: 12,
-    },
-    searchInput: {
-        flex: 1,
-        paddingVertical: 8,
-        marginLeft: 8,
-    },
-    itemsContainer: {
-        paddingBottom: 16,
-    },
     section: {
-        borderWidth: 1,
-        borderRadius: 8,
-        padding: 10,
-        marginBottom: 16,
+        paddingVertical: 10,
     },
     searchBarContainer: {
         zIndex: 10,
-        marginBottom: 16,
+    },
+    activeMenuItem: {
+        backgroundColor: '#eaeaea',
+        borderRadius: 8,
+    },
+    menuItemText: {
+        fontSize: 16,
+        fontWeight: '600',
     },
 });

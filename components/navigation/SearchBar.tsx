@@ -1,80 +1,208 @@
-import React, { useState } from 'react';
-import { TextInput, View, Text, TouchableOpacity, ScrollView, StyleSheet, Platform, Keyboard } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { TextInput, View, Text, TouchableOpacity, ScrollView, StyleSheet, Keyboard, Platform, BackHandler, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { allConfigs } from '@/constants/DataConfig';
+import { Ionicons } from '@expo/vector-icons';
+import useSearch from '@/hooks/useSearch';
 
-interface SearchBarProps {
-  setIsFullScreen?: (value: boolean) => void;
-}
+const ICON_COLOR = '#A1A1A1';
+const SEARCH_BAR_HEIGHT = 54;
 
-const normalizeText = (text: string) =>
-  text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const SearchBar: React.FC = () => {
+  const searchBarRef = useRef<View>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const router = useRouter();
+  const { t } = useTranslation();
+  const { query, setQuery, filteredResults } = useSearch(allConfigs);
+  const flatResults = Object.values(filteredResults).flat();
+  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
+  const { width } = useWindowDimensions();
 
-const filterResults = (text: string, allConfigs: any[], t: Function) => {
-  const normalizedText = normalizeText(text);
-  return allConfigs.filter((item) =>
-    normalizeText(t(item.label)).includes(normalizedText)
-  );
+  const handleSearchFocus = () => {
+    if (width < 768) {
+      Keyboard.dismiss();
+      router.push('/searchscreen');
+    }
+  };
+  
+
+  if (Platform.OS === 'web' || Platform.OS === 'windows') {
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const node = searchBarRef.current;
+      if (node && !(node as any).contains(event.target)) {
+        clearSearch();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  }
+
+  const handleSelectResult = (route?: string, id?: string): void => {
+    if (route) {
+      Keyboard.dismiss();
+      setQuery('');
+      router.push(id ? { pathname: route, params: { highlight: id } } : route as any);
+    }
+  };
+  
+  const clearSearch = (): void => {
+    setQuery('');
+    setSelectedIndex(null);
+  };
+
+  useEffect(() => {
+    if (selectedIndex !== null && (selectedIndex < 0 || selectedIndex >= flatResults.length)) {
+      setSelectedIndex(null); 
+    }
+  }, [flatResults, selectedIndex]);  
+
+  const handleKeyDown = (event: any): void => {
+    if (event.key === 'Escape') clearSearch();
+    if (flatResults.length === 0) return; 
+  
+    switch (event.key) {
+      case 'ArrowDown':
+        updateSelectedIndex((prevIndex) =>
+          prevIndex === null || prevIndex === flatResults.length - 1 ? 0 : prevIndex + 1
+        );
+        break;
+      case 'ArrowUp':
+        updateSelectedIndex((prevIndex) =>
+          prevIndex === null || prevIndex === 0 ? flatResults.length - 1 : prevIndex - 1
+        );
+        break;
+      case 'Enter':
+        if (selectedIndex !== null && flatResults[selectedIndex]) {
+          const { route, id } = flatResults[selectedIndex];
+          handleSelectResult(route, id);
+        }
+        break;
+    }
+  };  
+
+  const updateSelectedIndex = (calculateIndex: (prevIndex: number | null) => number): void => {
+    if (flatResults.length === 0) return; 
+    setSelectedIndex((prevIndex) => {
+      const newIndex = calculateIndex(prevIndex);
+      scrollToSelectedIndex(newIndex);
+      return newIndex;
+    });
+  };  
+
+const scrollToSelectedIndex = (index: number): void => {
+  const itemHeight = 50; 
+  const scrollViewHeight = 300; 
+  const scrollPosition = Math.max(0, (index * itemHeight) - (scrollViewHeight / 2) + (itemHeight / 2));
+  scrollViewRef.current?.scrollTo({
+    y: scrollPosition,
+    animated: true,
+  });
 };
 
-const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
-  const [query, setQuery] = useState<string>('');
-  const [filteredResults, setFilteredResults] = useState(allConfigs);
-  const { t } = useTranslation();
-  const router = useRouter();
+  const highlightMatchedText = (text: string) => {
+    const normalizedQuery = query.toLowerCase();
+    const startIndex = text.toLowerCase().indexOf(normalizedQuery);
 
-  const handleSearch = (text: string) => {
-    setQuery(text);
-    setFilteredResults(text ? filterResults(text, allConfigs, t) : allConfigs);
+    if (startIndex === -1) return <Text>{text}</Text>;
+
+    const endIndex = startIndex + normalizedQuery.length;
+    return (
+      <>
+        <Text>{text.slice(0, startIndex)}</Text>
+        <Text style={styles.highlightedText}>{text.slice(startIndex, endIndex)}</Text>
+        <Text>{text.slice(endIndex)}</Text>
+      </>
+    );
   };
 
-  const handleSelectResult = (route: string, label: string) => {
-    Keyboard.dismiss();
-    setIsFullScreen?.(true);
-    setQuery('');
-    setFilteredResults(allConfigs);
-  
-    router.push({
-      pathname: route as any,
-      params: { highlight: label },  
-    });
+  const renderSearchResults = () => {
+    return Object.entries(filteredResults).map(([category, items]) => (
+      <View key={category} style={styles.categoryContainer}>
+        <Text style={styles.categoryHeader}>{category}</Text>
+        {items.map((item, index) => {
+          const globalIndex = flatResults.indexOf(item);
+          return (
+            <TouchableOpacity
+              key={item.id || index}
+              onPress={() => handleSelectResult(item.route, item.id)}
+              activeOpacity={0.7}
+              style={[
+                styles.resultContainer,
+                selectedIndex === globalIndex && styles.selectedResultContainer,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.resultText,
+                  selectedIndex === globalIndex && styles.selectedResultText,
+                ]}
+              >
+                {highlightMatchedText(item.label)}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    ));
   };
   
-  const renderSearchResult = (item: any, index: number) => (
-    <TouchableOpacity
-      key={index}
-      onPress={() => handleSelectResult(item.route, item.label)}  
-      activeOpacity={0.7}
-    >
-      <Text
-        style={[
-          styles.resultText,
-          index === filteredResults.length - 1 && styles.resultTextLast,
-        ]}
-      >
-        {t(item.label)}
-      </Text>
-    </TouchableOpacity>
-  );
+  useEffect(() => {
+    const handleEscapePress = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') clearSearch();
+    };
+    const backAction = () => {
+      if (query.length > 0) {
+        clearSearch();
+        return true;
+      }
+      return false;
+    };
+
+    if (Platform.OS === 'web') {
+      document.addEventListener('keydown', handleEscapePress);
+      return () => document.removeEventListener('keydown', handleEscapePress);
+    }
+
+    if (Platform.OS === 'android') {
+      BackHandler.addEventListener('hardwareBackPress', backAction);
+      return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
+    }
+  }, [query]);
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        value={query}
-        onChangeText={handleSearch}
-        placeholder={t('search.placeholder')}
-        style={styles.input}
-        placeholderTextColor="#A1A1A1"
-        onSubmitEditing={() => handleSearch(query)} 
-      />
+    <View ref={searchBarRef} style={styles.container}>
+      <View style={styles.searchBarContainer}>
+        <Ionicons name="search-outline" size={20} color={ICON_COLOR} style={styles.searchIcon} />
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t('common.search')}
+          style={styles.input}
+          placeholderTextColor={ICON_COLOR}
+          onKeyPress={handleKeyDown}
+          onFocus={handleSearchFocus}
+        />
+        {query.length > 0 && (
+          <TouchableOpacity style={styles.clearButton} onPress={clearSearch}>
+            <Text style={styles.clearButtonText}>✕</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       {query.length > 0 && (
         <View style={styles.overlay}>
           <ScrollView
+            ref={scrollViewRef}
             style={styles.scrollContainer}
-            contentContainerStyle={styles.resultsContainer}
+            keyboardShouldPersistTaps="handled"
           >
-            {filteredResults.map(renderSearchResult)}
+            {flatResults.length > 0 ? renderSearchResults() : (
+              <Text style={styles.noResultsText}>{t('search.noResults')}</Text>
+            )}
           </ScrollView>
         </View>
       )}
@@ -82,52 +210,91 @@ const SearchBar: React.FC<SearchBarProps> = ({ setIsFullScreen }) => {
   );
 };
 
-export default SearchBar;
-
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 20,
     marginTop: 5,
+    width: '100%',
+  },
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+    borderWidth: 1,  
+    borderColor: '#000',  
   },
   input: {
-    height: 50,
-    borderColor: '#DDD',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingLeft: 20,
+    flex: 1,
+    height: 40,
     fontSize: 16,
-    backgroundColor: '#F9F9F9',
-    width: '100%',
+    color: '#333333',
+    backgroundColor: 'transparent',
+    borderRadius: 8,  
+    marginLeft: 10,
+  },
+  searchIcon: {
+    marginLeft: 10,
+  },
+  clearButton: {
+    backgroundColor: '#DDDDDD',
+    borderRadius: 15,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+  clearButtonText: {
+    color: '#555',
+    fontSize: 12,
   },
   overlay: {
     position: 'absolute',
-    top: 54,
+    top: SEARCH_BAR_HEIGHT,
     left: 0,
-    right: 20,
-    zIndex: 10,
+    right: 0,
     backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    width: '100%',
+    zIndex: 1,
   },
   scrollContainer: {
-    maxHeight: 300,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    borderColor: '#E0E0E0',
+    maxHeight: 400,
+    borderColor: "#333",
     borderWidth: 1,
+    borderRadius: 10,
   },
-  resultsContainer: {
-    paddingVertical: 0,
+  noResultsText: {
+    color: '#A1A1A1',  
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  categoryContainer: {
+    marginBottom: 15,
+  },
+  categoryHeader: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333333',
+    marginBottom: 5,
+  },
+  resultContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+  },
+  selectedResultContainer: {
+    backgroundColor: '#F0F0F0',
   },
   resultText: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    fontSize: 16,
+    fontSize: 14,
     color: '#333',
-    borderBottomColor: '#E0E0E0',
-    borderBottomWidth: 1,
   },
-  resultTextLast: {
-    borderBottomWidth: 0,
+  selectedResultText: {
+    color: '#000',
+    fontWeight: 'bold',
+  },
+  highlightedText: {
+    color: 'blue',
   },
 });
+
+export default SearchBar;

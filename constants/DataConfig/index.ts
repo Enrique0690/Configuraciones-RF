@@ -1,19 +1,19 @@
-import { businessInfoConfig } from "./BusinessConfig";
+import { organizationall} from "./organization";
 import { Securityall } from "./SecurityConfig";
-import { taxConfigall } from "./TaxConfig";
 import { PrintersConfig } from "./PrintersConfig";
-import { TabletConfig } from "./TabletConfig";
+import { TableConfig } from "./tablelayout";
 import { paymentMethodsConfig } from "./PaymentmethodsConfig";
 import { IntegrationsConfig } from "./IntegrationsConfig";
 import { StationsConfig } from "./StationsConfig";
 
+
 export const allConfigs = [
-  ...businessInfoConfig,
+  ...Object.values(organizationall).flat(),
   ...StationsConfig,
   ...PrintersConfig,
   //...paymentMethodsConfig,
-  ...TabletConfig,
+  ...TableConfig,
   //...IntegrationsConfig,
   ...Object.values(Securityall).flat(),
-  ...Object.values(taxConfigall).flat(),
+  //...Object.values(taxConfigall).flat(),
 ];
