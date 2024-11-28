@@ -29,7 +29,7 @@ const PrintersListScreen: React.FC = () => {
   };
 
   const handlePrinterClick = (id: string) => {
-    router.push('./printers/${id}');
+    router.push(`./printers/${id}`);
   };
   
   if (loading) {
