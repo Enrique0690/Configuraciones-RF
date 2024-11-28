@@ -17,7 +17,7 @@ const TabletConfiguration: React.FC<TabletConfigurationProps> = ({ showUser, sho
         <Text style={styles.tableLabel}>{t('tablelayout.userName')}</Text>
       )}
       {showCommercialName && (
-        <Text style={styles.tableLabel}>{t('tablelayout.commercialName')}</Text>
+        <Text style={styles.tableInfo}>{t('tablelayout.commercialName')}</Text>
       )}
       <Text style={styles.tableInfo}>{t('tablelayout.tableNumber')}</Text>
       {showTime && (

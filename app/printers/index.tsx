@@ -36,7 +36,7 @@ const PrintersListScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('printers.loading')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -46,7 +46,7 @@ const PrintersListScreen: React.FC = () => {
       <View style={styles.errorContainer}>
         <Text style={styles.errorMessage}>{t('printers.errorLoadingData')}</Text>
         <TouchableOpacity onPress={reloadData} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('printers.retry')}</Text>
+          <Text style={styles.goBackButtonText}>{t('common.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
