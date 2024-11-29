@@ -9,5 +9,6 @@
     "saveError": "No se pudieron guardar los cambios.",
     "search": "Buscar",
     "noResults": "No se encontraron resultados",
-    "search.placeholder": "Seleccione la barra de busqueda para buscar una configuración"
+    "search.placeholder": "Seleccione la barra de busqueda para buscar una configuración",
+    "searchtitle": "Resultados de Busqueda"
 }
