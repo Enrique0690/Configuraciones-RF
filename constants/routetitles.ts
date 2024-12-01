@@ -5,4 +5,5 @@ export const routeTitles = {
     "/table-layout": "tablelayout.header",
     "/security": "security.header",
     "/advanced": "advancedoptions.header",
+    "/searchscreen": "common.searchtitle"
 };

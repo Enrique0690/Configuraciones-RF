@@ -6,6 +6,8 @@ import { Colors } from '@/constants/Colors';
 import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
 import { useTranslation } from "react-i18next";
+import { ConfigProvider } from "@/components/DataContext/ConfigContext";
+import { routeTitles } from "@/constants/routetitles";
 
 export default function Layout() {
     const { t } = useTranslation();
@@ -16,6 +18,8 @@ export default function Layout() {
     const [selectedRoute, setSelectedRoute] = useState('');
     const { width } = useWindowDimensions();
     const isSmallScreen = width <= 768;
+    const getCurrentTitle = () => t(routeTitles[selectedRoute as keyof typeof routeTitles] || "layout.categorys.default");
+    
 
     const handleNavigation = useCallback((route: string) => {
         router.push(route as any);
@@ -94,6 +98,7 @@ export default function Layout() {
     }
 
     return (
+        <ConfigProvider connectionName="RunFood">
         <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
             {(!isFullScreen || !isSmallScreen) && (
                 <View style={[styles.sidebar, { width: isSmallScreen ? '100%' : 300 }]}>
@@ -116,12 +121,14 @@ export default function Layout() {
             <View style={[styles.content, isFullScreen && styles.fullScreenContent]}>
                 <Stack
                     screenOptions={{
-                        headerShown: false,
+                        headerShown: isSmallScreen,
+                        headerTitle: getCurrentTitle(),
                         contentStyle: { backgroundColor: 'white' },
                     }}
                 />
             </View>
         </View>
+        </ConfigProvider>
     );
 }
 

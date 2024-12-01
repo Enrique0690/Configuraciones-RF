@@ -61,7 +61,6 @@ const ScreenSearch: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.resultsHeader}>Resultados de búsqueda</Text>
 
       <View style={styles.searchBarContainer}>
         <Ionicons name="search-outline" size={20} color="#A1A1A1" style={styles.searchIcon} />
