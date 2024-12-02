@@ -1,5 +1,5 @@
 import React from 'react';
-import DataContext from "./Data/DataContext";
+import DataContext from '@/components/DataContext';
 import { Platform } from 'react-native';
 
 console.log(DataContext);

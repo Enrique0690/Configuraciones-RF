@@ -4,18 +4,23 @@ import SearchBar from '@/components/navigation/SearchBar';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';
-import useStorage from '@/hooks/useStorage';
 import { Colors } from '@/constants/Colors';
+import { useConfig } from '@/components/DataContext/ConfigContext';
+
+interface StationData {
+  stations: string[];
+}
 
 const OrderingStationsScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { data: stations, loading, error, saveData: saveStations, reloadData } = useStorage<string[]>('stations', []);
+  const { dataContext, isLoading } = useConfig();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [newStation, setNewStation] = useState('');
-
+  const stations: StationData['stations'] = dataContext?.Configuracion.DATA?.stations || [];
   const handleAddStation = () => {
     if (newStation.trim()) {
-      saveStations([...stations, newStation]);
+      const updatedStations = [...stations, newStation];
+      dataContext?.Configuracion.Set('stations', updatedStations);
       setNewStation('');
       setDialogVisible(false);
     }
@@ -23,25 +28,14 @@ const OrderingStationsScreen: React.FC = () => {
 
   const handleDeleteStation = (index: number) => {
     const updatedStations = stations.filter((_, i) => i !== index);
-    saveStations(updatedStations);
+    dataContext?.Configuracion.Set('stations', updatedStations);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('common.loadError')}</Text>
-        <TouchableOpacity onPress={reloadData} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('common.retry')}</Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -90,7 +84,7 @@ const OrderingStationsScreen: React.FC = () => {
         onChangeText={setNewStation}
         onSave={handleAddStation}
         onClose={() => setDialogVisible(false)}
-        title="Agregar Nueva Estación"
+        title={t('stations.addStationTitle')}
       />
     </View>
   );
@@ -117,8 +111,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    fontSize: 20,
-    fontWeight: 'bold',
     marginBottom: 16,
   },
   sectionTitle: {
@@ -154,7 +146,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#f9f9f9',
     marginBottom: 8,
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   stationName: {
     fontSize: 18,
@@ -170,31 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#4CAF50',
   },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  errorMessage: {
-    fontSize: 18,
-    color: 'red',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  goBackButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  goBackButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   noStationsContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,

@@ -3,25 +3,13 @@ function withGlobalRoute<T>(config: T[], route: string, category?: string): (T &
 }
 
 type FieldConfig = {
-  id:  keyof typeof defaultData;
+  id:  string;
   label: string;
   type: 'text' | 'image' | 'input' | 'inputlist';
   route?: string;
   imageUrl?: string | null;
   list?: string[];
   category?: string;
-};
-
-export const defaultData = {
-  id: '',
-  nombreComercial: '',
-  direccion: '',
-  telefono: '',
-  email: '',
-  base: '',
-  currency: '',
-  pruebas: '',
-  imageUrl: '',
 };
 
 export const organizationConfig: Array<FieldConfig> =  withGlobalRoute([
@@ -34,23 +22,10 @@ export const organizationConfig: Array<FieldConfig> =  withGlobalRoute([
 
 type InfoTributariaFieldConfig = {
   label: string;
-  id: keyof typeof defaultInfoTributariaData;
+  id: string;
   type: 'text' | 'switch' | 'input' | 'inputlist';
   route?: string;
   list?: string[]
-};
-
-export const defaultInfoTributariaData = {
-  ruc: '',
-  razonSocial: '',
-  direccionMatriz: '',
-  ObligadoContabilidad: false,
-  es_agente_retencion_microempresa: false,
-  agente_retencion_microempresa_resolucion: '',
-  regimenContribuyente: '',
-  calificacionArtesanal: '',
-  sitioWebFacturaElectronica: '',
-  correoEnvioComprobantes: '',
 };
 
 export const infoTributariaConfig: Array<InfoTributariaFieldConfig> = withGlobalRoute([
@@ -60,7 +35,7 @@ export const infoTributariaConfig: Array<InfoTributariaFieldConfig> = withGlobal
   { id: 'ObligadoContabilidad', label: 'organization.taxinfo.obligadollevarcontabilidad', type: 'switch' },
   { id: 'es_agente_retencion_microempresa', label: 'organization.taxinfo.agenteRetencion', type: 'switch' },
   { id: 'agente_retencion_microempresa_resolucion', label: 'organization.taxinfo.agente_retencion_microempresa_resolucion', type: 'input' },
-  { id: 'regimenContribuyente', label: 'organization.taxinfo.regimenContribuyente', type: 'inputlist', list: ['No Incluir Leyenda', 'Contribuyente Regimen General', 'Contribuyente Rigemen RIMPE', 'Contribuyente Negocio Popular - Regimen RIMPE'] },
+  { id: 'leyenda_contribuyente_rimpe', label: 'organization.taxinfo.regimenContribuyente', type: 'inputlist', list: ['No Incluir Leyenda', 'Contribuyente Regimen General', 'Contribuyente Rigemen RIMPE', 'Contribuyente Negocio Popular - Regimen RIMPE'] },
   { id: 'calificacionArtesanal', label: 'organization.taxinfo.numeroCalificacionArtesanal',type: 'input' },
   { id: 'sitioWebFacturaElectronica', label: 'organization.taxinfo.sitioWebFacturaElectronica', type: 'input' },
   //{ label: 'taxinfo.correoEnvioComprobantes', field: 'correoEnvioComprobantes', type: 'input' },

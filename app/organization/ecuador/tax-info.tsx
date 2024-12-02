@@ -1,24 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
-import { handleChange } from '@/hooks/handleChange';
-import useStorage from '@/hooks/useStorage';
+import { View, Text, StyleSheet, ScrollView, Platform, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { infoTributariaConfig, defaultInfoTributariaData } from '@/constants/DataConfig/organization';
-import DataRenderer from '@/components/DataRenderer'; 
 import SearchBar from '@/components/navigation/SearchBar';
+import DataRenderer from '@/components/DataRenderer';
+import { infoTributariaConfig } from '@/constants/DataConfig/organization';
+import { handleChange } from '@/hooks/handleChange';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
-import { useRouter } from 'expo-router';
+import { useConfig } from '@/components/DataContext/ConfigContext';
 
 const InfoTributaria: React.FC = () => {
   const { t } = useTranslation();
-  const { data, loading, error, saveData, reloadData } = useStorage('infoTributariaData', defaultInfoTributariaData);
+  const { dataContext, isLoading } = useConfig();
   const { highlight } = useLocalSearchParams();
-  const router = useRouter();
-  const firstGroup = infoTributariaConfig.slice(0, 3);
-  const secondGroup = infoTributariaConfig.slice(3);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
@@ -27,52 +23,33 @@ const InfoTributaria: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('common.loadError')}</Text>
-        <TouchableOpacity onPress={() => router.push('/')} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('printers.goBackHome')}</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   return (
     <View style={[styles.container]}>
-      <View style={styles.searchBarContainer}>
-        <SearchBar />
-      </View>
-      <Text style={[styles.sectionTitle, { color: Colors.text }]}>
-        {t('organization.taxinfo.header')}
-      </Text>
-      <View style={styles.groupContainer}>
-        {firstGroup.map(({ label, id, type, list }) => (
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View style={styles.searchBarContainer}>
+          <SearchBar />
+        </View>
+        <Text style={[styles.sectionTitle, { color: Colors.text }]}>
+          {t('organization.taxinfo.header')}
+        </Text>
+
+        {infoTributariaConfig.map(({ label, id, type, list }) => (
           <DataRenderer
             key={id}
             label={t(label)}
-            value={data[id]}
+            value={dataContext?.Configuracion.DATA[id]} // Obtener valor desde el contexto
             type={type}
-            onSave={(newValue) => handleChange(id, newValue, data, saveData)}
+            onSave={(newValue) =>
+              handleChange(id, newValue, dataContext?.Configuracion.DATA, (updatedData) =>
+                dataContext?.Configuracion.Set(id, updatedData[id]) // Guardar cambios en el contexto
+              )
+            }
             textColor={Colors.text}
-            highlight={highlight === id}
-          />
-        ))}
-      </View>
-      <View style={styles.groupContainer}>
-        {secondGroup.map(({ label, id, type, list }) => (
-          <DataRenderer
-            key={id}
-            label={t(label)}
-            value={data[id]}
-            type={type}
-            onSave={(newValue) => handleChange(id, newValue, data, saveData)}
-            textColor={Colors.text}
-            highlight={highlight === id}
             dataList={list}
+            highlight={highlight === id}
           />
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -83,11 +60,13 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 10,
   },
+  contentContainer: {
+    paddingBottom: 16,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginVertical: 16,
-    textAlign: 'center',
   },
   searchBarContainer: {
     display: Platform.select({

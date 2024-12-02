@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import useStorage from '@/hooks/useStorage';
 import SearchBar from '@/components/navigation/SearchBar';
 import DataRenderer from '@/components/DataRenderer';
-import { organizationConfig, defaultData } from '@/constants/DataConfig/organization';
+import { organizationConfig } from '@/constants/DataConfig/organization';
 import * as ImagePicker from 'expo-image-picker';
 import { handleChange } from '@/hooks/handleChange';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
-
-const IMAGE_PREVIEW_SIZE = 250;
+import { useConfig } from '@/components/DataContext/ConfigContext';
 
 const BusinessInfoScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { data, loading, error, saveData, reloadData } = useStorage('businessInfo', defaultData);
+  const { dataContext, isLoading } = useConfig(); 
   const [imageUri, setImageUri] = useState<string | null>(null);
   const { highlight } = useLocalSearchParams();
 
   useEffect(() => {
-    if (data?.imageUrl) {
-      setImageUri(data.imageUrl);
+    if (dataContext?.Configuracion.DATA?.imageUrl) {
+      setImageUri(dataContext.Configuracion.DATA.imageUrl);
     }
-  }, [data]);
+  }, [dataContext?.Configuracion.DATA]);
 
   const openImagePicker = async () => {
     const permission = await requestImagePickerPermission();
@@ -32,7 +30,7 @@ const BusinessInfoScreen: React.FC = () => {
         saveImage(result);
       }
     } else {
-      alert(t('businessInfo.permissionDenied'));
+      alert(t('common.permissionDenied'));
     }
   };
 
@@ -51,25 +49,16 @@ const BusinessInfoScreen: React.FC = () => {
 
   const saveImage = (uri: string) => {
     setImageUri(uri);
-    saveData({ ...data, imageUrl: uri }); 
+    if (dataContext) {
+      dataContext.Configuracion.Set('imageUrl', uri);
+    }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('businessInfo.loading')}</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('businessInfo.loadError')}</Text>
-        <TouchableOpacity onPress={reloadData} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>{t('businessInfo.retry')}</Text>
-        </TouchableOpacity>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -79,37 +68,37 @@ const BusinessInfoScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.searchBarContainer}>
           <SearchBar />
-        </View>
-
-        <Text style={[styles.sectionTitle, { color: Colors.text }]}>
-          {t('organization.header')}
-        </Text>
+        </View> 
 
         <ImageUploadSection 
           imageUri={imageUri}
           onSelectImage={openImagePicker}
-          buttonText={t('uploadImage')}
+          buttonText={t('common.uploadImage')}
         />
 
         {organizationConfig.map(({ label, id, type, list }) => (
           <DataRenderer
             key={id}
             label={t(label)}
-            value={data[id]}
+            value={dataContext?.Configuracion.DATA[id]} 
             type={type}
-            onSave={(newValue) => handleChange(id, newValue, data, saveData)}
+            onSave={(newValue) => 
+              handleChange(id, newValue, dataContext?.Configuracion.DATA, (updatedData) => 
+                dataContext?.Configuracion.Set(id, updatedData[id])
+              )
+            }
             textColor={Colors.text}
             dataList={list}
             highlight={highlight === id}
           />
         ))}
         <DataRenderer
-            label={t('organization.taxinfo.header')} 
-            value="/organization/ecuador/tax-info"
-            type='buttonlist'
-            iconName='document-text' 
-            textColor={Colors.text} 
-          />
+          label={t('organization.taxinfo.header')} 
+          value="/organization/ecuador/tax-info"
+          type='buttonlist'
+          iconName='document-text' 
+          textColor={Colors.text} 
+        />
       </ScrollView>
     </View>
   );
@@ -151,28 +140,27 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   imageContainer: {
-    alignItems: 'center',  
-    justifyContent: 'center',  
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
   },
   imagePreview: {
-    width: '100%', 
-    height: undefined, 
-    aspectRatio: 1, 
-    maxWidth: 500,  
-    maxHeight: 300, 
-    resizeMode: 'contain',  
-    borderRadius: 15,  
+    width: '100%',
+    height: undefined,
+    aspectRatio: 1,
+    maxWidth: 500,
+    maxHeight: 300,
+    resizeMode: 'contain',
+    borderRadius: 15,
   },
   uploadButton: {
     backgroundColor: '#4CAF50',
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: 8,
     marginVertical: 16,
-    elevation: 5,
+    maxWidth: 300,
+    marginHorizontal: 'auto',
   },
   uploadButtonText: {
     color: '#fff',
@@ -188,29 +176,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: '#4CAF50',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  errorMessage: {
-    fontSize: 18,
-    color: 'red',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  retryButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  retryButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

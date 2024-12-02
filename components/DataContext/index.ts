@@ -71,7 +71,7 @@ class ConfiguracionEntity {
             }
         );
         const result = await response.json();
-        if (!response.ok) throw new Error(result);
+        if (!response.ok) throw new Error(JSON.stringify(result));
         this.DATA[key] = value;
         return this.DATA;
     }
