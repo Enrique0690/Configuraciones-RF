@@ -45,12 +45,10 @@ const OrderingStationsScreen: React.FC = () => {
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
-      <View style={styles.titleContainer}>
+      <View style={styles.descriptionBox}>
         <TouchableOpacity style={styles.addButton} onPress={() => setDialogVisible(true)}>
           <Ionicons name="add-circle-outline" size={28} color={Colors.text} />
         </TouchableOpacity>
-      </View>
-      <View style={styles.descriptionBox}>
         <View style={styles.imagePlaceholder} />
         <Text style={[styles.descriptionText, { color: Colors.text }]}>
           {t('stations.description1')}

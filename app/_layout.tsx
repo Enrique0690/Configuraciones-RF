@@ -19,13 +19,8 @@ export default function Layout() {
     const [selectedRoute, setSelectedRoute] = useState('');
     const { width } = useWindowDimensions();
     const isSmallScreen = width <= 768;
-    const getCurrentRouteConfig = () => {
-        return routeTitles[selectedRoute as keyof typeof routeTitles] || {
-            title: "layout.categorys.default",
-        };
-    };
-    const routeConfig = getCurrentRouteConfig();
-    const isAddButtonVisible = routeConfig.showAddButton;
+    const routeConfig = routeTitles[selectedRoute as keyof typeof routeTitles] || { title: null };
+
     const handleNavigation = useCallback((route: string) => {
         router.push(route as any);
         setIsFullScreen(true);
@@ -126,6 +121,7 @@ export default function Layout() {
             <View style={[styles.content, isFullScreen && styles.fullScreenContent]}>
                 <Stack
                     screenOptions={{
+                        headerShown: !!routeConfig.title,
                         headerTitle: t(routeConfig.title),
                         contentStyle: { backgroundColor: "white" },
                         headerRight: () =>

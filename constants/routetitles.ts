@@ -3,8 +3,7 @@ import { Router } from "expo-router";
 type RouteConfig = {
     title: string;
     showAddButton?: boolean; 
-    navigate?: (router: Router) => void; 
-    openDialog?: (setDialogVisible: (visible: boolean) => void) => void
+    navigate?: (router: Router) => void;
 };
 
 export const routeTitles: Record<string, RouteConfig> = {
@@ -13,10 +12,7 @@ export const routeTitles: Record<string, RouteConfig> = {
     "/organization/ecuador/tax-info": {title: "organization.taxinfo.header"},
 
     "/order-station": {title: "stations.header",
-        showAddButton: true,
-        openDialog: (setDialogVisible: (visible: boolean) => void) => {
-            setDialogVisible(true);
-        },},
+        showAddButton: true},
 
     //Impresoras
     "/printers": {title: "printers.header", showAddButton: true, navigate: (router: Router) => router.push("/printers/newprinter")},
