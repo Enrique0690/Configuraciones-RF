@@ -1,38 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import useStorage from '@/hooks/useStorage';
+import { useConfig } from '@/components/Data/ConfigContext';
 import DataRenderer from '@/components/DataRenderer';
-
-interface Printer {
-  id: string;
-  name: string;
-  options: {
-    deliveryNote: boolean;
-    invoice: boolean;
-    preInvoice: boolean;
-    reports: boolean;
-    order: boolean;
-  };
-  stations: {
-    noStation: boolean;
-    selectedStations: string[];
-  };
-  connection: 'USB' | 'Ethernet' | 'Bluetooth' | '';
-}
+import BluetoothModal from '@/components/Printersconnection/BluetoohModal';
+import EthernetModal from '@/components/Printersconnection/EthernetModal';
+import UsbModal from '@/components/Printersconnection/USBModal';
+import Tooltip from '@/components/elements/tooltip';
 
 const EditPrinterScreen = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { printerId } = useLocalSearchParams();
-  const { data: printersData, saveData: savePrintersData } = useStorage<Printer[]>('printers', []);
-  const { data: stationsData, loading: stationsLoading } = useStorage<string[]>('stations', []);
-  const [printerName, setPrinterName] = useState('');
-  const [connection, setConnection] = useState<'USB' | 'Ethernet' | 'Bluetooth' | ''>('');
+  const { dataContext, isLoading } = useConfig();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [printerName, setPrinterName] = useState('');
+  const [connection, setConnection] = useState<'USB' | 'Ethernet' | 'Bluetooth' | ''>('');
+  const [isBluetoothModalVisible, setBluetoothModalVisible] = useState(false);
+  const [isUsbModalVisible, setUsbModalVisible] = useState(false);
+  const [isEthernetModalVisible, setEthernetModalVisible] = useState(false);
+  const [usbConnectionStatus, setUsbConnectionStatus] = useState<string | null>(null);
+  const [ethernetConnectionStatus, setEthernetConnectionStatus] = useState<string | null>(null);
+  const [bluetoothConnectionStatus, setBluetoothConnectionStatus] = useState<string | null>(null);
+  const [noStation, setNoStation] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [stations, setStations] = useState<{ name: string; enabled: boolean }[]>([]);
 
   const [printOptions, setPrintOptions] = useState({
     deliveryNote: false,
@@ -42,32 +36,31 @@ const EditPrinterScreen = () => {
     order: false,
   });
 
-  const [noStation, setNoStation] = useState(false);
-  const [stations, setStations] = useState<{ name: string; enabled: boolean }[]>([]);
-
   useEffect(() => {
-    const loadPrinterData = () => {
-      const printer = printersData?.find((printer) => printer.id === printerId);
+    if (dataContext && !isLoading) {
+      const printers = dataContext.Configuracion.DATA['printers'] || [];
+      const printer = printers.find((p: { id: string | string[]; }) => p.id === printerId);
+
       if (printer) {
         setPrinterName(printer.name);
         setPrintOptions(printer.options);
+        setNoStation(printer.stations.noStation);
         setStations(
-          stationsData?.map((station) => ({
+          (dataContext.Configuracion.DATA['stations'] || []).map((station: string) => ({
             name: station,
             enabled: printer.stations.selectedStations.includes(station),
-          })) || []
+          }))
         );
-        setNoStation(printer.stations.noStation);
         setConnection(printer.connection);
+
+        if (printer.connection === 'USB') setUsbConnectionStatus(t('printers.connectedToUsb'));
+        if (printer.connection === 'Ethernet') setEthernetConnectionStatus(t('printers.connectedToEthernet'));
+        if (printer.connection === 'Bluetooth') setBluetoothConnectionStatus(t('printers.connectedToBluetooth'));
       } else {
         setError(t('printers.errorLoadingData'));
       }
-    };
-
-    if (!stationsLoading && printersData) {
-      loadPrinterData();
     }
-  }, [stationsData, printersData, printerId, stationsLoading, t]);
+  }, [dataContext, printerId, isLoading, t]);
 
   const handleSave = async () => {
     setLoading(true);
@@ -85,33 +78,96 @@ const EditPrinterScreen = () => {
     };
 
     try {
-      const updatedPrinters = printersData?.map((printer) =>
+      const printers = dataContext?.Configuracion.DATA['printers'] || [];
+      const updatedPrinters = printers.map((printer: { id: string; }) =>
         printer.id === String(printerId) ? updatedPrinter : printer
       );
-      await savePrintersData(updatedPrinters || []);
+      await dataContext?.Configuracion.Set('printers', updatedPrinters);
       router.push('/printers');
     } catch (error) {
       console.error('Error saving printer data:', error);
-      setError(t('printers.errorSaving'));
+      setError(t('common.saveError'));
     } finally {
       setLoading(false);
     }
   };
 
-  const renderConnectionOption = (label: string, value: 'USB' | 'Ethernet' | 'Bluetooth') => (
-    <TouchableOpacity
-      style={[styles.connectionButton, connection === value && styles.selectedButton]}
-      onPress={() => setConnection(value)}
-    >
-      <Text style={[styles.buttonText, connection === value && styles.selectedButtonText]}>{label}</Text>
-    </TouchableOpacity>
-  );
+  const handleBluetoothSelect = async (device: { id: string; name: string }) => {
+    try {
+      setBluetoothConnectionStatus(`Conectado a ${device.name}`);
+      setBluetoothModalVisible(false);
+    } catch (error) {
+      console.error("Error al conectar al dispositivo Bluetooth", error);
+    }
+  };
 
-  if (loading || stationsLoading) {
+  const handleUsbSelect = async (device: { id: string; name: string }) => {
+    try {
+      setUsbConnectionStatus(`Conectado a ${device.name}`);
+      setUsbModalVisible(false);
+    } catch (error) {
+      console.error("Error al conectar al dispositivo USB", error);
+    }
+  };
+
+  const handleEthernetSelect = async (data: { ip: string; port: string }) => {
+    try {
+      setEthernetConnectionStatus(`Conectado a IP ${data.ip}, Puerto ${data.port}`);
+      setEthernetModalVisible(false);
+    } catch (error) {
+      console.error("Error en la configuración de Ethernet", error);
+    }
+  };
+
+  const renderConnectionOption = (label: string, value: 'USB' | 'Ethernet' | 'Bluetooth') => {
+    const handlePress = () => {
+      setConnection(value);
+      if (value === 'Bluetooth') {
+        setUsbConnectionStatus(null);
+        setEthernetConnectionStatus(null);
+        setBluetoothModalVisible(true);
+      } else if (value === 'USB') {
+        setBluetoothConnectionStatus(null);
+        setEthernetConnectionStatus(null);
+        setUsbModalVisible(true);
+      } else if (value === 'Ethernet') {
+        setBluetoothConnectionStatus(null);
+        setUsbConnectionStatus(null);
+        setEthernetModalVisible(true);
+      }
+    };
+
+    const connectionStatus =
+      value === 'USB' ? usbConnectionStatus :
+        value === 'Ethernet' ? ethernetConnectionStatus :
+          bluetoothConnectionStatus;
+
+    return (
+      <View style={styles.connectionOptionContainer}>
+        <TouchableOpacity
+          style={[styles.connectionButton, connection === value && styles.selectedButton]}
+          onPress={handlePress}
+        >
+          <Text style={[styles.buttonText, connection === value && styles.selectedButtonText]}>{label}</Text>
+        </TouchableOpacity>
+        {connectionStatus && <Text style={styles.connectionStatusText}>{connectionStatus}</Text>}
+      </View>
+    );
+  };
+
+  const toggleTooltip = () => {
+    setTooltipVisible(!tooltipVisible);
+  };
+
+  const handleCloseTooltip = () => {
+    setTooltipVisible(false);
+  };
+
+  if (loading || isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('printers.loading')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -120,8 +176,8 @@ const EditPrinterScreen = () => {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity onPress={() => router.back()} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('printers.goBackHome')}</Text>
+        <TouchableOpacity onPress={() => router.push('/printers')} style={styles.goBackButton}>
+          <Text style={styles.goBackButtonText}>{t('common.goBack')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -130,8 +186,6 @@ const EditPrinterScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
-        <Text style={styles.title}>{t('printers.editPrinter')}</Text>
-
         <DataRenderer
           label={t('printers.printerName')}
           value={printerName}
@@ -158,8 +212,17 @@ const EditPrinterScreen = () => {
         ))}
 
         {printOptions.order && (
-          <>
-            <Text style={styles.label}>{t('printers.stations')}</Text>
+          <View style={styles.stationsContainer}>
+            <View style={styles.labelContainer}>
+              <Text style={styles.label}>{t('printers.stations')}</Text>
+              <TouchableOpacity
+                style={styles.helpIconContainer}
+                onPress={toggleTooltip}
+              >
+                <Text style={styles.helpIcon}>?</Text>
+              </TouchableOpacity>
+            </View>
+            <Tooltip text={t('stations.description1')} visible={tooltipVisible} onClose={handleCloseTooltip} />
             <DataRenderer
               label={t('printers.noStation')}
               value={noStation}
@@ -187,7 +250,7 @@ const EditPrinterScreen = () => {
                 ))}
               </>
             )}
-          </>
+          </View>
         )}
 
         <Text style={styles.label}>{t('printers.connection')}</Text>
@@ -198,10 +261,33 @@ const EditPrinterScreen = () => {
         </View>
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <MaterialIcons name="save" size={24} color="white" />
           <Text style={styles.saveButtonText}>{t('common.save')}</Text>
         </TouchableOpacity>
       </View>
+      {isBluetoothModalVisible && (
+        <BluetoothModal
+          visible={isBluetoothModalVisible}
+          onClose={() => setBluetoothModalVisible(false)}
+          onSelect={handleBluetoothSelect}
+          title="Seleccionar Dispositivo Bluetooth"
+        />
+      )}
+      {isUsbModalVisible && (
+        <UsbModal
+          visible={isUsbModalVisible}
+          onClose={() => setUsbModalVisible(false)}
+          onSelect={handleUsbSelect}
+          title="Seleccionar Dispositivo USB"
+        />
+      )}
+      {isEthernetModalVisible && (
+        <EthernetModal
+          visible={isEthernetModalVisible}
+          onSave={handleEthernetSelect}
+          onClose={() => setEthernetModalVisible(false)}
+          title="Configuración Ethernet"
+        />
+      )}
     </ScrollView>
   );
 };
@@ -316,13 +402,13 @@ const styles = StyleSheet.create({
   },
   helpIcon: {
     fontSize: 18,
-    color: '#007AFF', 
+    color: '#007AFF',
     fontWeight: 'bold',
   },
   tooltip: {
     position: 'absolute',
-    top: 50, 
-    left: 50, 
+    top: 50,
+    left: 50,
     backgroundColor: '#333',
     padding: 10,
     borderRadius: 8,
@@ -333,8 +419,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   labelContainer: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 

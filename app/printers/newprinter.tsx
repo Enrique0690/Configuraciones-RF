@@ -3,35 +3,17 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator
 import UUID from 'react-native-uuid';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import useStorage from '@/hooks/useStorage';
+import { useConfig } from '@/components/Data/ConfigContext';
 import DataRenderer from '@/components/DataRenderer';
 import BluetoothModal from '@/components/Printersconnection/BluetoohModal';
 import EthernetModal from '@/components/Printersconnection/EthernetModal';
 import UsbModal from '@/components/Printersconnection/USBModal';
 import Tooltip from '@/components/elements/tooltip';
 
-interface Printer {
-  id: string;
-  name: string;
-  options: {
-    deliveryNote: boolean;
-    invoice: boolean;
-    preInvoice: boolean;
-    reports: boolean;
-    order: boolean;
-  };
-  stations: {
-    noStation: boolean;
-    selectedStations: string[];
-  };
-  connection: 'USB' | 'Ethernet' | 'Bluetooth' | '';
-}
-
 const NewPrinterScreen = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { data: stationsData, loading: stationsLoading, error: stationsError, reloadData: reloadStations } = useStorage<string[]>('stations', []);
-  const { data: printersData, saveData: savePrintersData } = useStorage<Printer[]>('printers', []);
+  const { dataContext, isLoading } = useConfig();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [printerName, setPrinterName] = useState('');
@@ -56,14 +38,15 @@ const NewPrinterScreen = () => {
   });
 
   useEffect(() => {
-    if (!stationsLoading && !stationsError) {
-      const initializedStations = (stationsData || []).map((station) => ({
+    if (dataContext && !isLoading) {
+      const stationsData = dataContext.Configuracion.DATA['stations'] || [];
+      const initializedStations = stationsData.map((station: string) => ({
         name: station,
         enabled: false,
       }));
       setStations(initializedStations);
     }
-  }, [stationsData, stationsLoading, stationsError]);
+  }, [dataContext, isLoading]);
 
   const handleSave = async () => {
     setLoading(true);
@@ -81,16 +64,37 @@ const NewPrinterScreen = () => {
     };
 
     try {
-      const updatedPrinters: Printer[] = [...(printersData || []), newPrinter];
-      await savePrintersData(updatedPrinters);
+      const printers = dataContext?.Configuracion.DATA['printers'] || [];
+      const updatedPrinters = [...printers, newPrinter];
+      await dataContext?.Configuracion.Set('printers', updatedPrinters);
       router.push('/printers');
     } catch (error) {
       console.error('Error saving printer data:', error);
-      setError(t('printers.errorSaving'));
+      setError(t('common.saveError'));
     } finally {
       setLoading(false);
     }
   };
+
+  if (loading || isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity onPress={() => router.push('/printers')} style={styles.goBackButton}>
+          <Text style={styles.goBackButtonText}>{t('common.goBack')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   const handleBluetoothSelect = async (device: { id: string; name: string; }) => {
     try {
@@ -157,26 +161,6 @@ const NewPrinterScreen = () => {
       </View>
     );
   };
-
-  if (loading || stationsLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('printers.loading')}</Text>
-      </View>
-    );
-  }
-
-  if (error || stationsError) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error || stationsError}</Text>
-        <TouchableOpacity onPress={() => router.push('/')} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('printers.goBackHome')}</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   const toggleTooltip = () => {
     setTooltipVisible(!tooltipVisible);
