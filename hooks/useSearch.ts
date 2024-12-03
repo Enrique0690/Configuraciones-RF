@@ -23,21 +23,20 @@ const useSearch = (configs: ConfigItem[]) => {
     const normalizedQuery = normalizeText(query);
 
     const filtered = configs.filter((item) => {
-      const translatedLabel = t(item.label); // Traduce el label
-      const translatedCategory = t(item.category || 'default'); 
+      const translatedLabel = t(item.label, { value: '' });
+      const translatedCategory = t(item.category || 'default', { value: '' });
       return (
         normalizeText(translatedLabel).includes(normalizedQuery) ||
         normalizeText(translatedCategory).includes(normalizedQuery)
       );
     });
 
-    // Agrupar resultados por categoría traducida
     return filtered.reduce<GroupedResults>((acc, item) => {
-      const category = t(item.category || 'default'); 
+      const category = t(item.category || 'default', { value: '' });
       if (!acc[category]) acc[category] = [];
       acc[category].push({
         ...item,
-        label: t(item.label),
+        label: t(item.label, { value: '' }),
       });
       return acc;
     }, {});

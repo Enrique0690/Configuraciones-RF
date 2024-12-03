@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, Switch, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Switch, StyleSheet, useWindowDimensions, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';  
 import ListModal from './modals/ListModal';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 interface DataRendererProps {
@@ -17,7 +17,7 @@ interface DataRendererProps {
   highlight?: boolean;
   dataList?: string[]; 
 }
-const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onPress, textColor, iconName, onSave, highlight, dataList}) => {
+const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress, textColor, iconName, onSave, highlight, dataList}) => {
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [tempValue, setTempValue] = useState(value as string);
   const [switchValue, setSwitchValue] = useState(value as boolean);
@@ -28,6 +28,27 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
   const interpolatedLabel = t(label, { value: value || '_____' });
   const { width } = useWindowDimensions();
   const isSmallScreen = width < 768;
+  if (Platform.OS === 'web' || Platform.OS === 'windows') {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isHighlighted && event.key === 'Enter') {
+        if (type === 'input' || type === 'text') {
+          openEditDialog();
+        } else if (type === 'inputlist' && dataList) {
+          setListModalVisible(true);
+        } else if (type === 'switch') {
+          handleSwitchChange(!switchValue);
+        }
+      }
+    };
+  
+    window.addEventListener('keydown', handleKeyDown);
+  
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isHighlighted, type, dataList, switchValue]); 
+} 
 
   const openEditDialog = () => {
     setTempValue(value as string);
@@ -50,13 +71,15 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value = '', type, onP
     onSave?.(selectedItem);
   };
 
-  useEffect(() => {
-    if (highlight) {
-      setHighlighted(true);
-      const timeout = setTimeout(() => setHighlighted(false), 8000);
-      return () => clearTimeout(timeout);
-    }
-  }, [highlight]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (highlight) {
+        setHighlighted(true);
+        const timeout = setTimeout(() => setHighlighted(false), 8000);
+        return () => clearTimeout(timeout);
+      }
+    }, [highlight])
+  );
 
   useEffect(() => {
     type === 'switch' ? setSwitchValue(value as boolean) : setTempValue(value as string);

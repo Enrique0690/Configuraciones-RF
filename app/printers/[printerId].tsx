@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'; 
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'; 
-import { useRouter, useLocalSearchParams } from 'expo-router'; 
-import { MaterialIcons } from '@expo/vector-icons'; 
-import { useTranslation } from 'react-i18next'; 
-import useStorage from '@/hooks/useStorage'; 
-import DataRenderer from '@/components/DataRenderer'; 
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import useStorage from '@/hooks/useStorage';
+import DataRenderer from '@/components/DataRenderer';
 
 interface Printer {
   id: string;
@@ -69,58 +69,34 @@ const EditPrinterScreen = () => {
     }
   }, [stationsData, printersData, printerId, stationsLoading, t]);
 
-useEffect(() => {
-  const loadPrinterData = () => {
-    const printer = printersData?.find((printer) => printer.id === String(printerId)); 
-    if (printer) {
-      setPrinterName(printer.name);
-      setPrintOptions(printer.options);
-      setStations(
-        stationsData?.map((station) => ({
-          name: station,
-          enabled: printer.stations.selectedStations.includes(station),
-        })) || []
+  const handleSave = async () => {
+    setLoading(true);
+    setError('');
+
+    const updatedPrinter = {
+      id: String(printerId),
+      name: printerName,
+      options: printOptions,
+      stations: {
+        noStation,
+        selectedStations: stations.filter((s) => s.enabled).map((s) => s.name),
+      },
+      connection,
+    };
+
+    try {
+      const updatedPrinters = printersData?.map((printer) =>
+        printer.id === String(printerId) ? updatedPrinter : printer
       );
-      setNoStation(printer.stations.noStation);
-      setConnection(printer.connection);
-    } else {
-      setError(t('printers.errorLoadingData'));
+      await savePrintersData(updatedPrinters || []);
+      router.push('/printers');
+    } catch (error) {
+      console.error('Error saving printer data:', error);
+      setError(t('printers.errorSaving'));
+    } finally {
+      setLoading(false);
     }
   };
-
-  if (!stationsLoading && printersData) {
-    loadPrinterData();
-  }
-}, [stationsData, printersData, printerId, stationsLoading, t]);
-
-const handleSave = async () => {
-  setLoading(true);
-  setError('');
-
-  const updatedPrinter = {
-    id: String(printerId), 
-    name: printerName,
-    options: printOptions,
-    stations: {
-      noStation,
-      selectedStations: stations.filter((s) => s.enabled).map((s) => s.name),
-    },
-    connection,
-  };
-
-  try {
-    const updatedPrinters = printersData?.map((printer) =>
-      printer.id === String(printerId) ? updatedPrinter : printer 
-    );
-    await savePrintersData(updatedPrinters || []);
-    router.push('/printers');
-  } catch (error) {
-    console.error('Error saving printer data:', error);
-    setError(t('printers.errorSaving'));
-  } finally {
-    setLoading(false);
-  }
-};
 
   const renderConnectionOption = (label: string, value: 'USB' | 'Ethernet' | 'Bluetooth') => (
     <TouchableOpacity
@@ -223,7 +199,7 @@ const handleSave = async () => {
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <MaterialIcons name="save" size={24} color="white" />
-          <Text style={styles.saveButtonText}>{t('printers.savePrinter')}</Text>
+          <Text style={styles.saveButtonText}>{t('common.save')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -231,11 +207,30 @@ const handleSave = async () => {
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: { flexGrow: 1 },
-  container: { flex: 1, padding: 20, backgroundColor: '#f9f9f9' },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 16, color: '#333' },
-  label: { fontSize: 16, color: '#666', marginTop: 20, marginBottom: 8 },
-  buttonContainer: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 16 },
+  scrollContainer: {
+    flexGrow: 1
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#333'
+  },
+  label: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
+    marginBottom: 8
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 16
+  },
   connectionButton: {
     padding: 10,
     borderRadius: 8,
@@ -244,9 +239,16 @@ const styles = StyleSheet.create({
     minWidth: 80,
     alignItems: 'center',
   },
-  selectedButton: { backgroundColor: '#007AFF' },
-  buttonText: { fontSize: 14, color: '#007AFF' },
-  selectedButtonText: { color: '#fff' },
+  selectedButton: {
+    backgroundColor: '#007AFF'
+  },
+  buttonText: {
+    fontSize: 14,
+    color: '#007AFF'
+  },
+  selectedButtonText: {
+    color: '#fff'
+  },
   saveButton: {
     flexDirection: 'row',
     backgroundColor: '#28a745',
@@ -257,11 +259,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
-  saveButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold', marginLeft: 8 },
-  errorText: { color: 'red', marginTop: 10, fontSize: 16 },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { fontSize: 18, color: '#4CAF50', marginTop: 10 },
-  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+    fontSize: 16
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#4CAF50',
+    marginTop: 10
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20
+  },
   goBackButton: {
     marginTop: 20,
     backgroundColor: '#007AFF',
@@ -269,7 +293,49 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
   },
-  goBackButtonText: { color: 'white', fontSize: 16 },
+  goBackButtonText: {
+    color: 'white',
+    fontSize: 16
+  },
+  connectionOptionContainer: {
+    alignItems: 'center',
+  },
+  connectionStatusText: {
+    marginTop: 5,
+    fontSize: 12,
+    color: '#333',
+  },
+  stationsContainer: {
+    marginTop: -20,
+    paddingLeft: 40,
+    borderRadius: 8,
+  },
+  helpIconContainer: {
+    marginLeft: 10,
+    paddingTop: 10,
+  },
+  helpIcon: {
+    fontSize: 18,
+    color: '#007AFF', 
+    fontWeight: 'bold',
+  },
+  tooltip: {
+    position: 'absolute',
+    top: 50, 
+    left: 50, 
+    backgroundColor: '#333',
+    padding: 10,
+    borderRadius: 8,
+    zIndex: 1,
+  },
+  tooltipText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  labelContainer: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+  },
 });
 
 export default EditPrinterScreen;

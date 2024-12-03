@@ -61,10 +61,8 @@ const ScreenSearch: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Título "Resultados de búsqueda" */}
       <Text style={styles.resultsHeader}>Resultados de búsqueda</Text>
 
-      {/* Barra de búsqueda */}
       <View style={styles.searchBarContainer}>
         <Ionicons name="search-outline" size={20} color="#A1A1A1" style={styles.searchIcon} />
         <TextInput
@@ -81,7 +79,6 @@ const ScreenSearch: React.FC = () => {
         )}
       </View>
 
-      {/* Resultados de búsqueda */}
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.resultsContainer}
@@ -91,10 +88,10 @@ const ScreenSearch: React.FC = () => {
           flatResults.length > 0 ? (
             renderSearchResults()
           ) : (
-            <Text style={styles.noResultsText}>{t('search.noResults')}</Text>
+            <Text style={styles.noResultsText}>{t('common.noResults')}</Text>
           )
         ) : (
-          <Text style={styles.placeholderText}>{t('search.placeholder')}</Text>
+          <Text style={styles.placeholderText}>{t('common.search.placeholder')}</Text>
         )}
       </ScrollView>
     </View>
@@ -151,7 +148,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   categoryContainer: {
-    marginBottom: 15,
+    marginBottom: 20,
   },
   categoryHeader: {
     fontSize: 16,
@@ -159,7 +156,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   resultContainer: {
-    paddingVertical: 10,
+    paddingVertical: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
   },

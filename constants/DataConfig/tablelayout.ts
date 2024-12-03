@@ -18,6 +18,6 @@ export const defaultData = {
 
 export const TableConfig: Array<TabletConfigField> = withGlobalRoute([
   { id: 'Mesa_mostrarCliente', label: 'tablelayout.showUser', type: 'switch' },
-  { id: 'PedidoEnMesa_MostrarReloj', label: 'tablelayout.showTime', type: 'switch' },
   { id: 'showCommercialName', label: 'tablelayout.showCommercialName', type: 'switch' },
+  { id: 'PedidoEnMesa_MostrarReloj', label: 'tablelayout.showTime', type: 'switch' },
 ], '/table-layout/', "layout.categorys.tabletConfiguration");

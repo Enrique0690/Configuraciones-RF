@@ -163,7 +163,7 @@ const scrollToSelectedIndex = (index: number): void => {
       return false;
     };
 
-    if (Platform.OS === 'web') {
+    if (Platform.OS === 'web' || Platform.OS === 'windows') {
       document.addEventListener('keydown', handleEscapePress);
       return () => document.removeEventListener('keydown', handleEscapePress);
     }
@@ -201,7 +201,7 @@ const scrollToSelectedIndex = (index: number): void => {
             keyboardShouldPersistTaps="handled"
           >
             {flatResults.length > 0 ? renderSearchResults() : (
-              <Text style={styles.noResultsText}>{t('search.noResults')}</Text>
+              <Text style={styles.noResultsText}>{t('common.noResults')}</Text>
             )}
           </ScrollView>
         </View>
@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
     boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
     borderWidth: 1,  
     borderColor: '#000',  
+    marginBottom: 15,
   },
   input: {
     flex: 1,

@@ -1,5 +1,5 @@
 {
-    "header": "Tax Information",
+    "header": "Business Information",
     "name": "Business Name",
     "address": "Address",
     "phone": "Phone Number",
@@ -7,7 +7,7 @@
     "businessType": "Business Type",
     "currency": "Currency",
     "taxinfo": {
-        "header": "TAX INFORMATION",
+        "header": "Tax Information",
         "ruc": "RUC",
         "razonSocial": "Company Name",
         "direccionMatriz": "Headquarters Address",

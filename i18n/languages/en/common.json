@@ -7,5 +7,7 @@
     "goBackHome": "Go back home",
     "permissionDenied": "Permission denied",
     "saveError": "Changes could not be saved.",
-    "search": "Search"
+    "search": "Search",
+    "noResults": "No results found",
+    "search.placeholder": "Select the search bar to search for a configuration"
 }

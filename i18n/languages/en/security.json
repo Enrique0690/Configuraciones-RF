@@ -1,8 +1,8 @@
 {
     "header": "Security",
-    "deleteProductReason": "Deleting products requires a reason of {{characters}} characters",
-    "cancelInvoiceReason": "Cancelling an invoice requires a reason of {{characters}} characters",
-    "cancelOrderReason": "Cancelling an order requires a reason of {{characters}} characters",
+    "deleteProductReason": "Deleting products requires a reason of {{value}} characters",
+    "cancelInvoiceReason": "Cancelling an invoice requires a reason of {{value}} characters",
+    "cancelOrderReason": "Cancelling an order requires a reason of {{value}} characters",
     "characters": "characters",
     "users": "Users",
     "roles": "Roles",
