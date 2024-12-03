@@ -22,7 +22,7 @@
         "header": "Lista de Roles",
         "roleNotFound": "Rol no encontrado",
         "noRoles": "No hay roles registrados, Haga click aqui para agregar uno",
-        "addNewRole": "Agregar Nuevo Rol",
+        "addNewRole": "Nuevo Rol",
         "editRole": "Editar Rol",
         "roleName": "Nombre del Rol",
         "selectAllPermissions": "Seleccionar Todos los Permisos",

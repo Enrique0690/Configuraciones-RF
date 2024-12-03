@@ -8,6 +8,7 @@ import '@/i18n';
 import { useTranslation } from "react-i18next";
 import { ConfigProvider } from "@/components/DataContext/ConfigContext";
 import { routeTitles } from "@/constants/routetitles";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Layout() {
     const { t } = useTranslation();
@@ -18,9 +19,13 @@ export default function Layout() {
     const [selectedRoute, setSelectedRoute] = useState('');
     const { width } = useWindowDimensions();
     const isSmallScreen = width <= 768;
-    const getCurrentTitle = () => t(routeTitles[selectedRoute as keyof typeof routeTitles] || "layout.categorys.default");
-    
-
+    const getCurrentRouteConfig = () => {
+        return routeTitles[selectedRoute as keyof typeof routeTitles] || {
+            title: "layout.categorys.default",
+        };
+    };
+    const routeConfig = getCurrentRouteConfig();
+    const isAddButtonVisible = routeConfig.showAddButton;
     const handleNavigation = useCallback((route: string) => {
         router.push(route as any);
         setIsFullScreen(true);
@@ -121,9 +126,14 @@ export default function Layout() {
             <View style={[styles.content, isFullScreen && styles.fullScreenContent]}>
                 <Stack
                     screenOptions={{
-                        headerShown: isSmallScreen,
-                        headerTitle: getCurrentTitle(),
-                        contentStyle: { backgroundColor: 'white' },
+                        headerTitle: t(routeConfig.title),
+                        contentStyle: { backgroundColor: "white" },
+                        headerRight: () =>
+                            routeConfig.showAddButton && routeConfig.navigate ? (
+                                <TouchableOpacity onPress={() => routeConfig.navigate!(router)}>
+                                    <Ionicons name="add-circle-outline" size={28} color={Colors.text} />
+                                </TouchableOpacity>
+                            ) : null,
                     }}
                 />
             </View>

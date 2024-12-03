@@ -105,9 +105,7 @@ const EditRoleScreen: React.FC = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
-      <Text style={styles.header}>{t('security.role.editRole')}</Text>
-
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>ad
       <DataRenderer
         label={t('security.role.roleName')}
         value={name}

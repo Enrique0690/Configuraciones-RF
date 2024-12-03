@@ -189,7 +189,6 @@ const NewPrinterScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
-        <Text style={styles.title}>{t('printers.addPrinter')}</Text>
         <DataRenderer
           label={t('printers.printerName')}
           value={printerName}

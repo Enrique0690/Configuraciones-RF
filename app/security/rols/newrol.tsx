@@ -87,8 +87,6 @@ const NewRoleScreen: React.FC = () => {
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
-      <Text style={styles.header}>{t('security.role.addNewRole')}</Text>
-
       <DataRenderer
         label={t('security.role.roleName')}
         value={name}

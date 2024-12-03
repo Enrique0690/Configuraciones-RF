@@ -46,7 +46,6 @@ const OrderingStationsScreen: React.FC = () => {
         <SearchBar />
       </View>
       <View style={styles.titleContainer}>
-        <Text style={[styles.sectionTitle, { color: Colors.text }]}>{t('stations.header')}</Text>
         <TouchableOpacity style={styles.addButton} onPress={() => setDialogVisible(true)}>
           <Ionicons name="add-circle-outline" size={28} color={Colors.text} />
         </TouchableOpacity>
@@ -118,7 +117,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   addButton: {
-    marginLeft: 10,
+    position: 'absolute',
+    right: 16,
+    marginTop: 10,
   },
   descriptionBox: {
     padding: 16,

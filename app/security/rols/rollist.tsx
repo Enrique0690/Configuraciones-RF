@@ -51,12 +51,6 @@ const RoleListScreen: React.FC = () => {
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: Colors.text }]}>{t('security.role.header')}</Text>
-        <TouchableOpacity onPress={handleCreateNewRole} style={styles.addButton}>
-          <Ionicons name="add-circle-outline" size={30} color={Colors.text} />
-        </TouchableOpacity>
-      </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {roles.length === 0 ? (
@@ -99,16 +93,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
   addButton: {
-    padding: 8,
+    position: 'absolute',
+    right: 16,
+    marginTop: 16,
   },
   contentContainer: {
-    paddingBottom: 16,
+    marginVertical: 16,
   },
   roleItem: {
     paddingVertical: 12,

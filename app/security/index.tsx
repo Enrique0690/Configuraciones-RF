@@ -43,9 +43,6 @@ const SecurityScreen: React.FC = () => {
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
-      <Text style={[styles.sectionTitle, { color: Colors.text }]}>
-        {t('security.header')}
-      </Text>
       <View style={styles.groupContainer}>
         {securityConfig.map(({ label, id, type}) => (
           <DataRenderer

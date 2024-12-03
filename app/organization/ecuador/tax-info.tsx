@@ -29,9 +29,6 @@ const InfoTributaria: React.FC = () => {
         <View style={styles.searchBarContainer}>
           <SearchBar />
         </View>
-        <Text style={[styles.sectionTitle, { color: Colors.text }]}>
-          {t('organization.taxinfo.header')}
-        </Text>
 
         {infoTributariaConfig.map(({ label, id, type, list }) => (
           <DataRenderer

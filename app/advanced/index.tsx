@@ -13,12 +13,7 @@ const AdvancedOptionsScreen: React.FC = () => {
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
-      <Text style={[styles.title, { color: Colors.text }]}>Configuración de Configuraciones Avanzadas</Text>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {/* Aquí puedes agregar componentes y ajustes específicos de esta categoría */}
-        <Text style={[styles.description, { color: Colors.text }]}>
-          Aquí puedes configurar las opciones de Configuraciones Avanzadas.
-        </Text>
       </ScrollView>
     </View>
   );

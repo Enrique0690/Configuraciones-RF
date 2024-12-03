@@ -59,8 +59,6 @@ const NewUserScreen: React.FC = () => {
 
   return (
     <ScrollView contentContainerStyle={[styles.container]}>
-      <Text style={[styles.title, { color: Colors.text }]}>{t('security.user.Newuser')}</Text>
-
       <DataRenderer
         label={t('security.user.namePlaceholder')}
         value={name}

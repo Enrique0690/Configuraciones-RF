@@ -41,9 +41,6 @@ const TabletConfigurationScreen: React.FC = () => {
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
-      <Text style={[styles.sectionTitle, { color: Colors.text }]}>
-        {t('tablelayout.header')}
-      </Text>
       <ScrollView>
         <TabletConfiguration
           showUser={Mesa_mostrarCliente}
