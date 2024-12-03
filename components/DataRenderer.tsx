@@ -11,7 +11,7 @@ interface DataRendererProps {
   value?: string | boolean;
   type: 'input' | 'image' | 'switch' | 'buttonlist' | 'text' | 'inputlist'; 
   onPress?: () => void;
-  textColor: string;
+  textColor?: string;
   iconName?: string;
   onSave?: (value: string | boolean) => void; 
   highlight?: boolean;

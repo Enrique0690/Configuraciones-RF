@@ -1,47 +1,50 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
-import UUID from 'react-native-uuid';
+import { useConfig } from '@/components/Data/ConfigContext';
+import { useRouter } from 'expo-router';
 import DataRenderer from '@/components/DataRenderer';
-import useStorage from '@/hooks/useStorage';
-import { Colors } from '@/constants/Colors';
 
 const NewUserScreen: React.FC = () => {
   const { t } = useTranslation();
+  const backgroundColor = useThemeColor({}, 'backgroundsecondary');
+  const buttonColor = useThemeColor({}, 'buttonColor');
+  const { dataContext } = useConfig();
+  const router = useRouter();
+
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [role, setRole] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { data: roles, loading: rolesLoading } = useStorage('roles', []);
-  const roleNames = roles.map((role: { name: string }) => role.name);  
+
+  const roles = dataContext?.Configuracion.DATA['roles'] || [];
+  const roleNames = roles.map((role: { name: string }) => role.name);
 
   const handleSave = async () => {
-    setLoading(true); 
-    const userId = UUID.v4();
-    const newUser = { id: userId, name, email, password, role };
+    setLoading(true);
+    setError(null);
+
     try {
-      const storedUsers = await AsyncStorage.getItem('users');
-      const users = storedUsers ? JSON.parse(storedUsers) : [];
-      users.push(newUser);
-      await AsyncStorage.setItem('users', JSON.stringify(users));
+      const users = dataContext?.Configuracion.DATA['users'] || [];
+      const newUser = { id: Date.now().toString(), name, email, password, role };
+      const updatedUsers = [...users, newUser];
+      await dataContext?.Configuracion.Set('users', updatedUsers);
       router.push('./userlist');
     } catch (error) {
-      setError(t('security.user.saveError'));
+      setError(t('common.saveError'));
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading || rolesLoading) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('security.user.loading')}</Text>
+        <Text style={styles.loadingText}>{t('common.saving')}</Text>
       </View>
     );
   }
@@ -50,20 +53,20 @@ const NewUserScreen: React.FC = () => {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorMessage}>{error}</Text>
-        <TouchableOpacity onPress={() => router.back()} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>{t('security.user.goBack')}</Text>
+        <TouchableOpacity onPress={() => router.push('./userlist')} style={styles.goBackButton}>
+          <Text style={styles.goBackButtonText}>{t('common.goBack')}</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={[styles.container]}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
       <DataRenderer
         label={t('security.user.namePlaceholder')}
         value={name}
         type="input"
-        textColor={Colors.text}
+        textColor="#333"
         onSave={(newValue) => setName(newValue as string)}
       />
 
@@ -71,7 +74,7 @@ const NewUserScreen: React.FC = () => {
         label={t('security.user.emailPlaceholder')}
         value={email}
         type="input"
-        textColor={Colors.text}
+        textColor="#333"
         onSave={(newValue) => setEmail(newValue as string)}
       />
 
@@ -79,8 +82,8 @@ const NewUserScreen: React.FC = () => {
         label={t('security.user.rolePlaceholder')}
         value={role}
         type="inputlist"
-        textColor={Colors.text}
-        dataList={roleNames}  
+        textColor="#333"
+        dataList={roleNames}
         onSave={(selectedRole) => setRole(selectedRole as string)}
       />
 
@@ -88,18 +91,13 @@ const NewUserScreen: React.FC = () => {
         label={t('security.user.passwordPlaceholder')}
         value={password}
         type="input"
-        textColor={Colors.text}
+        textColor="#333"
         onSave={(newValue) => setPassword(newValue as string)}
       />
 
-      <View style={styles.colorPickerContainer}>
-        <TouchableOpacity
-          style={[styles.saveButton, { backgroundColor: Colors.buttonColor }]}
-          onPress={handleSave}
-        >
-          <Text style={styles.saveButtonText}>{t('common.save')}</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={[styles.saveButton, { backgroundColor: buttonColor }]} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>{t('common.save')}</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -153,13 +151,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  retryButton: {
+  goBackButton: {
     backgroundColor: '#4CAF50',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
   },
-  retryButtonText: {
+  goBackButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',

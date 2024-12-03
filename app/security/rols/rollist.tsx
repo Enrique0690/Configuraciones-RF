@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import useStorage from '@/hooks/useStorage';
+import { useConfig } from '@/components/Data/ConfigContext';
 import SearchBar from '@/components/navigation/SearchBar';
 import { Colors } from '@/constants/Colors';
 
@@ -14,7 +13,8 @@ interface Role {
 }
 
 const RoleListScreen: React.FC = () => {
-  const { data: roles, loading, error, reloadData } = useStorage<Role[]>('roles', []);
+  const { dataContext, isLoading } = useConfig();
+  const roles: Role[] = dataContext?.Configuracion.DATA['roles'] || [];
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -26,36 +26,26 @@ const RoleListScreen: React.FC = () => {
     router.push(`./${id}`);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('security.role.loading')}</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('security.role.loadError')}</Text>
-        <TouchableOpacity onPress={reloadData} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('security.role.retry')}</Text>
-        </TouchableOpacity>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={[styles.container]}>
+    <View style={styles.container}>
       <View style={styles.searchBarContainer}>
         <SearchBar />
       </View>
-
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {roles.length === 0 ? (
           <TouchableOpacity onPress={handleCreateNewRole}>
-            <Text style={[styles.noRolesText, { color: Colors.text }]}>{t('security.role.noRoles')}</Text>
+            <Text style={[styles.noRolesText, { color: Colors.text }]}>
+              {t('security.role.noRoles')}
+            </Text>
           </TouchableOpacity>
         ) : (
           roles.map((role) => (

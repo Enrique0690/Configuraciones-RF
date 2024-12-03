@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform }
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { handleChange } from '@/hooks/handleChange';
-import useStorage from '@/hooks/useStorage';
+import { useConfig } from '@/components/Data/ConfigContext';
 import { useTranslation } from 'react-i18next';
-import { securityConfig, defaultData } from '@/constants/DataConfig/SecurityConfig';
+import { securityConfig} from '@/constants/DataConfig/SecurityConfig';
 import DataRenderer from '@/components/DataRenderer';
 import SearchBar from '@/components/navigation/SearchBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -13,27 +13,14 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 const SecurityScreen: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { data, loading, error, saveData, reloadData } = useStorage('securityData', defaultData);
   const { highlight } = useLocalSearchParams();
-  const { data: usersData, loading: usersLoading, error: usersError } = useStorage('users', []);
-  const { data: rolesData, loading: rolesLoading, error: rolesError } = useStorage('roles', []);
+  const { dataContext, isLoading } = useConfig();
 
-  if (loading || usersLoading || rolesLoading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('security.loading')}</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('security.loadError')}</Text>
-        <TouchableOpacity onPress={reloadData} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>{t('security.retry')}</Text>
-        </TouchableOpacity>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -48,9 +35,13 @@ const SecurityScreen: React.FC = () => {
           <DataRenderer
             key={label}
             label={t(label)}
-            value={data[id]}
+            value={dataContext?.Configuracion.DATA[id]}
             type={type}
-            onSave={(newValue) => handleChange(id, newValue, data, saveData)}
+            onSave={(newValue) =>
+              handleChange(id, newValue, dataContext?.Configuracion.DATA, (updatedData) =>
+                dataContext?.Configuracion.Set(id, updatedData[id]) 
+              )
+            }
             textColor={Colors.text}
             highlight={highlight === id}
           />
@@ -61,7 +52,9 @@ const SecurityScreen: React.FC = () => {
         <Ionicons name="people-outline" size={24} color={Colors.text} />
         <Text style={[styles.buttonLabel, { color: Colors.text }]}>
           {t('security.users')}{' '}
-          {!usersError && usersData && usersData.length > 0 ? `(${usersData.length})` : ''}
+          {dataContext?.Configuracion.DATA['users']?.length
+              ? `(${dataContext?.Configuracion.DATA['users'].length})`
+              : ''}
         </Text>
       </TouchableOpacity>
 
@@ -69,7 +62,9 @@ const SecurityScreen: React.FC = () => {
         <Ionicons name="briefcase-outline" size={24} color={Colors.text} />
         <Text style={[styles.buttonLabel, { color: Colors.text }]}>
           {t('security.roles')}{' '}
-          {!rolesError && rolesData && rolesData.length > 0 ? `(${rolesData.length})` : ''}
+          {dataContext?.Configuracion.DATA['roles']?.length
+              ? `(${dataContext?.Configuracion.DATA['roles'].length})`
+              : ''}
         </Text>
       </TouchableOpacity>
     </View>

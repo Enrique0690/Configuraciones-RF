@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';
 import { Colors } from '@/constants/Colors';
-import { useConfig } from '@/components/DataContext/ConfigContext';
+import { useConfig } from '@/components/Data/ConfigContext';
 
 interface StationData {
   stations: string[];

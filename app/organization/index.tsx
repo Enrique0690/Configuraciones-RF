@@ -8,7 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { handleChange } from '@/hooks/handleChange';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
-import { useConfig } from '@/components/DataContext/ConfigContext';
+import { useConfig } from '@/components/Data/ConfigContext';
 
 const BusinessInfoScreen: React.FC = () => {
   const { t } = useTranslation();

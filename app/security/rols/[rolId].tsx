@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import DataRenderer from '@/components/DataRenderer';
 import PermissionsList from '@/components/security/rol/permissionslist';
 import { rolePermissions } from '@/constants/DataConfig/SecurityConfig';
+import { useConfig } from '@/components/Data/ConfigContext';
 
 const EditRoleScreen: React.FC = () => {
   const { t } = useTranslation();
   const { rolId } = useLocalSearchParams();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const buttonColor = useThemeColor({}, 'buttonColor');
+  const { dataContext } = useConfig();
+  const router = useRouter();
   const [name, setName] = useState<string>('');
   const [permissions, setPermissions] = useState<Record<string, Record<string, boolean>>>({});
   const [activeCategory, setActiveCategory] = useState<string>(t('security.role.SALES'));
@@ -24,9 +26,8 @@ const EditRoleScreen: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const storedRoles = await AsyncStorage.getItem('roles');
-        const parsedRoles = storedRoles ? JSON.parse(storedRoles) : [];
-        const roleToEdit = parsedRoles.find((role: any) => role.id === rolId);
+        const roles = dataContext?.Configuracion.DATA['roles'] || [];
+        const roleToEdit = roles.find((role: any) => role.id === rolId);
 
         if (roleToEdit) {
           setName(roleToEdit.name);
@@ -43,7 +44,7 @@ const EditRoleScreen: React.FC = () => {
     };
 
     loadRole();
-  }, [rolId, t]);
+  }, [rolId, t, dataContext]);
 
   const updatePermission = (category: string, item: string, value: boolean) => {
     setPermissions((prev) => ({
@@ -68,13 +69,12 @@ const EditRoleScreen: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const storedRoles = await AsyncStorage.getItem('roles');
-      const parsedRoles = storedRoles ? JSON.parse(storedRoles) : [];
-      const updatedRoles = parsedRoles.map((role: any) =>
+      const roles = dataContext?.Configuracion.DATA['roles'] || [];
+      const updatedRoles = roles.map((role: any) =>
         role.id === rolId ? { ...role, name, permissions } : role
       );
 
-      await AsyncStorage.setItem('roles', JSON.stringify(updatedRoles));
+      await dataContext?.Configuracion.Set('roles', updatedRoles);
       router.push('./rollist');
     } catch (error) {
       setError(t('security.role.saveError'));
@@ -105,7 +105,7 @@ const EditRoleScreen: React.FC = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>ad
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
       <DataRenderer
         label={t('security.role.roleName')}
         value={name}

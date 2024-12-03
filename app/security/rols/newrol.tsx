@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import DataRenderer from '@/components/DataRenderer';
 import PermissionsList from '@/components/security/rol/permissionslist';
 import { rolePermissions } from '@/constants/DataConfig/SecurityConfig';
+import { useConfig } from '@/components/Data/ConfigContext';
 
 const NewRoleScreen: React.FC = () => {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const buttonColor = useThemeColor({}, 'buttonColor');
+  const { dataContext } = useConfig();
+  const router = useRouter();
   const [name, setName] = useState<string>('');
   const [permissions, setPermissions] = useState<Record<string, Record<string, boolean>>>({});
   const [activeCategory, setActiveCategory] = useState<string>(t('security.role.SALES'));
@@ -22,7 +24,7 @@ const NewRoleScreen: React.FC = () => {
     const initialPermissions = Object.fromEntries(
       Object.entries(rolePermissions).map(([category, items]) => [
         category,
-        Object.fromEntries(items.map((item) => [item, false]))
+        Object.fromEntries(items.map((item) => [item, false])),
       ])
     );
     setPermissions(initialPermissions);
@@ -33,8 +35,8 @@ const NewRoleScreen: React.FC = () => {
       ...prev,
       [category]: {
         ...prev[category],
-        [item]: value
-      }
+        [item]: value,
+      },
     }));
   };
 
@@ -43,7 +45,7 @@ const NewRoleScreen: React.FC = () => {
       ...prev,
       [category]: Object.fromEntries(
         Object.entries(prev[category]).map(([item, _]) => [item, value])
-      )
+      ),
     }));
   };
 
@@ -51,15 +53,13 @@ const NewRoleScreen: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const storedRoles = await AsyncStorage.getItem('roles');
-      const parsedRoles = storedRoles ? JSON.parse(storedRoles) : [];
+      const roles = dataContext?.Configuracion.DATA['roles'] || [];
       const newRole = { id: Date.now().toString(), name, permissions };
-      const updatedRoles = [...parsedRoles, newRole];
-      await AsyncStorage.setItem('roles', JSON.stringify(updatedRoles));
+      const updatedRoles = [...roles, newRole];
+      await dataContext?.Configuracion.Set('roles', updatedRoles);
       router.push('./rollist');
     } catch (error) {
-      setError(t('security.role.saveError'));
-      console.error('Error saving role:', error);
+      setError(t('common.saveError'));
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ const NewRoleScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('security.role.saving')}</Text>
+        <Text style={styles.loadingText}>{t('common.saving')}</Text>
       </View>
     );
   }
@@ -79,7 +79,7 @@ const NewRoleScreen: React.FC = () => {
       <View style={styles.errorContainer}>
         <Text style={styles.errorMessage}>{error}</Text>
         <TouchableOpacity onPress={() => router.push('./rollist')} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('security.role.goBack')}</Text>
+          <Text style={styles.goBackButtonText}>{t('common.goBack')}</Text>
         </TouchableOpacity>
       </View>
     );

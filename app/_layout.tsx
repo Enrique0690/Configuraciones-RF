@@ -6,7 +6,7 @@ import { Colors } from '@/constants/Colors';
 import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
 import { useTranslation } from "react-i18next";
-import { ConfigProvider } from "@/components/DataContext/ConfigContext";
+import { ConfigProvider } from "@/components/Data/ConfigContext";
 import { routeTitles } from "@/constants/routetitles";
 import { Ionicons } from '@expo/vector-icons';
 

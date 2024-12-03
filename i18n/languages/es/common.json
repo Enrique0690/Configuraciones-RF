@@ -5,6 +5,7 @@
     "uploadImage": "Subir Imagen",
     "loadError": "Error al cargar",
     "goBackHome": "Volver a inicio",
+    "goBack": "Volver",
     "permissionDenied": "Permiso denegado",
     "saveError": "No se pudieron guardar los cambios.",
     "search": "Buscar",

@@ -5,8 +5,7 @@ import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import SearchBar from '@/components/navigation/SearchBar';
-import useStorage from '@/hooks/useStorage';
-
+import { useConfig } from '@/components/Data/ConfigContext';
 interface Printer {
   id: string;
   name: string;
@@ -18,21 +17,15 @@ interface Printer {
   bar: boolean;
   noStation: boolean;
 }
-
 const PrintersListScreen: React.FC = () => {
-  const { data: printers, loading, error, reloadData,  } = useStorage<Printer[]>('printers', []);
+  const { dataContext, isLoading } = useConfig();
+  const printers: Printer[] = dataContext?.Configuracion.DATA['printers'] || [];
   const router = useRouter();
   const { t } = useTranslation();
+  const handleCreateNewPrinter = () => { router.push('./printers/newprinter'); };
+  const handlePrinterClick = (id: string) => { router.push(`./printers/${id}`); };
 
-  const handleCreateNewPrinter = () => {
-    router.push('./printers/newprinter');
-  };
-
-  const handlePrinterClick = (id: string) => {
-    router.push(`./printers/${id}`);
-  };
-  
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
@@ -41,45 +34,43 @@ const PrintersListScreen: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (!printers || printers.length === 0) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('printers.errorLoadingData')}</Text>
-        <TouchableOpacity onPress={reloadData} style={styles.goBackButton}>
-          <Text style={styles.goBackButtonText}>{t('common.retry')}</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  return (
-    <View style={[styles.container]}>
-      <View style={styles.searchBarContainer}>
-        <SearchBar />
-      </View>
-
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        {printers.length === 0 ? (
+      <View style={styles.container}>
+        <View style={styles.searchBarContainer}>
+          <SearchBar />
+        </View>
+        <View style={styles.contentContainer}>
           <TouchableOpacity onPress={handleCreateNewPrinter}>
             <Text style={[styles.noPrintersText, { color: Colors.text }]}>
               {t('printers.noPrinters')}
             </Text>
           </TouchableOpacity>
-        ) : (
-          printers.map((printer) => (
-            <TouchableOpacity
-              key={printer.id}
-              style={styles.printerItem}
-              onPress={() => handlePrinterClick(printer.id)}
-            >
-              <View style={[styles.colorCircle, { backgroundColor: printer.connection === 'wifi' ? '#4CAF50' : '#FF5722' }]} />
-              <View style={styles.printerDetails}>
-                <Text style={[styles.printerText, { color: Colors.text }]}>{printer.name}</Text>
-                <Text style={[styles.printerConnection, { color: Colors.text }]}>{printer.connection}</Text>
-              </View>
-            </TouchableOpacity>
-          ))
-        )}
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.searchBarContainer}>
+        <SearchBar />
+      </View>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        {printers.map((printer) => (
+          <TouchableOpacity
+            key={printer.id}
+            style={styles.printerItem}
+            onPress={() => handlePrinterClick(printer.id)}
+          >
+            <View style={styles.printerDetails}>
+              <Text style={[styles.printerText, { color: Colors.text }]}>{printer.name}</Text>
+              <Text style={[styles.printerConnection, { color: Colors.text }]}>
+                {printer.connection}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
     </View>
   );

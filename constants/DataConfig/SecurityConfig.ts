@@ -4,18 +4,11 @@ function withGlobalRoute<T>(config: T[], route: string, category?: string): (T &
 
 type FieldConfig = {
   label: string;
-  id: keyof typeof defaultData;
+  id: string;
   type: 'text' | 'buttonlist' | 'input';
   route?: string;
   iconName?: string;
   finalText?: string;
-};
-
-export const defaultData = {
-  eliminarMotivo: '',
-  minimo_caracteres_justificar_anulacion: '',
-  anularPedidoMotivo: '',
-  none: ''
 };
 
 export const securityConfig: Array<FieldConfig> = withGlobalRoute([
