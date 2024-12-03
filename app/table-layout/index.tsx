@@ -1,71 +1,65 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform, ScrollView } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { handleChange } from '@/hooks/handleChange';
-import useStorage from '@/hooks/useStorage';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { TableConfig, defaultData } from '@/constants/DataConfig/tablelayout';
-import DataRenderer from '@/components/DataRenderer';
-import SearchBar from '@/components/navigation/SearchBar';
+import { useConfig } from '@/components/Data/ConfigContext';
 import { useLocalSearchParams } from 'expo-router';
 import TabletConfiguration from '@/components/Table-layout/tablelayout';
+import DataRenderer from '@/components/DataRenderer';
+import { handleChange } from '@/hooks/handleChange';
+import { Colors } from '@/constants/Colors';
+import SearchBar from '@/components/navigation/SearchBar';
+import { TableConfig } from '@/constants/DataConfig/tablelayout';
 
 const TabletConfigurationScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { data, loading, error, saveData, reloadData } = useStorage('tabletConfiguration', defaultData);
+  const { dataContext, isLoading } = useConfig();
   const { highlight } = useLocalSearchParams();
-  const { Mesa_mostrarCliente, PedidoEnMesa_MostrarReloj, showCommercialName } = data;
+  const { Mesa_mostrarCliente, PedidoEnMesa_MostrarReloj, showCommercialName } = dataContext?.Configuracion.DATA || {};
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('tabletConfiguration.loading')}</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>{t('tablelayout.loadError')}</Text>
-        <TouchableOpacity onPress={reloadData} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>{t('tablelayout.retry')}</Text>
-        </TouchableOpacity>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={[styles.container]}>
-      <View style={styles.searchBarContainer}>
-        <SearchBar />
-      </View>
+    <View style={styles.container}>
       <ScrollView>
+        <View style={styles.searchBarContainer}>
+          <SearchBar />
+        </View>
+
         <TabletConfiguration
           showUser={Mesa_mostrarCliente}
           showTime={PedidoEnMesa_MostrarReloj}
           showCommercialName={showCommercialName}
         />
+
         <View style={styles.groupContainer}>
-          {TableConfig.map(({ id, label, type }) => (
+          {TableConfig.map(({ id, label, type, list }) => (
             <DataRenderer
               key={id}
               label={t(label)}
-              value={data[id]}
+              value={dataContext?.Configuracion.DATA[id]}
               type={type}
-              onSave={(newValue) => handleChange(id, newValue, data, saveData)}
+              onSave={(newValue) =>
+                handleChange(id, newValue, dataContext?.Configuracion.DATA, (updatedData) =>
+                  dataContext?.Configuracion.Set(id, updatedData[id])
+                )
+              }
               textColor={Colors.text}
+              dataList={list}
               highlight={highlight === id}
             />
           ))}
         </View>
       </ScrollView>
-
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

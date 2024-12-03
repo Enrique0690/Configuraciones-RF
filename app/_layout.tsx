@@ -126,7 +126,7 @@ export default function Layout() {
                         contentStyle: { backgroundColor: "white" },
                         headerRight: () =>
                             routeConfig.showAddButton && routeConfig.navigate ? (
-                                <TouchableOpacity onPress={() => routeConfig.navigate!(router)}>
+                                <TouchableOpacity onPress={() => routeConfig.navigate!(router)} style={{ marginRight: 20 }}>
                                     <Ionicons name="add-circle-outline" size={28} color={Colors.text} />
                                 </TouchableOpacity>
                             ) : null,
