@@ -16,8 +16,9 @@ interface DataRendererProps {
   onSave?: (value: string | boolean) => void; 
   highlight?: boolean;
   dataList?: string[]; 
+  validation?: string[];
 }
-const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress, textColor, iconName, onSave, highlight, dataList}) => {
+const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, textColor, iconName, onSave, highlight, dataList, validation}) => {
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [tempValue, setTempValue] = useState(value as string);
   const [switchValue, setSwitchValue] = useState(value as boolean);
@@ -153,6 +154,7 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress,
           onSave={handleSave}
           onClose={() => setDialogVisible(false)}
           title={type === 'text' ? interpolatedLabel : label}
+          validation={validation}
         />
       )}
       {isListModalVisible && dataList && (

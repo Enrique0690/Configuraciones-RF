@@ -8,10 +8,12 @@ type EditDialogProps = {
   onSave: () => void;
   onClose: () => void;
   title: string;
+  validation?: string[];
 };
 
-const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, onSave, onClose, title, }) => {
+const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, onSave, onClose, title, validation }) => {
   const inputRef = useRef<TextInput>(null);
+  const [error, setError] = React.useState<string | null>(null);
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -38,11 +40,80 @@ const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, o
 
   const handleKeyPress = (event: any) => {
     if (event.nativeEvent.key === 'Enter') {
-      onSave();
+      handleSave();
     }
     if (event.nativeEvent.key === 'Escape') {
       onClose();
     }
+  };
+
+  const validateInput = (): boolean => {
+    if (!validation) return true;
+    const validationRules: Record<string, (value: string) => string | null> = {
+      text: (value) => {
+        const textRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
+        return textRegex.test(value.trim()) ? null : 'Solo se permiten letras.';
+      },
+      number: (value) => {
+        const numberRegex = /^[0-9]*$/;
+        return numberRegex.test(value.trim()) ? null : 'Solo se permiten números.';
+      },
+      email: (value) => {
+        const trimmedEmail = value.trim();
+        const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!EMAIL_FORMAT.test(trimmedEmail)) return 'Correo electrónico inválido.';
+        if (trimmedEmail.length > 254) return 'Correo electrónico demasiado largo.';
+        if (/[^\x00-\x7F]/.test(trimmedEmail)) return 'El correo electrónico no puede contener caracteres Unicode.';
+        return null;
+      },
+      phone: (value) => {
+        let telefono = value.replace(/[\s#().-]/g, '');
+        if (!/^\+?\d+$/.test(telefono)) return 'Número de teléfono inválido. El número contiene caracteres no permitidos.';
+        if (telefono.length < 7 || telefono.length > 15) return 'Número de teléfono inválido. La longitud no es correcta.';
+        return null;
+      },
+      IDNumber: (value) => {
+        const trimmedValue = value.trim();
+        const idRegex = /^(?:\d{10}|\d{13}|\d{9,12})$/; // 10 para cédula, 13 para RUC, 9-12 para pasaporte
+        if (!idRegex.test(trimmedValue)) return 'Número de identificación inválido.';
+        return null;
+      }
+    };
+    for (const rule of validation) {
+      const validateRule = validationRules[rule];
+      if (validateRule) {
+        const error = validateRule(value);
+        if (error) {
+          setError(error);
+          return false;
+        }
+      }
+    }
+    setError(null);
+    return true;
+  };
+
+  const handleSave = () => {
+    if (validateInput()) {
+      onSave();
+    }
+  }
+
+  const handleInputChange = (text: string) => {
+    setError(null);
+    if (!validation) {
+      onChangeText(text);
+      return;
+    }
+    let filteredText = text;
+    for (const rule of validation) {
+      if (rule === 'number') {
+        filteredText = filteredText.replace(/[^0-9]/g, '');
+      } else if (rule === 'text') {
+        filteredText = filteredText.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+      }
+    }
+    onChangeText(filteredText);
   };
 
   return (
@@ -57,22 +128,23 @@ const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, o
           <TouchableWithoutFeedback>
             <View style={styles.dialog}>
               <Text style={styles.title}>{title}</Text>
+              {error && <Text style={styles.errorText}>{error}</Text>}
               <TextInput
                 ref={inputRef}
                 style={styles.input}
                 value={value}
-                onChangeText={onChangeText}
+                onChangeText={handleInputChange}
                 onKeyPress={handleKeyPress}
-                onSubmitEditing={onSave} // Manejador para "Enter" en móviles
+                onSubmitEditing={handleSave}
                 autoFocus
-                placeholder="Escribe aquí..."
                 placeholderTextColor="#999"
+                keyboardType={validation?.includes('number') ? 'numeric' : 'default'}
               />
               <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={onClose} style={styles.button}>
                   <Text style={styles.buttonTextCancel}>Cancelar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={onSave} style={styles.button}>
+                <TouchableOpacity onPress={handleSave} style={styles.button}>
                   <Text style={styles.buttonTextSave}>Guardar</Text>
                 </TouchableOpacity>
               </View>
@@ -133,6 +205,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#007AFF',
     fontWeight: '600',
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
   },
 });
 

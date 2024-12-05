@@ -91,7 +91,7 @@ const BusinessInfoScreen: React.FC = () => {
           buttonText={t('uploadImage')}
         />
 
-        {organizationConfig.map(({ label, id, type, list }) => (
+        {organizationConfig.map(({ label, id, type, list, validation }) => (
           <DataRenderer
             key={id}
             label={t(label)}
@@ -101,6 +101,7 @@ const BusinessInfoScreen: React.FC = () => {
             textColor={Colors.text}
             dataList={list}
             highlight={highlight === id}
+            validation={validation}
           />
         ))}
         <DataRenderer

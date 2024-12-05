@@ -10,6 +10,7 @@ type FieldConfig = {
   imageUrl?: string | null;
   list?: string[];
   category?: string;
+  validation?: string[];
 };
 
 export const defaultData = {
@@ -27,8 +28,8 @@ export const defaultData = {
 export const organizationConfig: Array<FieldConfig> =  withGlobalRoute([
   { id: 'nombreComercial', label: 'organization.name', type: 'input'},
   { id: 'direccion', label: 'organization.address', type: 'input'},
-  { id: 'telefono', label: 'organization.phone', type: 'input'},
-  { id: 'email', label: 'organization.email', type: 'input'},
+  { id: 'telefono', label: 'organization.phone', type: 'input', validation: ['number', 'phone']},
+  { id: 'email', label: 'organization.email', type: 'input', validation: ['email']},
   { id: 'base', label: 'organization.businessType', type: 'inputlist',list: ['FOODTRUCK / PUESTO DE COMIDA', 'RESTAURANT', 'REATIL/ LOCAL COMERCIAL', 'HOTEL']},
 ], '/organization', "layout.categorys.businessInfo"); 
 
