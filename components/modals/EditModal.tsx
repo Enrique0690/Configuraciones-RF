@@ -78,11 +78,9 @@ const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, o
     }
     let filteredText = text;
     for (const rule of validation) {
-      if (rule === 'number') {
-        filteredText = filteredText.replace(/[^0-9]/g, '');
-      } else if (rule === 'text') {
-        filteredText = filteredText.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-      }
+      if (rule === 'text') filteredText = filteredText.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+      if (rule === 'number') filteredText = filteredText.replace(/[^0-9\-]/g, '');
+      if (rule === 'phone') filteredText = filteredText.replace(/[^0-9\+\-\(\)\s]/g, '');
     }
     onChangeText(filteredText);
   };
@@ -109,8 +107,8 @@ const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, o
                 onSubmitEditing={handleSave}
                 autoFocus
                 placeholderTextColor="#999"
-                keyboardType={validation?.includes('number') ? 'numeric' : 'default'}
-              />
+                keyboardType={validation?.includes('phone') ? 'phone-pad' : validation?.includes('number') ? 'numeric' : 'default'} 
+                />
               <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={onClose} style={styles.button}>
                   <Text style={styles.buttonTextCancel}>Cancelar</Text>
