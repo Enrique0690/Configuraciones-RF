@@ -5,7 +5,6 @@ import { useConfig } from '@/components/Data/ConfigContext';
 import { useLocalSearchParams } from 'expo-router';
 import TabletConfiguration from '@/components/Table-layout/tablelayout';
 import DataRenderer from '@/components/DataRenderer';
-import { handleChange } from '@/hooks/handleChange';
 import { Colors } from '@/constants/Colors';
 import SearchBar from '@/components/navigation/SearchBar';
 import { TableConfig } from '@/constants/DataConfig/tablelayout';
@@ -15,7 +14,6 @@ const TabletConfigurationScreen: React.FC = () => {
   const { dataContext, isLoading } = useConfig();
   const { highlight } = useLocalSearchParams();
   const { Mesa_mostrarCliente, PedidoEnMesa_MostrarReloj, showCommercialName } = dataContext?.Configuracion.DATA || {};
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -24,20 +22,17 @@ const TabletConfigurationScreen: React.FC = () => {
       </View>
     );
   }
-
   return (
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.searchBarContainer}>
           <SearchBar />
         </View>
-
         <TabletConfiguration
           showUser={Mesa_mostrarCliente}
           showTime={PedidoEnMesa_MostrarReloj}
           showCommercialName={showCommercialName}
         />
-
         <View style={styles.groupContainer}>
           {TableConfig.map(({ id, label, type, list }) => (
             <DataRenderer
@@ -45,11 +40,9 @@ const TabletConfigurationScreen: React.FC = () => {
               label={t(label)}
               value={dataContext?.Configuracion.DATA[id]}
               type={type}
-              onSave={(newValue) =>
-                handleChange(id, newValue, dataContext?.Configuracion.DATA, (updatedData) =>
-                  dataContext?.Configuracion.Set(id, updatedData[id])
-                )
-              }
+              onSave={async (newValue) => {
+                await dataContext?.Configuracion.Set(id, newValue);
+              }}
               textColor={Colors.text}
               dataList={list}
               highlight={highlight === id}
@@ -60,6 +53,7 @@ const TabletConfigurationScreen: React.FC = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

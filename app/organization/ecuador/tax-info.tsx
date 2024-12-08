@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import SearchBar from '@/components/navigation/SearchBar';
 import DataRenderer from '@/components/DataRenderer';
 import { infoTributariaConfig } from '@/constants/DataConfig/organization';
-import { handleChange } from '@/hooks/handleChange';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useConfig } from '@/components/Data/ConfigContext';
@@ -13,7 +12,6 @@ const InfoTributaria: React.FC = () => {
   const { t } = useTranslation();
   const { dataContext, isLoading } = useConfig();
   const { highlight } = useLocalSearchParams();
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -22,25 +20,21 @@ const InfoTributaria: React.FC = () => {
       </View>
     );
   }
-
   return (
     <View style={[styles.container]}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.searchBarContainer}>
           <SearchBar />
         </View>
-
         {infoTributariaConfig.map(({ label, id, type, list }) => (
           <DataRenderer
             key={id}
             label={t(label)}
-            value={dataContext?.Configuracion.DATA[id]} // Obtener valor desde el contexto
+            value={dataContext?.Configuracion.DATA[id]} 
             type={type}
-            onSave={(newValue) =>
-              handleChange(id, newValue, dataContext?.Configuracion.DATA, (updatedData) =>
-                dataContext?.Configuracion.Set(id, updatedData[id]) // Guardar cambios en el contexto
-              )
-            }
+            onSave={async (newValue) => {
+              await dataContext?.Configuracion.Set(id, newValue);
+            }}
             textColor={Colors.text}
             dataList={list}
             highlight={highlight === id}

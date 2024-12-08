@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, Switch, StyleSheet, useWindowDimensions, Platform } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Switch, StyleSheet, useWindowDimensions, Platform, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';  
 import ListModal from './modals/ListModal';
@@ -22,12 +22,13 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress,
   const [tempValue, setTempValue] = useState(value as string);
   const [switchValue, setSwitchValue] = useState(value as boolean);
   const [isHighlighted, setHighlighted] = useState(highlight);
-  const [isActive, setIsActive] = useState(false);
   const [isListModalVisible, setListModalVisible] = useState(false);
   const { t } = useTranslation();
   const interpolatedLabel = t(label, { value: value || '_____' });
   const { width } = useWindowDimensions();
   const isSmallScreen = width < 768;
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   if (Platform.OS === 'web' || Platform.OS === 'windows') {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -41,36 +42,53 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress,
         }
       }
     };
-  
     window.addEventListener('keydown', handleKeyDown);
-  
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isHighlighted, type, dataList, switchValue]); 
 } 
-
   const openEditDialog = () => {
     setTempValue(value as string);
     setDialogVisible(true);
   };
-
-  const handleSave = () => {
-    onSave?.(tempValue);
-    setDialogVisible(false);
+  const handleSave = async () => {
+    setIsLoading(true);
+    setErrorMessage(null); 
+    try {
+      setDialogVisible(false);
+      await onSave?.(tempValue);
+    } catch (error: any) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  const handleSwitchChange = (newValue: boolean) => {
-    setSwitchValue(newValue);
-    onSave?.(newValue);
+  const handleSwitchChange = async (newValue: boolean) => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      await onSave?.(newValue);
+      setSwitchValue(newValue);
+    } catch (error: any) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  const handleSelectItem = (selectedItem: string) => {
-    setTempValue(selectedItem);
-    setListModalVisible(false);
-    onSave?.(selectedItem);
+  const handleSelectItem = async (selectedItem: string) => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      await onSave?.(selectedItem);
+      setTempValue(selectedItem);
+    } catch (error: any) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+      setListModalVisible(false);
+    }
   };
-
   useFocusEffect(
     React.useCallback(() => {
       if (highlight) {
@@ -80,11 +98,9 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress,
       }
     }, [highlight])
   );
-
   useEffect(() => {
     type === 'switch' ? setSwitchValue(value as boolean) : setTempValue(value as string);
   }, [value, type]);
-
   const renderInput = () => (
     <TouchableOpacity onPress={openEditDialog}>
     <View style={[styles.inputContainer, isSmallScreen && styles.smallScreenInputContainer]}>
@@ -93,7 +109,6 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress,
     </View>
   </TouchableOpacity>
   );
-
   const renderText = () => (
     <TouchableOpacity onPress={openEditDialog}>
       <Text style={[styles.textValue, { color: textColor }]}>
@@ -101,7 +116,6 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress,
       </Text>
     </TouchableOpacity>
   );
-
   const renderInputList = () => (
     <TouchableOpacity onPress={() => setListModalVisible(true)}>
       <Text style={[styles.textValue, { color: textColor }]}>
@@ -109,28 +123,31 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress,
       </Text>
     </TouchableOpacity>
   );
-
   const renderSwitch = () => (
     <TouchableOpacity style={styles.switchContainer} onPress={() => handleSwitchChange(!switchValue)}>
       <Text style={[styles.label, { color: textColor }]}>{label}</Text>
       <Switch value={switchValue} onValueChange={handleSwitchChange} />
     </TouchableOpacity>
   );
-
   const renderImage = () => (
     <View style={styles.imageContainer}>
       <Image style={styles.image} source={{ uri: value as string }} resizeMode="contain" />
     </View>
   );
-
   const renderButtonList = () => (
     <TouchableOpacity style={styles.button} onPress={() => router.push(value as any)}>
       {iconName && <Ionicons name={iconName as any} size={20} color={textColor} />}
       <Text style={[styles.buttonLabel, { color: textColor }]}>{label}</Text>
     </TouchableOpacity>
   );
-
   const renderContent = () => {
+    if (isLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="small" color={'#4CAF50'} />
+        </View>
+      );
+    }
     switch (type) {
       case 'input': return renderInput();
       case 'text': return renderText();
@@ -141,10 +158,10 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress,
       default: return null;
     }
   };
-
   return (
     <View style={[styles.inputGroup, isHighlighted && styles.highlightedContainer]}>
       {renderContent()}
+      {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
       {isDialogVisible && (
         <EditDialog
           visible={isDialogVisible}
@@ -152,7 +169,7 @@ const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress,
           onChangeText={setTempValue}
           onSave={handleSave}
           onClose={() => setDialogVisible(false)}
-          title={type === 'text' ? interpolatedLabel : label}
+          title={label}
         />
       )}
       {isListModalVisible && dataList && (
@@ -230,6 +247,14 @@ const styles = StyleSheet.create({
   smallScreenLabel: {
     marginBottom: 4,
   },
+  errorText: { 
+    color: 'red', 
+    fontSize: 12, 
+    marginTop: 4 
+  },
+  loadingContainer: { 
+    alignItems: 'center', 
+    justifyContent: 'center' },
 });
 
 export default DataRenderer;

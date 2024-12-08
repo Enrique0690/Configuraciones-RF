@@ -12,7 +12,6 @@ type EditDialogProps = {
 
 const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, onSave, onClose, title, }) => {
   const inputRef = useRef<TextInput>(null);
-
   useEffect(() => {
     const handleBackPress = () => {
       if (visible) {
@@ -21,21 +20,18 @@ const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, o
       }
       return false;
     };
-
     if (visible) {
       inputRef.current?.focus();
       if (Platform.OS !== 'web') {
         BackHandler.addEventListener('hardwareBackPress', handleBackPress);
       }
     }
-
     return () => {
       if (Platform.OS !== 'web') {
         BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
       }
     };
   }, [visible, onClose]);
-
   const handleKeyPress = (event: any) => {
     if (event.nativeEvent.key === 'Enter') {
       onSave();
@@ -44,7 +40,6 @@ const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, o
       onClose();
     }
   };
-
   return (
     <Modal
       visible={visible}

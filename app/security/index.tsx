@@ -37,10 +37,9 @@ const SecurityScreen: React.FC = () => {
             label={t(label)}
             value={dataContext?.Configuracion.DATA[id]}
             type={type}
-            onSave={(newValue) =>
-              handleChange(id, newValue, dataContext?.Configuracion.DATA, (updatedData) =>
-                dataContext?.Configuracion.Set(id, updatedData[id]) 
-              )
+            onSave={async (newValue) => {
+              await dataContext?.Configuracion.Set(id, newValue);
+            }
             }
             textColor={Colors.text}
             highlight={highlight === id}

@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Platform, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import SearchBar from '@/components/navigation/SearchBar';
 import DataRenderer from '@/components/DataRenderer';
 import { organizationConfig } from '@/constants/DataConfig/organization';
-import * as ImagePicker from 'expo-image-picker';
-import { handleChange } from '@/hooks/handleChange';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useConfig } from '@/components/Data/ConfigContext';
@@ -15,7 +13,6 @@ const BusinessInfoScreen: React.FC = () => {
   const { t } = useTranslation();
   const { dataContext, isLoading } = useConfig();
   const { highlight } = useLocalSearchParams();
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -24,31 +21,28 @@ const BusinessInfoScreen: React.FC = () => {
       </View>
     );
   }
-
   return (
     <View style={[styles.container]}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.searchBarContainer}>
           <SearchBar />
         </View>
-
         <ImageUploader
           initialUri={dataContext?.Configuracion.DATA?.imageUrl}
-          onSave={(uri) => dataContext?.Configuracion.Set('imageUrl', uri)}
+          onSave={async (uri) => {
+            await dataContext?.Configuracion.Set('imageUrl', uri);
+          }}
           buttonText={t('common.uploadImage')}
         />
-
         {organizationConfig.map(({ label, id, type, list }) => (
           <DataRenderer
             key={id}
             label={t(label)}
             value={dataContext?.Configuracion.DATA[id]}
             type={type}
-            onSave={(newValue) =>
-              handleChange(id, newValue, dataContext?.Configuracion.DATA, (updatedData) =>
-                dataContext?.Configuracion.Set(id, updatedData[id])
-              )
-            }
+            onSave={async (newValue) => {
+              await dataContext?.Configuracion.Set(id, newValue);
+            }}
             textColor={Colors.text}
             dataList={list}
             highlight={highlight === id}
