@@ -9,50 +9,12 @@ import { handleChange } from '@/hooks/handleChange';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useConfig } from '@/components/Data/ConfigContext';
+import ImageUploader from '@/components/ImageUploader';
 
 const BusinessInfoScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { dataContext, isLoading } = useConfig(); 
-  const [imageUri, setImageUri] = useState<string | null>(null);
+  const { dataContext, isLoading } = useConfig();
   const { highlight } = useLocalSearchParams();
-
-  useEffect(() => {
-    if (dataContext?.Configuracion.DATA?.imageUrl) {
-      setImageUri(dataContext.Configuracion.DATA.imageUrl);
-    }
-  }, [dataContext?.Configuracion.DATA]);
-
-  const openImagePicker = async () => {
-    const permission = await requestImagePickerPermission();
-    if (permission) {
-      const result = await pickImage();
-      if (result) {
-        saveImage(result);
-      }
-    } else {
-      alert(t('common.permissionDenied'));
-    }
-  };
-
-  const requestImagePickerPermission = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    return status === 'granted';
-  };
-
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images',
-      quality: 1,
-    });
-    return !result.canceled ? result.assets[0].uri : null;
-  };
-
-  const saveImage = (uri: string) => {
-    setImageUri(uri);
-    if (dataContext) {
-      dataContext.Configuracion.Set('imageUrl', uri);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -68,11 +30,11 @@ const BusinessInfoScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.searchBarContainer}>
           <SearchBar />
-        </View> 
+        </View>
 
-        <ImageUploadSection 
-          imageUri={imageUri}
-          onSelectImage={openImagePicker}
+        <ImageUploader
+          initialUri={dataContext?.Configuracion.DATA?.imageUrl}
+          onSave={(uri) => dataContext?.Configuracion.Set('imageUrl', uri)}
           buttonText={t('common.uploadImage')}
         />
 
@@ -80,10 +42,10 @@ const BusinessInfoScreen: React.FC = () => {
           <DataRenderer
             key={id}
             label={t(label)}
-            value={dataContext?.Configuracion.DATA[id]} 
+            value={dataContext?.Configuracion.DATA[id]}
             type={type}
-            onSave={(newValue) => 
-              handleChange(id, newValue, dataContext?.Configuracion.DATA, (updatedData) => 
+            onSave={(newValue) =>
+              handleChange(id, newValue, dataContext?.Configuracion.DATA, (updatedData) =>
                 dataContext?.Configuracion.Set(id, updatedData[id])
               )
             }
@@ -93,34 +55,16 @@ const BusinessInfoScreen: React.FC = () => {
           />
         ))}
         <DataRenderer
-          label={t('organization.taxinfo.header')} 
+          label={t('organization.taxinfo.header')}
           value="/organization/ecuador/tax-info"
-          type='buttonlist'
-          iconName='document-text' 
-          textColor={Colors.text} 
+          type="buttonlist"
+          iconName="document-text"
+          textColor={Colors.text}
         />
       </ScrollView>
     </View>
   );
 };
-
-const ImageUploadSection: React.FC<{
-  imageUri: string | null;
-  onSelectImage: () => void;
-  buttonText: string;
-}> = ({ imageUri, onSelectImage, buttonText }) => (
-  <>
-    {!imageUri ? (
-      <TouchableOpacity style={styles.uploadButton} onPress={onSelectImage}>
-        <Text style={styles.uploadButtonText}>{buttonText}</Text>
-      </TouchableOpacity>
-    ) : (
-      <TouchableOpacity style={styles.imageContainer} onPress={onSelectImage}>
-        <Image source={{ uri: imageUri }} style={styles.imagePreview} />
-      </TouchableOpacity>
-    )}
-  </>
-);
 
 const styles = StyleSheet.create({
   container: {
@@ -138,34 +82,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 16,
-  },
-  imageContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  imagePreview: {
-    width: '100%',
-    height: undefined,
-    aspectRatio: 1,
-    maxWidth: 500,
-    maxHeight: 300,
-    resizeMode: 'contain',
-    borderRadius: 15,
-  },
-  uploadButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    marginVertical: 16,
-    maxWidth: 300,
-    marginHorizontal: 'auto',
-  },
-  uploadButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   loadingContainer: {
     flex: 1,
