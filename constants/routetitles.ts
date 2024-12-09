@@ -8,28 +8,28 @@ type RouteConfig = {
 
 export const routeTitles: Record<string, RouteConfig> = {
     //informacion del negocio
-    "/organization": {title: "organization.header"},
-    "/organization/ecuador/tax-info": {title: "organization.taxinfo.header"},
+    "/settings/organization": {title: "organization.header"},
+    "/settings/organization/ecuador/tax-info": {title: "organization.taxinfo.header"},
 
-    "/order-station": {title: "stations.header",
+    "/settings/order-station": {title: "stations.header",
         showAddButton: true},
 
     //Impresoras
-    "/printers": {title: "printers.header", showAddButton: true, navigate: (router: Router) => router.push("/printers/newprinter")},
-    "/printers/newprinter": {title: "printers.addPrinter"},
-    "/printers/editprinter": {title: "printers.editPrinter"},
+    "/settings/printers": {title: "printers.header", showAddButton: true, navigate: (router: Router) => router.push("/settings/printers/newprinter")},
+    "/settings/printers/newprinter": {title: "printers.addPrinter"},
+    "/settings/printers/editprinter": {title: "printers.editPrinter"},
     
-    "/table-layout": {title: "tablelayout.header"},
+    "/settings/table-layout": {title: "tablelayout.header"},
 
     //security
-    "/security": {title: "security.header"},
-    "/security/users/userlist": {title: "security.users", showAddButton: true, navigate: (router: Router) => router.push("/security/users/newuser")},
-    "/security/users/[userId]": {title: "security.user.editUser"},
-    "/security/users/newuser": {title: "security.user.Newuser"},
-    "/security/rols/rollist": {title: "security.roles", showAddButton: true, navigate: (router: Router) => router.push("/security/rols/newrol")},
-    "/security/rols/[rolId]": {title: "security.role.editRole"},
-    "/security/rols/newrol": {title: "security.role.addNewRole"},
+    "/settings/security": {title: "security.header"},
+    "/settings/security/users/userlist": {title: "security.users", showAddButton: true, navigate: (router: Router) => router.push("/settings/security/users/newuser")},
+    "/settings/security/users/[userId]": {title: "security.user.editUser"},
+    "/settings/security/users/newuser": {title: "security.user.Newuser"},
+    "/settings/security/rols/rollist": {title: "security.roles", showAddButton: true, navigate: (router: Router) => router.push("/settings/security/rols/newrol")},
+    "/settings/security/rols/[rolId]": {title: "security.role.editRole"},
+    "/settings/security/rols/newrol": {title: "security.role.addNewRole"},
 
-    "/advanced": {title: "advancedoptions.header"},
+    "/settings/advanced": {title: "advancedoptions.header"},
     "/searchscreen": {title: "common.searchtitle"}
 };

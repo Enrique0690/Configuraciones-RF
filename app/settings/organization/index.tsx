@@ -9,7 +9,7 @@ import { Colors } from '@/constants/Colors';
 import { useConfig } from '@/components/Data/ConfigContext';
 import ImageUploader from '@/components/ImageUploader';
 
-const BusinessInfoScreen: React.FC = () => {
+const BusinessInfoScreen = () => {
   const { t } = useTranslation();
   const { dataContext, isLoading } = useConfig();
   const { highlight } = useLocalSearchParams();

@@ -76,16 +76,16 @@ export default function Layout() {
 
     const menuGroups = [
         [
-            { text: t("layout.categorys.businessInfo"), route: "/organization"},
+            { text: t("layout.categorys.businessInfo"), route: "/settings/organization"},
         ],
         [
-            { text: t("layout.categorys.orderingstations"), route: "/order-station"},
-            { text: t("layout.categorys.printers"), route: "/printers"},
-            { text: t("layout.categorys.tabletConfiguration"), route: "/table-layout"},
+            { text: t("layout.categorys.orderingstations"), route: "/settings/order-station"},
+            { text: t("layout.categorys.printers"), route: "/settings/printers"},
+            { text: t("layout.categorys.tabletConfiguration"), route: "/settings/table-layout"},
         ],
         [
-            { text: t("layout.categorys.security"), route: "/security"},
-            { text: t("layout.categorys.advancedOptions"), route: "/advanced"},
+            { text: t("layout.categorys.security"), route: "/settings/security"},
+            { text: t("layout.categorys.advancedOptions"), route: "/settings/advanced"},
         ],
     ];
 

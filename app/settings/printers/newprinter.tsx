@@ -67,7 +67,7 @@ const NewPrinterScreen = () => {
       const printers = dataContext?.Configuracion.DATA['printers'] || [];
       const updatedPrinters = [...printers, newPrinter];
       await dataContext?.Configuracion.Set('printers', updatedPrinters);
-      router.push('/printers');
+      router.push('/settings/printers');
     } catch (error) {
       console.error('Error saving printer data:', error);
       setError(t('common.saveError'));
@@ -80,7 +80,7 @@ const NewPrinterScreen = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading', { value: t('printers.header') })}</Text>
       </View>
     );
   }
@@ -89,7 +89,7 @@ const NewPrinterScreen = () => {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity onPress={() => router.push('/printers')} style={styles.goBackButton}>
+        <TouchableOpacity onPress={() => router.push('/settings/printers')} style={styles.goBackButton}>
           <Text style={styles.goBackButtonText}>{t('common.goBack')}</Text>
         </TouchableOpacity>
       </View>

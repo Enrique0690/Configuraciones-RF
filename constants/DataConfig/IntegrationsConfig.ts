@@ -1,3 +1,3 @@
 export const IntegrationsConfig = [
-    { label: 'integrations.header', route: '/Integrations' },
+    { label: 'integrations.header', route: '/settings/integrations' },
 ];
