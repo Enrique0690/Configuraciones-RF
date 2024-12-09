@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@/components/Data/ConfigContext';
-import SearchBar from '@/components/navigation/SearchBar';
 import { Colors } from '@/constants/Colors';
 
 interface Role {
@@ -37,9 +36,6 @@ const RoleListScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchBarContainer}>
-        <SearchBar />
-      </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {roles.length === 0 ? (
           <TouchableOpacity onPress={handleCreateNewRole}>

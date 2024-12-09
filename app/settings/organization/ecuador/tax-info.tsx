@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import SearchBar from '@/components/navigation/SearchBar';
 import DataRenderer from '@/components/DataRenderer';
 import { infoTributariaConfig } from '@/constants/DataConfig/organization';
 import { useLocalSearchParams } from 'expo-router';
@@ -23,9 +22,6 @@ const InfoTributaria: React.FC = () => {
   return (
     <View style={[styles.container]}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <View style={styles.searchBarContainer}>
-          <SearchBar />
-        </View>
         {infoTributariaConfig.map(({ label, id, type, list }) => (
           <DataRenderer
             key={id}

@@ -1,18 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import SearchBar from '@/components/navigation/SearchBar';
-import { Colors } from '@/constants/Colors';
 
 const AdvancedOptionsScreen: React.FC = () => {
-  const router = useRouter();
 
   return (
     <View style={[styles.container]}>
-      <View style={styles.searchBarContainer}>
-        <SearchBar />
-      </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
       </ScrollView>
     </View>

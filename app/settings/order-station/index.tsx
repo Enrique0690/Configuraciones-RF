@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
-import SearchBar from '@/components/navigation/SearchBar';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';
@@ -42,9 +41,6 @@ const OrderingStationsScreen: React.FC = () => {
 
   return (
     <View style={[styles.container]}>
-      <View style={styles.searchBarContainer}>
-        <SearchBar />
-      </View>
       <View style={styles.descriptionBox}>
         <TouchableOpacity style={styles.addButton} onPress={() => setDialogVisible(true)}>
           <Ionicons name="add-circle-outline" size={28} color={Colors.text} />

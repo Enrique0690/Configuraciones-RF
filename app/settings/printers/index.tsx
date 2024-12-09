@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import SearchBar from '@/components/navigation/SearchBar';
 import { useConfig } from '@/components/Data/ConfigContext';
 interface Printer {
   id: string;
@@ -37,9 +35,6 @@ const PrintersListScreen: React.FC = () => {
   if (!printers || printers.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={styles.searchBarContainer}>
-          <SearchBar />
-        </View>
         <View style={styles.contentContainer}>
           <TouchableOpacity onPress={handleCreateNewPrinter}>
             <Text style={[styles.noPrintersText, { color: Colors.text }]}>
@@ -53,9 +48,6 @@ const PrintersListScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchBarContainer}>
-        <SearchBar />
-      </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {printers.map((printer) => (
           <TouchableOpacity

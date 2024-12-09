@@ -6,7 +6,6 @@ import { useLocalSearchParams } from 'expo-router';
 import TabletConfiguration from '@/components/Table-layout/tablelayout';
 import DataRenderer from '@/components/DataRenderer';
 import { Colors } from '@/constants/Colors';
-import SearchBar from '@/components/navigation/SearchBar';
 import { TableConfig } from '@/constants/DataConfig/tablelayout';
 
 const TabletConfigurationScreen: React.FC = () => {
@@ -25,9 +24,6 @@ const TabletConfigurationScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <View style={styles.searchBarContainer}>
-          <SearchBar />
-        </View>
         <TabletConfiguration
           showUser={Mesa_mostrarCliente}
           showTime={PedidoEnMesa_MostrarReloj}

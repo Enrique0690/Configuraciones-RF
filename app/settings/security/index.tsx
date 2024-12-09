@@ -2,12 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
-import { handleChange } from '@/hooks/handleChange';
 import { useConfig } from '@/components/Data/ConfigContext';
 import { useTranslation } from 'react-i18next';
 import { securityConfig} from '@/constants/DataConfig/SecurityConfig';
 import DataRenderer from '@/components/DataRenderer';
-import SearchBar from '@/components/navigation/SearchBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const SecurityScreen: React.FC = () => {
@@ -27,9 +25,6 @@ const SecurityScreen: React.FC = () => {
 
   return (
     <View style={[styles.container]}>
-      <View style={styles.searchBarContainer}>
-        <SearchBar />
-      </View>
       <View style={styles.groupContainer}>
         {securityConfig.map(({ label, id, type}) => (
           <DataRenderer

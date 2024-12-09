@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import SearchBar from '@/components/navigation/SearchBar';
 import DataRenderer from '@/components/DataRenderer';
 import { organizationConfig } from '@/constants/DataConfig/organization';
 import { useLocalSearchParams } from 'expo-router';
