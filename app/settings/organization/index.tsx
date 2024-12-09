@@ -9,7 +9,7 @@ import { Colors } from '@/constants/Colors';
 import { useConfig } from '@/components/Data/ConfigContext';
 import ImageUploader from '@/components/ImageUploader';
 
-const BusinessInfoScreen = () => {
+const OrganizationScreen = () => {
   const { t } = useTranslation();
   const { dataContext, isLoading } = useConfig();
   const { highlight } = useLocalSearchParams();
@@ -24,9 +24,6 @@ const BusinessInfoScreen = () => {
   return (
     <View style={[styles.container]}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <View style={styles.searchBarContainer}>
-          <SearchBar />
-        </View>
         <ImageUploader
           initialUri={dataContext?.Configuracion.DATA?.imageUrl}
           onSave={async (uri) => {
@@ -89,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BusinessInfoScreen;
+export default OrganizationScreen;
