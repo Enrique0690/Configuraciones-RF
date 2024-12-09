@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, BackHandler, useWindowDimensions } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, BackHandler } from "react-native";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
@@ -11,6 +11,7 @@ import { routeTitles } from "@/constants/routetitles";
 import { Ionicons } from '@expo/vector-icons';
 import { menuconfig } from "@/constants/menuconfig";
 import MenuSection from "@/components/MenuComponents";
+import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 
 export default function Layout() {
     const { t } = useTranslation();
@@ -19,8 +20,7 @@ export default function Layout() {
     const segments = useSegments();
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [selectedRoute, setSelectedRoute] = useState('');
-    const { width } = useWindowDimensions();
-    const isSmallScreen = width <= 768;
+    const isSmallScreen = useIsSmallScreen();
     const routeConfig = routeTitles[selectedRoute as keyof typeof routeTitles] || { title: null };
 
     const handleNavigation = useCallback((route: string) => {
@@ -100,7 +100,7 @@ export default function Layout() {
                                             </TouchableOpacity>
                                         )}
                                     </View>
-                                    {routeConfig.title !== "common.searchtitle" && width < 768 && (
+                                    {routeConfig.title !== "common.searchtitle" && isSmallScreen && (
                                         <View style={styles.searchBarContainer}>
                                             <SearchBar />
                                         </View>
