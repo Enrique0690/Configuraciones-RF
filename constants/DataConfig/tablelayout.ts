@@ -4,16 +4,10 @@ function withGlobalRoute<T>(config: T[], route: string, category?: string): (T &
 
 type TabletConfigField = {
   label: string;
-  id: keyof typeof defaultData;
+  id: string;
   type: 'text' | 'switch' | 'input' | 'inputlist';
   route?: string;
   list?: string[];
-};
-
-export const defaultData = {
-  Mesa_mostrarCliente: false,
-  PedidoEnMesa_MostrarReloj: false,
-  showCommercialName: false,
 };
 
 export const TableConfig: Array<TabletConfigField> = withGlobalRoute([

@@ -29,7 +29,7 @@ const PrintersListScreen: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading', { value: t('printers.header') })}</Text>
       </View>
     );
   }

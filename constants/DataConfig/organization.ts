@@ -5,7 +5,7 @@ function withGlobalRoute<T>(config: T[], route: string, category?: string): (T &
 type FieldConfig = {
   id:  string;
   label: string;
-  type: 'text' | 'image' | 'input' | 'inputlist';
+  type: 'text' | 'image' | 'input' | 'inputlist' | 'switch';
   route?: string;
   imageUrl?: string | null;
   list?: string[];
@@ -20,15 +20,7 @@ export const organizationConfig: Array<FieldConfig> =  withGlobalRoute([
   { id: 'base', label: 'organization.businessType', type: 'inputlist',list: ['FOODTRUCK / PUESTO DE COMIDA', 'RESTAURANT', 'REATIL/ LOCAL COMERCIAL', 'HOTEL']},
 ], '/organization', "layout.categorys.businessInfo"); 
 
-type InfoTributariaFieldConfig = {
-  label: string;
-  id: string;
-  type: 'text' | 'switch' | 'input' | 'inputlist';
-  route?: string;
-  list?: string[]
-};
-
-export const infoTributariaConfig: Array<InfoTributariaFieldConfig> = withGlobalRoute([
+export const infoTributariaConfig: Array<FieldConfig> = withGlobalRoute([
   { id: 'ruc', label: 'organization.taxinfo.ruc', type: 'input' },
   { id: 'razonSocial', label: 'organization.taxinfo.razonSocial', type: 'input' },
   { id: 'direccionMatriz', label: 'organization.taxinfo.direccionMatriz', type: 'input' },

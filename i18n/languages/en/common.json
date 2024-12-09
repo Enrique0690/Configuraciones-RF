@@ -1,6 +1,6 @@
 {
     "save": "Save",
-    "loading": "Loading...",
+    "loading": "Loading {{value}}...",
     "error": "Error",
     "uploadImage": "Upload Image",
     "loadError": "Error loading",
