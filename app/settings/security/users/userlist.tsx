@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 import { Colors } from '@/constants/Colors';
 
 interface User {
@@ -13,7 +13,7 @@ interface User {
 }
 
 const UserListScreen = () => {
-  const { dataContext, isLoading } = useConfig();
+  const { dataContext, isLoading } = useAppContext();
   const users: User[] = dataContext?.Configuracion.DATA['users'] || [];
   const router = useRouter();
   const { t } = useTranslation();

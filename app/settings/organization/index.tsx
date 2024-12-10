@@ -5,12 +5,12 @@ import DataRenderer from '@/components/DataRenderer';
 import { organizationConfig } from '@/constants/DataConfig/organization';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 import ImageUploader from '@/components/ImageUploader';
 
 const OrganizationScreen = () => {
   const { t } = useTranslation();
-  const { dataContext, isLoading } = useConfig();
+  const { dataContext, isLoading } = useAppContext();
   const { highlight } = useLocalSearchParams();
   if (isLoading) {
     return (

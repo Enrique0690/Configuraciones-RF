@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditModal';
 import { Colors } from '@/constants/Colors';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 
 interface StationData {
   stations: string[];
@@ -12,7 +12,7 @@ interface StationData {
 
 const OrderingStationsScreen = () => {
   const { t } = useTranslation();
-  const { dataContext, isLoading } = useConfig();
+  const { dataContext, isLoading } = useAppContext();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [newStation, setNewStation] = useState('');
   const stations: StationData['stations'] = dataContext?.Configuracion.DATA?.stations || [];

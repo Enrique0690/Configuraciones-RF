@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 import { useLocalSearchParams } from 'expo-router';
 import TabletConfiguration from '@/components/Table-layout/tablelayout';
 import DataRenderer from '@/components/DataRenderer';
@@ -10,7 +10,7 @@ import { TableConfig } from '@/constants/DataConfig/tablelayout';
 
 const TabletConfigurationScreen = () => {
   const { t } = useTranslation();
-  const { dataContext, isLoading } = useConfig();
+  const { dataContext, isLoading } = useAppContext();
   const { highlight } = useLocalSearchParams();
   const { Mesa_mostrarCliente, PedidoEnMesa_MostrarReloj, showCommercialName } = dataContext?.Configuracion.DATA || {};
   if (isLoading) {

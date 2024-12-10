@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator
 import UUID from 'react-native-uuid';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 import DataRenderer from '@/components/DataRenderer';
 import BluetoothModal from '@/components/Printersconnection/BluetoohModal';
 import EthernetModal from '@/components/Printersconnection/EthernetModal';
@@ -13,7 +13,7 @@ import Tooltip from '@/components/elements/tooltip';
 const NewPrinterScreen = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { dataContext, isLoading } = useConfig();
+  const { dataContext, isLoading } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [printerName, setPrinterName] = useState('');

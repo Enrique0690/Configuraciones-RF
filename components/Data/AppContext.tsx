@@ -42,10 +42,10 @@ export const ConfigProvider: React.FC<React.PropsWithChildren<ConfigProviderProp
   );
 };
 
-export const useConfig = () => {
+export const useAppContext = () => {
   const context = useContext(ConfigContext);
   if (!context) {
-    throw new Error("useConfig debe ser usado dentro de ConfigProvider");
+    throw new Error("appContext debe ser usado dentro de ConfigProvider");
   }
   return context;
 };

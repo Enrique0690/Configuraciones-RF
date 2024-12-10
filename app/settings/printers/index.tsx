@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 interface Printer {
   id: string;
   name: string;
@@ -16,7 +16,7 @@ interface Printer {
   noStation: boolean;
 }
 const PrintersListScreen = () => {
-  const { dataContext, isLoading } = useConfig();
+  const { dataContext, isLoading } = useAppContext();
   const printers: Printer[] = dataContext?.Configuracion.DATA['printers'] || [];
   const router = useRouter();
   const { t } = useTranslation();

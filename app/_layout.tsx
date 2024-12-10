@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
 import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
-import { ConfigProvider } from "@/components/Data/ConfigContext";
+import { ConfigProvider } from "@/components/Data/AppContext";
 import { routeTitles } from "@/constants/routetitles";
 import { menuconfig } from "@/constants/menuconfig";
 import MenuSection from "@/components/MenuComponents";

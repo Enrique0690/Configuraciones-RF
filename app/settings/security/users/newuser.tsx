@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 import { useRouter } from 'expo-router';
 import DataRenderer from '@/components/DataRenderer';
 
@@ -10,7 +10,7 @@ const NewUserScreen = () => {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const buttonColor = useThemeColor({}, 'buttonColor');
-  const { dataContext } = useConfig();
+  const { dataContext } = useAppContext();
   const router = useRouter();
 
   const [name, setName] = useState<string>('');

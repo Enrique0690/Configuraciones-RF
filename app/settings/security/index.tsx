@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 import { useTranslation } from 'react-i18next';
 import { securityConfig} from '@/constants/DataConfig/SecurityConfig';
 import DataRenderer from '@/components/DataRenderer';
@@ -12,7 +12,7 @@ const SecurityScreen = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { highlight } = useLocalSearchParams();
-  const { dataContext, isLoading } = useConfig();
+  const { dataContext, isLoading } = useAppContext();
 
   if (isLoading) {
     return (

@@ -6,13 +6,13 @@ import { useTranslation } from 'react-i18next';
 import DataRenderer from '@/components/DataRenderer';
 import PermissionsList from '@/components/security/rol/permissionslist';
 import { rolePermissions } from '@/constants/DataConfig/SecurityConfig';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 
 const NewRoleScreen = () => {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const buttonColor = useThemeColor({}, 'buttonColor');
-  const { dataContext } = useConfig();
+  const { dataContext } = useAppContext();
   const router = useRouter();
   const [name, setName] = useState<string>('');
   const [permissions, setPermissions] = useState<Record<string, Record<string, boolean>>>({});

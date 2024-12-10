@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 import { Colors } from '@/constants/Colors';
 
 interface Role {
@@ -12,7 +12,7 @@ interface Role {
 }
 
 const RoleListScreen = () => {
-  const { dataContext, isLoading } = useConfig();
+  const { dataContext, isLoading } = useAppContext();
   const roles: Role[] = dataContext?.Configuracion.DATA['roles'] || [];
   const router = useRouter();
   const { t } = useTranslation();

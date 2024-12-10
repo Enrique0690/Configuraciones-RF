@@ -5,11 +5,11 @@ import DataRenderer from '@/components/DataRenderer';
 import { infoTributariaConfig } from '@/constants/DataConfig/organization';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 
 const InfoTributaria= () => {
   const { t } = useTranslation();
-  const { dataContext, isLoading } = useConfig();
+  const { dataContext, isLoading } = useAppContext();
   const { highlight } = useLocalSearchParams();
   if (isLoading) {
     return (

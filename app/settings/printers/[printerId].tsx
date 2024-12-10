@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/components/Data/ConfigContext';
+import { useAppContext } from '@/components/Data/AppContext';
 import DataRenderer from '@/components/DataRenderer';
 import BluetoothModal from '@/components/Printersconnection/BluetoohModal';
 import EthernetModal from '@/components/Printersconnection/EthernetModal';
@@ -13,7 +13,7 @@ const EditPrinterScreen = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { printerId } = useLocalSearchParams();
-  const { dataContext, isLoading } = useConfig();
+  const { dataContext, isLoading } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [printerName, setPrinterName] = useState('');
