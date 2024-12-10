@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, BackHandler } from "react-native";
-import { Stack, useSegments } from "expo-router";
+import React from "react";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
 import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
 import { ConfigProvider } from "@/components/Data/ConfigContext";
 import { routeTitles } from "@/constants/routetitles";
-import { Ionicons } from '@expo/vector-icons';
 import { menuconfig } from "@/constants/menuconfig";
 import MenuSection from "@/components/MenuComponents";
 import { usehooksGlobals } from "@/hooks/globals";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useBackHandler } from "@/hooks/useBackHandler";
+import StackHeader from "@/components/navigation/StackHeader";
 
 export default function Layout() {
     const { t, router, isSmallScreen } = usehooksGlobals();
@@ -20,6 +20,7 @@ export default function Layout() {
     const { selectedRoute, isFullScreen, setIsFullScreen, handleNavigation, segments } = useNavigation(isSmallScreen);
     const routeConfig = routeTitles[selectedRoute as keyof typeof routeTitles] || { title: null };
     useBackHandler(isSmallScreen, isFullScreen, segments, () => setIsFullScreen(false));
+
     if (!selectedRoute) {
         return (
             <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
@@ -50,35 +51,12 @@ export default function Layout() {
                 )}
                 <View style={[styles.content, isFullScreen && styles.fullScreenContent]}>
                     <Stack
-                        screenOptions={{
-                            headerShown: !!routeConfig.title,
-                            contentStyle: { backgroundColor: "white" },
-                            header: () => (
-                                <View>
-                                    <View style={styles.headerContainer}>
-                                        <View style={styles.headerLeft}>
-                                            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                                                <Ionicons name="arrow-back" size={24} color={Colors.text} />
-                                            </TouchableOpacity>
-                                        </View>
-                                        <Text style={styles.headerTitle}>{t(routeConfig.title)}</Text>
-                                        {routeConfig.showAddButton && routeConfig.navigate && (
-                                            <TouchableOpacity
-                                                onPress={() => routeConfig.navigate!(router)}
-                                                style={styles.addButton}
-                                            >
-                                                <Ionicons name="add-circle-outline" size={28} color={Colors.text} />
-                                            </TouchableOpacity>
-                                        )}
-                                    </View>
-                                    {routeConfig.title !== "common.searchtitle" && isSmallScreen && (
-                                        <View style={styles.searchBarContainer}>
-                                            <SearchBar />
-                                        </View>
-                                    )}
-                                </View>
-                            ),
-                        }}
+                        screenOptions={StackHeader({
+                            routeConfig,
+                            isSmallScreen,
+                            t,
+                            router
+                        })}
                     />
                 </View>
             </View>
@@ -105,10 +83,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: Colors.text,
     },
-    menuItem: {
-        paddingHorizontal: 20,
-        fontSize: 16,
-    },
     content: {
         flex: 1,
         maxWidth: 900,
@@ -118,24 +92,8 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
-    section: {
-        paddingVertical: 10,
-    },
     searchBarContainer: {
         zIndex: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "white",
-        marginHorizontal: 16,
-        paddingVertical: 10,
-    },
-    activeMenuItem: {
-        backgroundColor: '#eaeaea',
-        borderRadius: 8,
-    },
-    menuItemText: {
-        fontSize: 16,
-        fontWeight: '600',
     },
     headerContainer: {
         flexDirection: "row",
