@@ -1,53 +1,25 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, BackHandler } from "react-native";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Stack, useSegments } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
 import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
-import { useTranslation } from "react-i18next";
 import { ConfigProvider } from "@/components/Data/ConfigContext";
 import { routeTitles } from "@/constants/routetitles";
 import { Ionicons } from '@expo/vector-icons';
 import { menuconfig } from "@/constants/menuconfig";
 import MenuSection from "@/components/MenuComponents";
-import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+import { usehooksGlobals } from "@/hooks/globals";
+import { useNavigation } from "@/hooks/useNavigation";
+import { useBackHandler } from "@/hooks/useBackHandler";
 
 export default function Layout() {
-    const { t } = useTranslation();
+    const { t, router, isSmallScreen } = usehooksGlobals();
     const insets = useSafeAreaInsets();
-    const router = useRouter();
-    const segments = useSegments();
-    const [isFullScreen, setIsFullScreen] = useState(false);
-    const [selectedRoute, setSelectedRoute] = useState('');
-    const isSmallScreen = useIsSmallScreen();
+    const { selectedRoute, isFullScreen, setIsFullScreen, handleNavigation, segments } = useNavigation(isSmallScreen);
     const routeConfig = routeTitles[selectedRoute as keyof typeof routeTitles] || { title: null };
-
-    const handleNavigation = useCallback((route: string) => {
-        router.push(route as any);
-        setIsFullScreen(true);
-        setSelectedRoute(route);
-    }, [router]);
-
-    useEffect(() => {
-        const currentRoute = `/${segments.join('/')}`;
-        setIsFullScreen(isSmallScreen && currentRoute !== '/');
-        setSelectedRoute(currentRoute);
-    }, [isSmallScreen, segments]);
-
-    useEffect(() => {
-        if (isSmallScreen && isFullScreen) {
-            const handleBackPress = () => {
-                if (Number(segments.length) === 0) {
-                    setIsFullScreen(false);
-                    return true;
-                }
-                return false;
-            };
-            BackHandler.addEventListener("hardwareBackPress", handleBackPress);
-            return () => BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
-        }
-    }, [isSmallScreen, isFullScreen, segments]);
+    useBackHandler(isSmallScreen, isFullScreen, segments, () => setIsFullScreen(false));
     if (!selectedRoute) {
         return (
             <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
@@ -55,7 +27,6 @@ export default function Layout() {
             </View>
         );
     }
-
     return (
         <ConfigProvider connectionName="RunFood">
             <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>

@@ -1,11 +1,12 @@
+// hooks/useNavigationHandler.ts
 import { useState, useEffect, useCallback } from "react";
-import { useRouter, useSegments } from "expo-router";
+import { useSegments, useRouter } from "expo-router";
 
-export const useNavigation = () => {
+export function useNavigation(isSmallScreen: boolean) {
     const router = useRouter();
     const segments = useSegments();
-    const [isFullScreen, setIsFullScreen] = useState(false);
     const [selectedRoute, setSelectedRoute] = useState('');
+    const [isFullScreen, setIsFullScreen] = useState(false);
 
     const handleNavigation = useCallback((route: string) => {
         router.push(route as any);
@@ -15,27 +16,9 @@ export const useNavigation = () => {
 
     useEffect(() => {
         const currentRoute = `/${segments.join('/')}`;
-        setIsFullScreen(window.innerWidth <= 768 && currentRoute !== '/');
+        setIsFullScreen(isSmallScreen && currentRoute !== '/');
         setSelectedRoute(currentRoute);
-    }, [segments]);
+    }, [isSmallScreen, segments]);
 
-    useEffect(() => {
-        if (window.innerWidth <= 768 && isFullScreen) {
-            const handleBackPress = () => {
-                if (Number(segments.length) === 0) {
-                    setIsFullScreen(false);
-                    return true;
-                }
-                return false;
-            };
-            window.addEventListener("hardwareBackPress", handleBackPress);
-            return () => window.removeEventListener("hardwareBackPress", handleBackPress);
-        }
-    }, [isFullScreen, segments]);
-
-    return {
-        isFullScreen,
-        selectedRoute,
-        handleNavigation,
-    };
-};
+    return { selectedRoute, isFullScreen, setIsFullScreen, handleNavigation, segments };
+}
