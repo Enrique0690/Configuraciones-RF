@@ -9,7 +9,7 @@ import useSearch from '@/hooks/useSearch';
 const ICON_COLOR = '#A1A1A1';
 const SEARCH_BAR_HEIGHT = 54;
 
-const SearchBar: React.FC = () => {
+const SearchBar= () => {
   const searchBarRef = useRef<View>(null);
   const scrollViewRef = useRef<ScrollView>(null);
   const router = useRouter();

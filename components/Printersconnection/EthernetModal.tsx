@@ -25,7 +25,7 @@ const isValidPort = (port: string): boolean => {
   return portNumber >= 1 && portNumber <= 65535;
 };
 
-const EthernetModal: React.FC<EthernetModalProps> = ({ visible, onSave, onClose, title }) => {
+const EthernetModal = ({ visible, onSave, onClose, title }: EthernetModalProps) => {
   const [ip, setIp] = useState<IpState>({
     octet1: '',
     octet2: '',

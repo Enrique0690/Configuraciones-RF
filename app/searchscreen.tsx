@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import useSearch from '@/hooks/useSearch';
 import { allConfigs } from '@/constants/DataConfig';
 
-const ScreenSearch: React.FC = () => {
+const ScreenSearch = () => {
   const { t } = useTranslation();
   const { query, setQuery, filteredResults } = useSearch(allConfigs);
   const flatResults = Object.values(filteredResults).flat();
@@ -97,8 +97,6 @@ const ScreenSearch: React.FC = () => {
   );
 };
 
-export default ScreenSearch;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -180,3 +178,5 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
+
+export default ScreenSearch;

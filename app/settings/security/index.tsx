@@ -8,7 +8,7 @@ import { securityConfig} from '@/constants/DataConfig/SecurityConfig';
 import DataRenderer from '@/components/DataRenderer';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
-const SecurityScreen: React.FC = () => {
+const SecurityScreen = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { highlight } = useLocalSearchParams();

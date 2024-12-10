@@ -12,7 +12,7 @@ interface User {
   color: string;
 }
 
-const UserListScreen: React.FC = () => {
+const UserListScreen = () => {
   const { dataContext, isLoading } = useConfig();
   const users: User[] = dataContext?.Configuracion.DATA['users'] || [];
   const router = useRouter();

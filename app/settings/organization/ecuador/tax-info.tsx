@@ -7,7 +7,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useConfig } from '@/components/Data/ConfigContext';
 
-const InfoTributaria: React.FC = () => {
+const InfoTributaria= () => {
   const { t } = useTranslation();
   const { dataContext, isLoading } = useConfig();
   const { highlight } = useLocalSearchParams();

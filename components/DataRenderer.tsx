@@ -17,7 +17,7 @@ interface DataRendererProps {
   highlight?: boolean;
   dataList?: string[]; 
 }
-const DataRenderer: React.FC<DataRendererProps> = ({label, value, type, onPress, textColor, iconName, onSave, highlight, dataList}) => {
+const DataRenderer= ({label, value, type, onPress, textColor, iconName, onSave, highlight, dataList}: DataRendererProps) => {
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [tempValue, setTempValue] = useState(value as string);
   const [switchValue, setSwitchValue] = useState(value as boolean);

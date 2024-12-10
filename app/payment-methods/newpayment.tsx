@@ -16,7 +16,7 @@ const iconOptions: IoniconName[] = [
   'pricetags-outline',
 ];
 
-const NewPaymentScreen: React.FC = () => {
+const NewPaymentScreen = () => {
   const { t } = useTranslation(); 
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');

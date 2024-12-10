@@ -9,7 +9,7 @@ type TabletConfigurationProps = {
   showCommercialName: boolean;
 };
 
-const TabletConfiguration: React.FC<TabletConfigurationProps> = ({ showUser, showTime, showCommercialName }) => {
+const TabletConfiguration = ({ showUser, showTime, showCommercialName } : TabletConfigurationProps) => {
   const { t } = useTranslation();
   return (
     <View style={styles.tableBox}>

@@ -6,7 +6,7 @@ import { useConfig } from '@/components/Data/ConfigContext';
 import { useRouter } from 'expo-router';
 import DataRenderer from '@/components/DataRenderer';
 
-const NewUserScreen: React.FC = () => {
+const NewUserScreen = () => {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const buttonColor = useThemeColor({}, 'buttonColor');

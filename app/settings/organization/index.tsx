@@ -65,14 +65,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingBottom: 16,
   },
-  searchBarContainer: {
-    display: Platform.select({ ios: 'flex', android: 'flex', default: 'none' }),
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

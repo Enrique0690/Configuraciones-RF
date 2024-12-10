@@ -8,7 +8,7 @@ import DataRenderer from '@/components/DataRenderer';
 import { Colors } from '@/constants/Colors';
 import { TableConfig } from '@/constants/DataConfig/tablelayout';
 
-const TabletConfigurationScreen: React.FC = () => {
+const TabletConfigurationScreen = () => {
   const { t } = useTranslation();
   const { dataContext, isLoading } = useConfig();
   const { highlight } = useLocalSearchParams();

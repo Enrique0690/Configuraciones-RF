@@ -7,7 +7,7 @@ import DataRenderer from '@/components/DataRenderer';
 import useStorage from '@/hooks/useStorage';
 import { Colors } from '@/constants/Colors';
 
-const EditUserScreen: React.FC = () => {
+const EditUserScreen = () => {
   const { t } = useTranslation();
   const { userId } = useLocalSearchParams();
   const [name, setName] = useState<string>('');

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 
-const AdvancedOptionsScreen: React.FC = () => {
+const AdvancedOptionsScreen = () => {
 
   return (
     <View style={[styles.container]}>

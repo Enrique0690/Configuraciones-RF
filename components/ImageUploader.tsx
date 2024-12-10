@@ -9,7 +9,7 @@ interface ImageUploaderProps {
     buttonText: string;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ initialUri, onSave, buttonText }) => {
+const ImageUploader = ({ initialUri, onSave, buttonText }: ImageUploaderProps) => {
     const [imageUri, setImageUri] = useState<string | null>(initialUri || null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

@@ -8,7 +8,7 @@ import PermissionsList from '@/components/security/rol/permissionslist';
 import { rolePermissions } from '@/constants/DataConfig/SecurityConfig';
 import { useConfig } from '@/components/Data/ConfigContext';
 
-const EditRoleScreen: React.FC = () => {
+const EditRoleScreen = () => {
   const { t } = useTranslation();
   const { rolId } = useLocalSearchParams();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');

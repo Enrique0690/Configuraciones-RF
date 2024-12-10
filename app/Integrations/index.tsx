@@ -5,7 +5,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import SearchBar from '@/components/navigation/SearchBar';
 import { useTranslation } from 'react-i18next';
 
-const IntegrationsScreen: React.FC = () => {
+const IntegrationsScreen= () => {
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const textColor = useThemeColor({}, 'textsecondary');
   const { t } = useTranslation();

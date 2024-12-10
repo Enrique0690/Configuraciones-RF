@@ -15,7 +15,7 @@ interface Printer {
   bar: boolean;
   noStation: boolean;
 }
-const PrintersListScreen: React.FC = () => {
+const PrintersListScreen = () => {
   const { dataContext, isLoading } = useConfig();
   const printers: Printer[] = dataContext?.Configuracion.DATA['printers'] || [];
   const router = useRouter();

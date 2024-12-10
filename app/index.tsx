@@ -3,7 +3,7 @@ import DataContext from '@/components/Data';
 import { Platform } from 'react-native';
 
 console.log(DataContext);
-const Index: React.FC = () => {
+const Index = () => {
   if (Platform.OS === "web") {
     // datos necesarios para compatibilidad con RunFood
     localStorage["RunFood"] = "https://ec-s1.runfoodapp.com/apps/demo-digital-mind/api/v1";

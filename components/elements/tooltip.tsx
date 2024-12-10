@@ -7,7 +7,7 @@ interface TooltipProps {
   onClose: () => void;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ text, visible, onClose }) => {
+const Tooltip = ({ text, visible, onClose }: TooltipProps) => {
   return (
     <Modal
       transparent={true} 

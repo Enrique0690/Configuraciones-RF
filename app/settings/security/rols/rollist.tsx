@@ -11,7 +11,7 @@ interface Role {
   permissions: string[];
 }
 
-const RoleListScreen: React.FC = () => {
+const RoleListScreen = () => {
   const { dataContext, isLoading } = useConfig();
   const roles: Role[] = dataContext?.Configuracion.DATA['roles'] || [];
   const router = useRouter();

@@ -14,7 +14,7 @@ type PaymentMethod = {
   isActive: boolean;
 };
 
-const PaymentMethodsScreen: React.FC = () => {
+const PaymentMethodsScreen= () => {
   const { t } = useTranslation(); 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(false); 

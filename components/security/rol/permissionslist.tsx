@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-const Checkbox: React.FC<{ value: boolean, onChange: (newValue: boolean) => void }> = ({ value, onChange }) => (
+const Checkbox = ({ value, onChange }: { value: boolean, onChange: (value: boolean) => void }) => (
   <TouchableOpacity onPress={() => onChange(!value)} style={styles.checkbox}>
     {value && <Text style={styles.checkboxIcon}>✔️</Text>}
   </TouchableOpacity>
@@ -17,14 +17,7 @@ interface PermissionsListProps {
   onCategoryChange: (category: string) => void;
 }
 
-const PermissionsList: React.FC<PermissionsListProps> = ({
-  rolePermissions,
-  permissions,
-  activeCategory,
-  updatePermission,
-  updateCategoryPermissions,
-  onCategoryChange,
-}) => {
+const PermissionsList = ({ rolePermissions, permissions, activeCategory, updatePermission, updateCategoryPermissions, onCategoryChange }: PermissionsListProps) => {
   const { t } = useTranslation();
 
   return (

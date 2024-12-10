@@ -8,7 +8,7 @@ import PermissionsList from '@/components/security/rol/permissionslist';
 import { rolePermissions } from '@/constants/DataConfig/SecurityConfig';
 import { useConfig } from '@/components/Data/ConfigContext';
 
-const NewRoleScreen: React.FC = () => {
+const NewRoleScreen = () => {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'backgroundsecondary');
   const buttonColor = useThemeColor({}, 'buttonColor');

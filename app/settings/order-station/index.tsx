@@ -10,7 +10,7 @@ interface StationData {
   stations: string[];
 }
 
-const OrderingStationsScreen: React.FC = () => {
+const OrderingStationsScreen = () => {
   const { t } = useTranslation();
   const { dataContext, isLoading } = useConfig();
   const [dialogVisible, setDialogVisible] = useState(false);

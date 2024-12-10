@@ -10,7 +10,7 @@ type EditDialogProps = {
   title: string;
 };
 
-const EditDialog: React.FC<EditDialogProps> = ({ visible, value, onChangeText, onSave, onClose, title, }) => {
+const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title }: EditDialogProps) => {
   const inputRef = useRef<TextInput>(null);
   useEffect(() => {
     const handleBackPress = () => {

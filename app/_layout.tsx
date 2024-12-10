@@ -50,14 +50,7 @@ export default function Layout() {
                     </View>
                 )}
                 <View style={[styles.content, isFullScreen && styles.fullScreenContent]}>
-                    <Stack
-                        screenOptions={StackHeader({
-                            routeConfig,
-                            isSmallScreen,
-                            t,
-                            router
-                        })}
-                    />
+                    <Stack screenOptions={StackHeader({ routeConfig, isSmallScreen, t, router })} />
                 </View>
             </View>
         </ConfigProvider>
@@ -94,31 +87,5 @@ const styles = StyleSheet.create({
     },
     searchBarContainer: {
         zIndex: 10,
-    },
-    headerContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        backgroundColor: "white",
-        borderBottomWidth: 1,
-        borderBottomColor: "#ccc",
-    },
-    headerLeft: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    backButton: {
-        padding: 5,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        flex: 1,
-        textAlign: "center",
-    },
-    addButton: {
-        marginRight: 10,
     },
 });
