@@ -161,6 +161,7 @@ const DataRenderer= ({label, value, type, textColor, iconName, onSave, highlight
   return (
     <View style={[styles.inputGroup, isHighlighted && styles.highlightedContainer]}>
       {renderContent()}
+      {errorMessage && type !== 'input' && type !== 'text' && <Text style={styles.errorText}>{errorMessage}</Text>}
       {isDialogVisible && (
         <EditDialog
           visible={isDialogVisible}

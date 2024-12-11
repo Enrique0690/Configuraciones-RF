@@ -29,7 +29,7 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
   }, [visible, value]);
   useEffect(() => {
     const handleBackPress = () => {
-      if (visible) {
+      if (visible && !isLoading) {
         onClose();
         return true;
       }
@@ -46,15 +46,7 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
         BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
       }
     };
-  }, [visible, onClose]);
-  const handleKeyPress = (event: any) => {
-    if (event.nativeEvent.key === 'Enter') {
-      handleSave();
-    }
-    if (event.nativeEvent.key === 'Escape') {
-      onClose();
-    }
-  };
+  }, [visible, onClose, isLoading]);
   const validateInput = (): boolean => {
     if (!validation) return true;
     for (const rule of validation) {
@@ -70,11 +62,17 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
     setError(null);
     return true;
   };
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (isLoading && event.key === 'Escape') {
+      event.preventDefault();
+    }
+  };
   const handleSave = () => {
     if (validateInput()) {
       onSave();
     }
-  }
+  };
+
   const handleInputChange = (text: string) => {
     setError(null);
     if (!validation) {
@@ -89,14 +87,10 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
     }
     onChangeText(filteredText);
   };
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); onClose(); }}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={() => { if (!isLoading) { onClose(); } }}>
+      <TouchableWithoutFeedback onPress={() => { if (!isLoading) { Keyboard.dismiss(); onClose(); } }}>
         <View style={styles.modalContainer}>
           <TouchableWithoutFeedback>
             <View style={styles.dialog}>
@@ -107,26 +101,25 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
                 </View>
               )}
               {isLoading ? (
-                <ActivityIndicator size="small" color="#09b048"/>
+                <ActivityIndicator size="small" color="#09b048" />
               ) : (
-              <TextInput
-                ref={inputRef}
-                style={styles.input}
-                value={value}
-                onChangeText={handleInputChange}
-                onKeyPress={handleKeyPress}
-                onSubmitEditing={handleSave}
-                autoFocus
-                placeholder="Escribe aquí..."
-                placeholderTextColor="#999"
-                keyboardType={validation?.includes('phone') ? 'phone-pad' : validation?.includes('number') ? 'numeric' : 'default'}
-              />
-            )}
+                <TextInput
+                  ref={inputRef}
+                  style={styles.input}
+                  value={value}
+                  onChangeText={handleInputChange}
+                  onSubmitEditing={handleSave}
+                  autoFocus
+                  placeholder="Escribe aquí..."
+                  placeholderTextColor="#999"
+                  keyboardType={validation?.includes('phone') ? 'phone-pad' : validation?.includes('number') ? 'numeric' : 'default'}
+                />
+              )}
               <View style={styles.buttonContainer}>
-                <TouchableOpacity onPress={onClose} style={styles.button}>
+                <TouchableOpacity onPress={() => { if (!isLoading) onClose(); }} style={[styles.button, isLoading && styles.buttonDisabled]}>
                   <Text style={styles.buttonTextCancel}>Cancelar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSave} style={styles.button}>
+                <TouchableOpacity onPress={handleSave} style={[styles.button, isLoading && styles.buttonDisabled]}>
                   <Text style={styles.buttonTextSave}>Guardar</Text>
                 </TouchableOpacity>
               </View>
@@ -193,11 +186,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   errorContainer: {
-  marginBottom: 10,
+    marginBottom: 10,
     padding: 10,
     backgroundColor: '#FFDDDD',
     borderRadius: 5,
-  }
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
 });
 
 export default EditDialog;
