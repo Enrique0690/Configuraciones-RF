@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { validationRules } from '@/constants/validationRules';
 
 type EditDialogProps = {
   visible: boolean;
@@ -8,10 +9,12 @@ type EditDialogProps = {
   onSave: () => void;
   onClose: () => void;
   title: string;
+  validation?: string[];
 };
 
-const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title }: EditDialogProps) => {
+const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, validation }: EditDialogProps) => {
   const inputRef = useRef<TextInput>(null);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     const handleBackPress = () => {
       if (visible) {
@@ -34,11 +37,45 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title }: Ed
   }, [visible, onClose]);
   const handleKeyPress = (event: any) => {
     if (event.nativeEvent.key === 'Enter') {
-      onSave();
+      handleSave();
     }
     if (event.nativeEvent.key === 'Escape') {
       onClose();
     }
+  };
+  const validateInput = (): boolean => {
+    if (!validation) return true;
+    for (const rule of validation) {
+      const validateRule = validationRules[rule];
+      if (validateRule) {
+        const error = validateRule(value);
+        if (error) {
+          setError(error);
+          return false;
+        }
+      }
+    }
+    setError(null);
+    return true;
+  };
+  const handleSave = () => {
+    if (validateInput()) {
+      onSave();
+    }
+  }
+  const handleInputChange = (text: string) => {
+    setError(null);
+    if (!validation) {
+      onChangeText(text);
+      return;
+    }
+    let filteredText = text;
+    for (const rule of validation) {
+      if (rule === 'text') filteredText = filteredText.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+      if (rule === 'number') filteredText = filteredText.replace(/[^0-9\-]/g, '');
+      if (rule === 'phone') filteredText = filteredText.replace(/[^0-9\+\-\(\)\s]/g, '');
+    }
+    onChangeText(filteredText);
   };
   return (
     <Modal
@@ -52,22 +89,24 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title }: Ed
           <TouchableWithoutFeedback>
             <View style={styles.dialog}>
               <Text style={styles.title}>{title}</Text>
+              {error && <Text style={styles.errorText}>{error}</Text>}
               <TextInput
                 ref={inputRef}
                 style={styles.input}
                 value={value}
-                onChangeText={onChangeText}
+                onChangeText={handleInputChange}
                 onKeyPress={handleKeyPress}
-                onSubmitEditing={onSave} // Manejador para "Enter" en móviles
+                onSubmitEditing={handleSave} 
                 autoFocus
                 placeholder="Escribe aquí..."
                 placeholderTextColor="#999"
+                keyboardType={validation?.includes('phone') ? 'phone-pad' : validation?.includes('number') ? 'numeric' : 'default'} 
               />
               <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={onClose} style={styles.button}>
                   <Text style={styles.buttonTextCancel}>Cancelar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={onSave} style={styles.button}>
+                <TouchableOpacity onPress={handleSave} style={styles.button}>
                   <Text style={styles.buttonTextSave}>Guardar</Text>
                 </TouchableOpacity>
               </View>
@@ -128,6 +167,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#007AFF',
     fontWeight: '600',
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
   },
 });
 

@@ -25,7 +25,7 @@ const OrganizationScreen = () => {
           }}
           buttonText={t('common.uploadImage')}
         />
-        {organizationConfig.map(({ label, id, type, list }) => (
+        {organizationConfig.map(({ label, id, type, list, validation }) => (
           <DataRenderer
             key={id}
             label={t(label)}
@@ -37,6 +37,7 @@ const OrganizationScreen = () => {
             textColor={Colors.text}
             dataList={list}
             highlight={highlight === id}
+            validation={validation}
           />
         ))}
         <DataRenderer

@@ -16,8 +16,9 @@ interface DataRendererProps {
   onSave?: (value: string | boolean) => void; 
   highlight?: boolean;
   dataList?: string[]; 
+  validation?: string[];
 }
-const DataRenderer= ({label, value, type, onPress, textColor, iconName, onSave, highlight, dataList}: DataRendererProps) => {
+const DataRenderer= ({label, value, type, textColor, iconName, onSave, highlight, dataList, validation}: DataRendererProps) => {
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [tempValue, setTempValue] = useState(value as string);
   const [switchValue, setSwitchValue] = useState(value as boolean);
@@ -169,7 +170,8 @@ const DataRenderer= ({label, value, type, onPress, textColor, iconName, onSave, 
           onChangeText={setTempValue}
           onSave={handleSave}
           onClose={() => setDialogVisible(false)}
-          title={label}
+          title={type === 'text' ? interpolatedLabel : label}
+          validation={validation}
         />
       )}
       {isListModalVisible && dataList && (
