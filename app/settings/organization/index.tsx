@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import DataRenderer from '@/components/DataRenderer';
 import { organizationConfig } from '@/constants/DataConfig/organization';
@@ -7,19 +7,14 @@ import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useAppContext } from '@/components/Data/AppContext';
 import ImageUploader from '@/components/ImageUploader';
+import { LoadingErrorState } from '@/components/Data/LoadingErrorState';
 
 const OrganizationScreen = () => {
   const { t } = useTranslation();
-  const { dataContext, isLoading } = useAppContext();
+  const { dataContext, isLoading, error } = useAppContext();
   const { highlight } = useLocalSearchParams();
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('common.loading', { value: t('organization.header') })}</Text>
-      </View>
-    );
-  }
+  const loadingErrorState = <LoadingErrorState isLoading={isLoading} error={error} />;
+  if (isLoading || error) return loadingErrorState;
   return (
     <View style={[styles.container]}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -64,16 +59,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#4CAF50',
   },
 });
 

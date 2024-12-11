@@ -1,11 +1,11 @@
-import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import React, { useMemo } from "react";
+import { View, Text, ScrollView, StyleSheet} from "react-native";
 import { Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
 import SearchBar from '@/components/navigation/SearchBar';
 import '@/i18n';
-import { ConfigProvider } from "@/components/Data/AppContext";
+import { AppProvider, useAppContext } from "@/components/Data/AppContext";
 import { routeTitles } from "@/constants/routetitles";
 import { menuconfig } from "@/constants/menuconfig";
 import MenuSection from "@/components/MenuComponents";
@@ -13,47 +13,49 @@ import { usehooksGlobals } from "@/hooks/globals";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useBackHandler } from "@/hooks/useBackHandler";
 import StackHeader from "@/components/navigation/StackHeader";
+import { LoadingErrorState } from "@/components/Data/LoadingErrorState";
 
-export default function Layout() {
+function LayoutContent() {
     const { t, router, isSmallScreen } = usehooksGlobals();
     const insets = useSafeAreaInsets();
     const { selectedRoute, isFullScreen, setIsFullScreen, handleNavigation, segments } = useNavigation(isSmallScreen);
-    const routeConfig = routeTitles[selectedRoute as keyof typeof routeTitles] || { title: null };
+    const routeConfig = useMemo(() => routeTitles[selectedRoute as keyof typeof routeTitles] || { title: null }, [selectedRoute]);
     useBackHandler(isSmallScreen, isFullScreen, segments, () => setIsFullScreen(false));
-
-    if (!selectedRoute) {
-        return (
-            <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-                <View style={[styles.sidebarLoading, { width: isSmallScreen ? '100%' : 300 }]} />
-            </View>
-        );
-    }
+    const { isLoading, error } = useAppContext();
+    const loadingErrorState = <LoadingErrorState isLoading={isLoading} error={error}/>;
+    if (isLoading || error) return loadingErrorState;
     return (
-        <ConfigProvider connectionName="RunFood">
-            <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-                {(!isFullScreen || !isSmallScreen) && (
-                    <View style={[styles.sidebar, { width: isSmallScreen ? '100%' : 300 }]}>
-                        <Text style={styles.header}>{t("layout.header")}</Text>
-                        <View style={styles.searchBarContainer}>
-                            <SearchBar />
-                        </View>
-                        <ScrollView>
-                            {menuconfig.map((group, index) => (
-                                <MenuSection
-                                    key={index}
-                                    items={group}
-                                    onItemPress={handleNavigation}
-                                    selectedRoute={selectedRoute}
-                                />
-                            ))}
-                        </ScrollView>
+        <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+            {(!isFullScreen || !isSmallScreen) && (
+                <View style={[styles.sidebar, { width: isSmallScreen ? '100%' : 300 }]}>
+                    <Text style={styles.header}>{t("layout.header")}</Text>
+                    <View style={styles.searchBarContainer}>
+                        <SearchBar />
                     </View>
-                )}
-                <View style={[styles.content, isFullScreen && styles.fullScreenContent]}>
-                    <Stack screenOptions={StackHeader({ routeConfig, isSmallScreen, t, router })} />
+                    <ScrollView>
+                        {menuconfig.map((group, index) => (
+                            <MenuSection
+                                key={index}
+                                items={group}
+                                onItemPress={handleNavigation}
+                                selectedRoute={selectedRoute}
+                            />
+                        ))}
+                    </ScrollView>
                 </View>
+            )}
+            <View style={[styles.content, isFullScreen && styles.fullScreenContent]}>
+                <Stack screenOptions={StackHeader({ routeConfig, isSmallScreen, t, router })} />
             </View>
-        </ConfigProvider>
+        </View>
+    );
+}
+
+export default function Layout() {
+    return (
+        <AppProvider connectionName="RunFood">
+            <LayoutContent />
+        </AppProvider>
     );
 }
 
@@ -64,10 +66,6 @@ const styles = StyleSheet.create({
     },
     sidebar: {
         padding: 16,
-    },
-    sidebarLoading: {
-        height: '100%',
-        backgroundColor: '#fff',
     },
     header: {
         fontSize: 24,
@@ -87,5 +85,5 @@ const styles = StyleSheet.create({
     },
     searchBarContainer: {
         zIndex: 10,
-    },
+    }
 });

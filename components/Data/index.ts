@@ -27,27 +27,34 @@ class ConfiguracionEntity {
         return this.DATA;
     }
     async download() {
-        const url = new URL(this.config.base_url);
-        if (url.pathname.endsWith("/")) {
-            let x = Array.from(url.pathname);
-            x.pop();
-            url.pathname = x.join("");
-        }
-        url.pathname += "/LOCAL_NETWORK/CONFIGURACION/Fetch";
-        const response = await fetch(url.toJSON()
-            , {
-                mode: "cors"
-                , body: JSON.stringify({
-                    tablet: this.TabletParams()
-                })
-                , method: "POST"
+        try {
+            const url = new URL(this.config.base_url);
+            if (url.pathname.endsWith("/")) {
+                let x = Array.from(url.pathname);
+                x.pop();
+                url.pathname = x.join("");
             }
-        );
-        const data = await response.json();
-        this.DATA = data;
-        await this.store("deviceID", "tmp-" + new Date().valueOf());
-        return this.DATA;
+            url.pathname += "/LOCAL_NETWORK/CONFIGURACION/Fetch";
+            const response = await fetch(url.toJSON(), {
+                mode: "cors",
+                body: JSON.stringify({
+                    tablet: this.TabletParams()
+                }),
+                method: "POST"
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            this.DATA = data;
+            await this.store("deviceID", "tmp-" + new Date().valueOf());
+            return this.DATA;
+        } catch (error: any) {
+            console.error("Error during download:", error);
+            throw new Error(`Failed to download data: ${error.message}`);
+        }
     }
+    
     async Set(key: string, value: any, scope?: "EMPRESA" | "ESTABLECIMIENTO" | "DISPOSITIVO") {
         if (Platform.OS != "web") return {};
         const url = new URL(this.config.base_url);
