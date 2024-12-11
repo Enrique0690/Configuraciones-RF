@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import EditDialog from '@/components/modals/EditModal';
+import EditDialog from '@/components/modals/EditDialog';
 import { Colors } from '@/constants/Colors';
 import { useAppContext } from '@/components/Data/AppContext';
 

@@ -1,5 +1,5 @@
-import React, { useEffect, useState,useRef } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler, Platform, TouchableWithoutFeedback, Keyboard, ActivityIndicator } from 'react-native';
 import { validationRules } from '@/constants/validationRules';
 
 type EditDialogProps = {
@@ -10,11 +10,23 @@ type EditDialogProps = {
   onClose: () => void;
   title: string;
   validation?: string[];
+  isLoading: boolean;
+  errorMessage: string | null;
 };
 
-const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, validation }: EditDialogProps) => {
+const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, validation, isLoading, errorMessage }: EditDialogProps) => {
   const inputRef = useRef<TextInput>(null);
+  const [inputValue, setInputValue] = useState(value);
   const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    setError(errorMessage);
+  }, [errorMessage]);
+  useEffect(() => {
+    if (visible) {
+      setError(null);
+      setInputValue(value);
+    }
+  }, [visible, value]);
   useEffect(() => {
     const handleBackPress = () => {
       if (visible) {
@@ -89,19 +101,27 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
           <TouchableWithoutFeedback>
             <View style={styles.dialog}>
               <Text style={styles.title}>{title}</Text>
-              {error && <Text style={styles.errorText}>{error}</Text>}
+              {error && (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              )}
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#09b048"/>
+              ) : (
               <TextInput
                 ref={inputRef}
                 style={styles.input}
                 value={value}
                 onChangeText={handleInputChange}
                 onKeyPress={handleKeyPress}
-                onSubmitEditing={handleSave} 
+                onSubmitEditing={handleSave}
                 autoFocus
                 placeholder="Escribe aquí..."
                 placeholderTextColor="#999"
-                keyboardType={validation?.includes('phone') ? 'phone-pad' : validation?.includes('number') ? 'numeric' : 'default'} 
+                keyboardType={validation?.includes('phone') ? 'phone-pad' : validation?.includes('number') ? 'numeric' : 'default'}
               />
+            )}
               <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={onClose} style={styles.button}>
                   <Text style={styles.buttonTextCancel}>Cancelar</Text>
@@ -172,6 +192,12 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 10,
   },
+  errorContainer: {
+  marginBottom: 10,
+    padding: 10,
+    backgroundColor: '#FFDDDD',
+    borderRadius: 5,
+  }
 });
 
 export default EditDialog;

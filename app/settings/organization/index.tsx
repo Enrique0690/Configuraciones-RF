@@ -42,7 +42,7 @@ const OrganizationScreen = () => {
         ))}
         <DataRenderer
           label={t('organization.taxinfo.header')}
-          value="/organization/ecuador/tax-info"
+          value="/settings/organization/ecuador/tax-info"
           type="buttonlist"
           iconName="document-text"
           textColor={Colors.text}

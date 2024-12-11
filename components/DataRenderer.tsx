@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Switch, StyleSheet, useWindowDimensions, Platform, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import EditDialog from '@/components/modals/EditModal';  
+import EditDialog from '@/components/modals/EditDialog';  
 import ListModal from './modals/ListModal';
 import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -57,7 +57,6 @@ const DataRenderer= ({label, value, type, textColor, iconName, onSave, highlight
     setIsLoading(true);
     setErrorMessage(null); 
     try {
-      setDialogVisible(false);
       await onSave?.(tempValue);
     } catch (error: any) {
       setErrorMessage(error.message);
@@ -162,7 +161,6 @@ const DataRenderer= ({label, value, type, textColor, iconName, onSave, highlight
   return (
     <View style={[styles.inputGroup, isHighlighted && styles.highlightedContainer]}>
       {renderContent()}
-      {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
       {isDialogVisible && (
         <EditDialog
           visible={isDialogVisible}
@@ -172,6 +170,8 @@ const DataRenderer= ({label, value, type, textColor, iconName, onSave, highlight
           onClose={() => setDialogVisible(false)}
           title={type === 'text' ? interpolatedLabel : label}
           validation={validation}
+          isLoading={isLoading}
+          errorMessage={errorMessage}
         />
       )}
       {isListModalVisible && dataList && (
