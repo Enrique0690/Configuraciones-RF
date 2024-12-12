@@ -5,23 +5,27 @@ import DataRenderer from '@/components/DataRenderer';
 import { organizationConfig } from '@/constants/DataConfig/organization';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
-import { useAppContext } from '@/components/Data/AppContext';
 import ImageUploader from '@/components/ImageUploader';
 import { LoadingErrorState } from '@/components/Data/LoadingErrorState';
+import { useFetch } from '@/hooks/useFetch';
+
+const fetchOrganizationData = async (dataContext: any) => {
+  await dataContext.Configuracion.download();
+  return dataContext.Configuracion.DATA;
+};
 
 const OrganizationScreen = () => {
   const { t } = useTranslation();
-  const { dataContext, isLoading, error } = useAppContext();
   const { highlight } = useLocalSearchParams();
-  const loadingErrorState = <LoadingErrorState isLoading={isLoading} error={error} />;
-  if (isLoading || error) return loadingErrorState;
+  const { data, isLoading, error } = useFetch(fetchOrganizationData);
+  if (isLoading || error) return <LoadingErrorState isLoading={isLoading} error={error} />;
   return (
-    <View style={[styles.container]}>
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <ImageUploader
-          initialUri={dataContext?.Configuracion.DATA?.imageUrl}
+          initialUri={data?.imageUrl} 
           onSave={async (uri) => {
-            await dataContext?.Configuracion.Set('imageUrl', uri);
+            await data?.Configuracion.Set('imageUrl', uri);
           }}
           buttonText={t('common.uploadImage')}
         />
@@ -29,10 +33,10 @@ const OrganizationScreen = () => {
           <DataRenderer
             key={id}
             label={t(label)}
-            value={dataContext?.Configuracion.DATA[id]}
+            value={data?.[id]} 
             type={type}
             onSave={async (newValue) => {
-              await dataContext?.Configuracion.Set(id, newValue);
+              await data?.Configuracion.Set(id, newValue);
             }}
             textColor={Colors.text}
             dataList={list}
