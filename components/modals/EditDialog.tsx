@@ -26,7 +26,7 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
       setError(null);
       setInputValue(value);
     }
-  }, [visible, value]);
+  }, [visible]);
   useEffect(() => {
     const handleBackPress = () => {
       if (visible && !isLoading) {
@@ -62,11 +62,6 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
     setError(null);
     return true;
   };
-  const handleKeyPress = (event: KeyboardEvent) => {
-    if (isLoading && event.key === 'Escape') {
-      event.preventDefault();
-    }
-  };
   const handleSave = () => {
     if (validateInput()) {
       onSave();
@@ -74,7 +69,6 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
   };
 
   const handleInputChange = (text: string) => {
-    setError(null);
     if (!validation) {
       onChangeText(text);
       return;
@@ -95,11 +89,6 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
           <TouchableWithoutFeedback>
             <View style={styles.dialog}>
               <Text style={styles.title}>{title}</Text>
-              {error && (
-                <View style={styles.errorContainer}>
-                  <Text style={styles.errorText}>{error}</Text>
-                </View>
-              )}
               {isLoading ? (
                 <ActivityIndicator size="small" color="#09b048" />
               ) : (
@@ -114,6 +103,11 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
                   placeholderTextColor="#999"
                   keyboardType={validation?.includes('phone') ? 'phone-pad' : validation?.includes('number') ? 'numeric' : 'default'}
                 />
+              )}
+              {error && (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
               )}
               <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={() => { if (!isLoading) onClose(); }} style={[styles.button, isLoading && styles.buttonDisabled]}>
@@ -166,7 +160,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
   },
   button: {
     padding: 10,
@@ -183,10 +176,9 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    marginBottom: 10,
   },
   errorContainer: {
-    marginBottom: 10,
+    marginTop: 10,
     padding: 10,
     backgroundColor: '#FFDDDD',
     borderRadius: 5,

@@ -1,7 +1,7 @@
 {
     "header": "Configuraciones",
     "categorys": {
-        "businessInfo": "👁️ Información del Negocio",
+        "businessInfo": "👁️ Información General",
         "printers": "🖨️ Impresoras",
         "paymentMethods": " Métodos de Pago",
         "integrations": "Integraciones con otras Apps",
