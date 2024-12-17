@@ -1,48 +1,38 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import EditDialog from '@/components/modals/EditDialog';
 import { Colors } from '@/constants/Colors';
-import { useAppContext } from '@/components/Data/AppContext';
+import withDataFetch from '@/components/HOC/withDataFetch';
+import { useEditManager } from '@/hooks/useEditManager';
 
 interface StationData {
+  Configuracion: any;
   stations: string[];
 }
 
-const OrderingStationsScreen = () => {
+const OrderingStationsScreen = ({ data }: { data: StationData }) => {
   const { t } = useTranslation();
-  const { dataContext, isLoading } = useAppContext();
-  const [dialogVisible, setDialogVisible] = useState(false);
-  const [newStation, setNewStation] = useState('');
-  const stations: StationData['stations'] = dataContext?.Configuracion.DATA?.stations || [];
-  const handleAddStation = () => {
-    if (newStation.trim()) {
-      const updatedStations = [...stations, newStation];
-      dataContext?.Configuracion.Set('stations', updatedStations);
-      setNewStation('');
-      setDialogVisible(false);
-    }
-  };
-
+  const stations = data?.stations || [];
+  const { isDialogVisible, tempValue: newStation, setTempValue: setNewStation, isLoading, errorMessage,
+    openDialog, closeDialog, handleSave, } = useEditManager('',
+      async (station) => {
+        if (!station.trim()) {
+          throw new Error(t('common.fieldCannotBeEmpty'));
+        }
+        const updatedStations = [...stations, station];
+        await data?.Configuracion.Set('stations', updatedStations);
+      }
+    );
   const handleDeleteStation = (index: number) => {
     const updatedStations = stations.filter((_, i) => i !== index);
-    dataContext?.Configuracion.Set('stations', updatedStations);
+    data?.Configuracion.Set('stations', updatedStations);
   };
-
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>{t('common.loading', { value: t('stations.header') })}</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={[styles.container]}>
       <View style={styles.descriptionBox}>
-        <TouchableOpacity style={styles.addButton} onPress={() => setDialogVisible(true)}>
+        <TouchableOpacity style={styles.addButton} onPress={openDialog}>
           <Ionicons name="add-circle-outline" size={28} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.imagePlaceholder} />
@@ -54,7 +44,7 @@ const OrderingStationsScreen = () => {
         </Text>
       </View>
       {stations.length === 0 ? (
-        <TouchableOpacity onPress={() => setDialogVisible(true)} style={styles.noStationsContainer}>
+        <TouchableOpacity onPress={openDialog} style={styles.noStationsContainer}>
           <Text style={[styles.noStationsText, { color: Colors.text }]}>
             {t('stations.noStations')}
           </Text>
@@ -72,12 +62,14 @@ const OrderingStationsScreen = () => {
         </ScrollView>
       )}
       <EditDialog
-        visible={dialogVisible}
+        visible={isDialogVisible}
         value={newStation}
         onChangeText={setNewStation}
-        onSave={handleAddStation}
-        onClose={() => setDialogVisible(false)}
+        onSave={handleSave}
+        onClose={closeDialog}
         title={t('stations.addStationTitle')}
+        errorMessage={errorMessage}
+        isLoading={isLoading}
       />
     </View>
   );
@@ -91,24 +83,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 16,
-  },
-  searchBarContainer: {
-    marginBottom: 20,
-    display: Platform.select({
-      ios: 'flex',
-      android: 'flex',
-      default: 'none',
-    }),
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
   },
   addButton: {
     position: 'absolute',
@@ -146,16 +120,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#4CAF50',
-  },
   noStationsContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -170,4 +134,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OrderingStationsScreen;
+const fetchOrderStationsData = async (dataContext: any) => {
+  if (!dataContext?.Configuracion?.download) throw new Error('El método download no está disponible en Configuracion');
+  await dataContext.Configuracion.download();
+  return dataContext.Configuracion.DATA;
+};
+
+export default withDataFetch(OrderingStationsScreen, fetchOrderStationsData);

@@ -4,7 +4,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '@/components/Data/AppContext';
 import { useRouter } from 'expo-router';
-import DataRenderer from '@/components/DataRenderer';
+import DataRenderer from '@/components/Renders/EditableFieldRow';
 
 const NewUserScreen = () => {
   const { t } = useTranslation();

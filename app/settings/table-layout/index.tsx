@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppContext } from '@/components/Data/AppContext';
 import { useLocalSearchParams } from 'expo-router';
 import TabletConfiguration from '@/components/Table-layout/tablelayout';
-import DataRenderer from '@/components/DataRenderer';
+import DataRenderer from '@/components/Renders/EditableFieldRow';
 import { Colors } from '@/constants/Colors';
 import { TableConfig } from '@/constants/DataConfig/tablelayout';
 

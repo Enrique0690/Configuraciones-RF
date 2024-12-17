@@ -5,7 +5,7 @@ function withGlobalRoute<T>(config: T[], route: string, category?: string): (T &
 type FieldConfig = {
   id:  string;
   label: string;
-  type: 'text' | 'image' | 'input' | 'inputlist' | 'switch';
+  type: 'inputinterpolation' | 'input' | 'inputlist' | 'switch';
   route?: string;
   imageUrl?: string | null;
   list?: string[];

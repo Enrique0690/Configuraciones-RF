@@ -2,16 +2,7 @@ import React, { ComponentType, useEffect, useState } from 'react';
 import { LoadingErrorState } from '@/components/Data/LoadingErrorState';
 import { useAppContext } from '@/components/Data/AppContext';
 
-const fetchData = async (dataContext: any, downloadMethod: string) => {
-  if (dataContext?.Configuracion?.[downloadMethod]) {
-    await dataContext.Configuracion[downloadMethod]();
-  } else {
-    throw new Error(`El método ${downloadMethod} no existe en Configuracion`);
-  }
-  return dataContext.Configuracion.DATA;
-};
-
-function withDataFetch<T>(WrappedComponent: ComponentType<T & { data: any }>, fetchMethod: string) {
+function withDataFetch<T>(WrappedComponent: ComponentType<T & { data: any }>, fetchMethod: (dataContext: any) => Promise<any>) {
   return function WithDataFetchWrapper(props: T) {
     const { dataContext } = useAppContext();
     const [data, setData] = useState<any>(null);
@@ -23,7 +14,7 @@ function withDataFetch<T>(WrappedComponent: ComponentType<T & { data: any }>, fe
         setIsLoading(true);
         setError(null);
         try {
-          const result = await fetchData(dataContext, fetchMethod);
+          const result = await fetchMethod(dataContext);
           setData(result);
         } catch (err: any) {
           setError(err.message || 'Error al obtener los datos');
@@ -32,7 +23,7 @@ function withDataFetch<T>(WrappedComponent: ComponentType<T & { data: any }>, fe
         }
       };
       loadData();
-    }, [dataContext]);
+    }, []);
     if (isLoading || error) return <LoadingErrorState isLoading={isLoading} error={error} />;
     return <WrappedComponent {...props} data={data} />;
   };

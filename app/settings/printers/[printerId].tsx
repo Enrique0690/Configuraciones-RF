@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '@/components/Data/AppContext';
-import DataRenderer from '@/components/DataRenderer';
+import DataRenderer from '@/components/Renders/EditableFieldRow';
 import BluetoothModal from '@/components/Printersconnection/BluetoohModal';
 import EthernetModal from '@/components/Printersconnection/EthernetModal';
 import UsbModal from '@/components/Printersconnection/USBModal';

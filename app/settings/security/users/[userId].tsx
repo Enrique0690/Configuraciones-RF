@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useLocalSearchParams } from 'expo-router';
-import DataRenderer from '@/components/DataRenderer';
+import DataRenderer from '@/components/Renders/EditableFieldRow';
 import useStorage from '@/hooks/useStorage';
 import { Colors } from '@/constants/Colors';
 

@@ -10,23 +10,14 @@ type EditDialogProps = {
   onClose: () => void;
   title: string;
   validation?: string[];
-  isLoading: boolean;
+  isLoading?: boolean;
   errorMessage: string | null;
 };
 
-const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, validation, isLoading, errorMessage }: EditDialogProps) => {
+const EditModal = ({ visible, value, onChangeText, onSave, onClose, title, validation, isLoading, errorMessage }: EditDialogProps) => {
   const inputRef = useRef<TextInput>(null);
   const [inputValue, setInputValue] = useState(value);
   const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    setError(errorMessage);
-  }, [errorMessage]);
-  useEffect(() => {
-    if (visible) {
-      setError(null);
-      setInputValue(value);
-    }
-  }, [visible]);
   useEffect(() => {
     const handleBackPress = () => {
       if (visible && !isLoading) {
@@ -104,9 +95,9 @@ const EditDialog = ({ visible, value, onChangeText, onSave, onClose, title, vali
                   keyboardType={validation?.includes('phone') ? 'phone-pad' : validation?.includes('number') ? 'numeric' : 'default'}
                 />
               )}
-              {error && (
+              {(error || errorMessage) && (
                 <View style={styles.errorContainer}>
-                  <Text style={styles.errorText}>{error}</Text>
+                  <Text style={styles.errorText}>{error || errorMessage}</Text>
                 </View>
               )}
               <View style={styles.buttonContainer}>
@@ -188,4 +179,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditDialog;
+export default EditModal;

@@ -5,16 +5,16 @@ function withGlobalRoute<T>(config: T[], route: string, category?: string): (T &
 type FieldConfig = {
   label: string;
   id: string;
-  type: 'text' | 'buttonlist' | 'input';
+  type: 'inputinterpolation' | 'buttonlist' | 'input';
   route?: string;
   iconName?: string;
   finalText?: string;
 };
 
 export const securityConfig: Array<FieldConfig> = withGlobalRoute([
-  { id: 'eliminarMotivo', label: 'security.deleteProductReason', type: 'text' },
-  { id: 'minimo_caracteres_justificar_anulacion', label: 'security.cancelInvoiceReason', type: 'text' },
-  { id: 'anularPedidoMotivo', label: 'security.cancelOrderReason', type: 'text' },
+  { id: 'eliminarMotivo', label: 'security.deleteProductReason', type: 'inputinterpolation' },
+  { id: 'minimo_caracteres_justificar_anulacion', label: 'security.cancelInvoiceReason', type: 'inputinterpolation' },
+  { id: 'anularPedidoMotivo', label: 'security.cancelOrderReason', type: 'inputinterpolation' },
 ], '/settings/security', "layout.categorys.security");
 
 const linksConfig = [

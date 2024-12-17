@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import DataRenderer from '@/components/DataRenderer';
+import DataRenderer from '@/components/Renders/EditableFieldRow';
 import PermissionsList from '@/components/security/rol/permissionslist';
 import { rolePermissions } from '@/constants/DataConfig/SecurityConfig';
 import { useAppContext } from '@/components/Data/AppContext';

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import DataRenderer from '@/components/DataRenderer';
+import EditableFieldRow from '@/components/Renders/EditableFieldRow';
 import { infoTributariaConfig } from '@/constants/DataConfig/organization';
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
@@ -11,36 +11,30 @@ const InfoTributariaScreen = ({ data }: { data: any }) => {
   const { t } = useTranslation();
   const { highlight } = useLocalSearchParams();
   return (
-    <View style={[styles.container]}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        {infoTributariaConfig.map(({ label, id, type, list }) => (
-          <DataRenderer
-            key={id}
-            label={t(label)}
-            value={data?.Configuracion.DATA[id]}
-            type={type}
-            onSave={async (newValue) => {
-              await data?.Configuracion.Set(id, newValue);
-            }}
-            textColor={Colors.text}
-            dataList={list}
-            highlight={highlight === id}
-          />
-        ))}
-      </ScrollView>
-    </View>
+    <ScrollView>
+      {infoTributariaConfig.map(({ label, id, type, list, validation }) => (
+        <EditableFieldRow
+          key={id}
+          label={t(label)}
+          value={data?.[id]}
+          type={type}
+          onSave={async (newValue) => {
+            await data?.Configuracion.Set(id, newValue);
+          }}
+          textColor={Colors.text}
+          dataList={list}
+          highlight={highlight === id}
+          validation={validation}
+        />
+      ))}
+    </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 10,
-  },
-  contentContainer: {
-    paddingBottom: 16,
-  }
-});
+const fetchTaxInfoData = async (dataContext: any) => {
+  if (!dataContext?.Configuracion?.download) throw new Error('El método download no está disponible en Configuracion');
+  await dataContext.Configuracion.download();
+  return dataContext.Configuracion.DATA;
+};
 
-export default withDataFetch(InfoTributariaScreen, 'download');
+export default withDataFetch(InfoTributariaScreen, fetchTaxInfoData);

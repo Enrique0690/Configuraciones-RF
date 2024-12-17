@@ -4,7 +4,7 @@ import UUID from 'react-native-uuid';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '@/components/Data/AppContext';
-import DataRenderer from '@/components/DataRenderer';
+import EditableFieldRow from '@/components/Renders/EditableFieldRow';
 import BluetoothModal from '@/components/Printersconnection/BluetoohModal';
 import EthernetModal from '@/components/Printersconnection/EthernetModal';
 import UsbModal from '@/components/Printersconnection/USBModal';
@@ -27,8 +27,6 @@ const NewPrinterScreen = () => {
   const [noStation, setNoStation] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [stations, setStations] = useState<{ name: string; enabled: boolean }[]>([]);
-
-
   const [printOptions, setPrintOptions] = useState({
     deliveryNote: false,
     invoice: false,
@@ -173,7 +171,7 @@ const NewPrinterScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
-        <DataRenderer
+        <EditableFieldRow
           label={t('printers.printerName')}
           value={printerName}
           type="input"
@@ -183,7 +181,7 @@ const NewPrinterScreen = () => {
 
         <Text style={styles.label}>{t('printers.printingSettings')}</Text>
         {Object.keys(printOptions).map((optionKey) => (
-          <DataRenderer
+          <EditableFieldRow
             key={optionKey}
             label={t(`printers.${optionKey}`)}
             value={printOptions[optionKey as keyof typeof printOptions]}
@@ -210,7 +208,7 @@ const NewPrinterScreen = () => {
             </TouchableOpacity>
           </View>
           <Tooltip text={t('stations.description1')} visible={tooltipVisible} onClose={handleCloseTooltip} />
-          <DataRenderer
+          <EditableFieldRow
             label={t('printers.noStation')}
             value={noStation}
             type="switch"
@@ -220,7 +218,7 @@ const NewPrinterScreen = () => {
           {stations.length > 0 && (
             <>
               {stations.map((station, index) => (
-                <DataRenderer
+                <EditableFieldRow
                   key={index}
                   label={station.name}
                   value={station.enabled}
@@ -239,8 +237,6 @@ const NewPrinterScreen = () => {
           )}
         </View>
         )}
-        
-
         <Text style={styles.label}>{t('printers.connection')}</Text>
         <View style={styles.buttonContainer}>
           {renderConnectionOption(t('printers.usb'), 'USB')}

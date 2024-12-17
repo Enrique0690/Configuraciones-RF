@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Text, ScrollView, StyleSheet} from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from '@/constants/Colors';
@@ -9,20 +9,24 @@ import { AppProvider, useAppContext } from "@/components/Data/AppContext";
 import { routeTitles } from "@/constants/routetitles";
 import { menuconfig } from "@/constants/menuconfig";
 import MenuSection from "@/components/MenuComponents";
-import { usehooksGlobals } from "@/hooks/globals";
+import { useSmallScreen } from "@/hooks/useSmallScreen";
 import { useNavigation } from "@/hooks/useNavigation";
 import { useBackHandler } from "@/hooks/useBackHandler";
-import StackHeader from "@/components/navigation/StackHeader";
+import HeaderNav from "@/components/navigation/HeaderNav";
 import { LoadingErrorState } from "@/components/Data/LoadingErrorState";
+import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 
 function LayoutContent() {
-    const { t, router, isSmallScreen } = usehooksGlobals();
+    const { isSmallScreen } = useSmallScreen();
+    const { t } = useTranslation();
+    const router = useRouter();
     const insets = useSafeAreaInsets();
     const { selectedRoute, isFullScreen, setIsFullScreen, handleNavigation, segments } = useNavigation(isSmallScreen);
     const routeConfig = useMemo(() => routeTitles[selectedRoute as keyof typeof routeTitles] || { title: null }, [selectedRoute]);
     useBackHandler(isSmallScreen, isFullScreen, segments, () => setIsFullScreen(false));
     const { isLoading, error } = useAppContext();
-    const loadingErrorState = <LoadingErrorState isLoading={isLoading} error={error}/>;
+    const loadingErrorState = <LoadingErrorState isLoading={isLoading} error={error} />;
     if (isLoading || error) return loadingErrorState;
     return (
         <View style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
@@ -45,7 +49,18 @@ function LayoutContent() {
                 </View>
             )}
             <View style={[styles.content, isFullScreen && styles.fullScreenContent]}>
-                <Stack screenOptions={StackHeader({ routeConfig, isSmallScreen, t, router })} />
+                <Stack
+                    screenOptions={{
+                        headerShown: !!routeConfig.title,
+                        contentStyle: {
+                            backgroundColor: "white",
+                            padding: 16
+                        },
+                        header: () => (
+                            <HeaderNav routeConfig={routeConfig} isSmallScreen={isSmallScreen} />
+                        ),
+                    }}
+                />
             </View>
         </View>
     );

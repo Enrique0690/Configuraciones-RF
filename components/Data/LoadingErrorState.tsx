@@ -7,7 +7,7 @@ interface LoadingErrorStateProps {
 export const LoadingErrorState = ({ isLoading, error }: LoadingErrorStateProps) => {
     if (isLoading) {
         return (
-            <View style={[styles.centered]}>
+            <View style={[styles.container]}>
                 <ActivityIndicator size="large" color={Colors.primary} />
             </View>
         );
@@ -15,7 +15,7 @@ export const LoadingErrorState = ({ isLoading, error }: LoadingErrorStateProps) 
 
     if (error) {
         return (
-            <View style={[styles.centered]}>
+            <View style={[styles.container]}>
                 <Text style={styles.errorText}>{`Error: ${error}`}</Text>
             </View>
         );
@@ -25,15 +25,16 @@ export const LoadingErrorState = ({ isLoading, error }: LoadingErrorStateProps) 
 };
 
 const styles = StyleSheet.create({
-    centered: {
+    container: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
       },
       errorText: {
         color: Colors.error,
-        fontSize: 16,
+        fontSize: 14,
         textAlign: "center",
         marginHorizontal: 20,
+        marginBottom: 15,
       }
 });

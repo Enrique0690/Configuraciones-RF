@@ -10,5 +10,7 @@
     "saveError": "Changes could not be saved.",
     "search": "Search",
     "noResults": "No results found",
-    "search.placeholder": "Select the search bar to search for a configuration"
+    "search.placeholder": "Select the search bar to search for a configuration",
+    "searchtitle": "Search Results",
+    "fieldCannotBeEmpty": "Field cannot be empty"
 }

@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import DataRenderer from '@/components/DataRenderer';
+import EditableFieldRow from '@/components/Renders/EditableFieldRow';
+import ButtonRow from '@/components/Renders/ButtonRow';
 import { organizationConfig } from '@/constants/DataConfig/organization';
 import { useLocalSearchParams } from 'expo-router';
-import { Colors } from '@/constants/Colors';
 import ImageUploader from '@/components/ImageUploader';
 import withDataFetch from '@/components/HOC/withDataFetch';
 
@@ -12,51 +12,41 @@ const OrganizationScreen = ({ data }: { data: any }) => {
   const { t } = useTranslation();
   const { highlight } = useLocalSearchParams();
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <ImageUploader
-          initialUri={data?.imageUrl} 
-          onSave={async (uri) => {
-            await data?.Configuracion.Set('imageUrl', uri);
+    <ScrollView>
+      <ImageUploader
+        initialUri={data?.imageUrl}
+        onSave={async (uri) => {
+          await data?.Configuracion.Set('imageUrl', uri);
+        }}
+        buttonText={t('common.uploadImage')}
+      />
+      {organizationConfig.map(({ label, id, type, list, validation }) => (
+        <EditableFieldRow
+          key={id}
+          label={t(label)}
+          value={data?.[id]}
+          type={type}
+          onSave={async (newValue) => {
+            await data?.Configuracion.Set(id, newValue);
           }}
-          buttonText={t('common.uploadImage')}
+          dataList={list}
+          highlight={highlight === id}
+          validation={validation}
         />
-        {organizationConfig.map(({ label, id, type, list, validation }) => (
-          <DataRenderer
-            key={id}
-            label={t(label)}
-            value={data?.[id]} 
-            type={type}
-            onSave={async (newValue) => {
-              await data?.Configuracion.Set(id, newValue);
-            }}
-            textColor={Colors.text}
-            dataList={list}
-            highlight={highlight === id}
-            validation={validation}
-          />
-        ))}
-        <DataRenderer
-          label={t('organization.taxinfo.header')}
-          value="/settings/organization/ecuador/tax-info"
-          type="buttonlist"
-          iconName="document-text"
-          textColor={Colors.text}
-        />
-      </ScrollView>
-    </View>
+      ))}
+      <ButtonRow
+        label={t('organization.taxinfo.header')}
+        route="/settings/organization/ecuador/tax-info"
+        iconName="document-text"
+      />
+    </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 10,
-  },
-  contentContainer: {
-    paddingBottom: 16,
-  },
-});
+const fetchOrganizationData = async (dataContext: any) => {
+  if (!dataContext?.Configuracion?.download) throw new Error('El método download no está disponible en Configuracion');
+  await dataContext.Configuracion.download();
+  return dataContext.Configuracion.DATA;
+};
 
-export default withDataFetch(OrganizationScreen, 'download');
+export default withDataFetch(OrganizationScreen, fetchOrganizationData);
